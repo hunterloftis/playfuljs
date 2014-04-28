@@ -1,0 +1,32 @@
+{
+  "name": "blog",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hunter",
+    "loftis",
+    "blog"
+  ],
+  "author": "Hunter Loftis <hunter@hunterloftis.com>",
+  "license": "none",
+  "dependencies": {
+    "metalsmith": "^0.6.1",
+    "jade": "^1.3.1",
+    "swig": "^1.3.2",
+    "metalsmith-templates": "^0.4.0",
+    "metalsmith-markdown": "^0.2.1",
+    "metalsmith-permalinks": "^0.3.0",
+    "metalsmith-collections": "^0.4.0",
+    "metalsmith-drafts": "0.0.1",
+    "metalsmith-excerpts": "^0.3.0",
+    "metalsmith-stylus": "git://github.com/hunterloftis/metalsmith-stylus.git#master",
+    "metalsmith-assets": "0.0.1",
+    "metalsmith-autoprefixer": "^0.1.2",
+    "metalsmith-ignore": "^0.1.2"
+  }
+}

@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    title= title
+    meta(name='description', content= description)
+    link(rel='stylesheet' type='text/css' href='styles/global.css')
+  body
+    h1= title
+    p= description
+
+    each article in collections.articles
+      h2 #{article.title}
+      != article.excerpt
