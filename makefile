@@ -8,4 +8,7 @@ clean:
 	rm -rf node_modules
 	rm -rf build
 
+publish:
+	git subtree push --prefix build github gh-pages
+
 .PHONY: build
