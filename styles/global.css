@@ -107,7 +107,11 @@ input {
   width: 128px;
   height: 128px;
   border-radius: 50%;
-  background: #334;
+  background: #334 url("images/avatar.jpg") center center no-repeat;
+  -webkit-background-size: cover;
+  background-size: cover;
+  -webkit-box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   display: inline-block;
 }
 .Header-contents {
