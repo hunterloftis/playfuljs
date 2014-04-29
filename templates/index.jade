@@ -4,24 +4,22 @@ html
     title= title
     meta(name='description', content= description)
     link(rel='stylesheet' type='text/css' href='styles/global.css')
-    link(rel='stylesheet' type='text/css' href='styles/smart-grid.css')
+    link(rel='stylesheet' type='text/css' href='styles/grid.css')
   body
     header.Header
-      .container
-        .row
-          h1.Header-logo PlayfulJS
-        .row
-          .columns.two
-            .Header-avatar
-          .columns.ten
-            .Header-intro!= contents
-            .Header-actions
-              span Want a playful session at your conference?&nbsp;
-              span Need help with a node.js or HTML5 project?&nbsp;
-              a(href='mailto:hunter@hunterloftis.com') Email me!
-
-    .container
       .row
-        each article in collections.articles
-          h2 #{article.title}
-          != article.excerpt
+        h1.Header-logo PlayfulJS
+      .row
+        .col
+          .Header-avatar
+        .col
+          .Header-intro!= contents
+          .Header-actions
+            span Want a playful session at your conference?&nbsp;
+            span Need help with a node.js or HTML5 project?&nbsp;
+            a(href='mailto:hunter@hunterloftis.com') Email me!
+
+    main.row
+      each article in collections.articles
+        h2 #{article.title}
+        != article.excerpt
