@@ -1,16 +1,35 @@
 .Header
   background #777
   color #fff
-  padding 30px 0
+  padding 20px 0 30px 0
+  text-align center
 
 .Header-logo
   text-align center
   font-family 'Satisfy'
   font-size 4rem
-  line-height 1.5
+  line-height 1.9
+  color #fff
+  text-shadow 0 2px 10px rgba(0, 0, 0, 0.2)
 
 .Header-avatar
   width 128px
   height 128px
   border-radius 50%
   background #333
+  display inline-block
+
+.Header-contents
+  text-shadow 0 1px 0px rgba(0, 0, 0, 1)
+
+.Header-actions
+  font-size 0.9rem
+  text-align center
+  text-shadow 0 1px 0px rgba(0, 0, 0, 1)
+
+@media only screen and (min-width: 800px)
+  .Header
+    text-align left
+
+  .Header-actions
+    text-align right

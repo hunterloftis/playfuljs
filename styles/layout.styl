@@ -1,0 +1,28 @@
+column(x)
+  width (x/12 * 100)%
+
+.center
+  text-align center
+
+.row
+  max-width 1024px
+  margin 0 auto
+
+@media only screen and (min-width: 800px)
+  .col.two
+    column(2)
+
+  .col.three
+    column(3)
+
+  .col.four
+    column(4)
+
+  .col.eight
+    column(8)
+
+  .col.nine
+    column(9)
+
+  .col.ten
+    column(10)

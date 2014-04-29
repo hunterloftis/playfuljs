@@ -10,16 +10,28 @@ html
       .row
         h1.Header-logo PlayfulJS
       .row
-        .col
+        .col.two.center
           .Header-avatar
-        .col
-          .Header-intro!= contents
+        .col.ten
+          .Header-contents!= contents
           .Header-actions
             span Want a playful session at your conference?&nbsp;
             span Need help with a node.js or HTML5 project?&nbsp;
             a(href='mailto:hunter@hunterloftis.com') Email me!
 
-    main.row
-      each article in collections.articles
-        h2 #{article.title}
-        != article.excerpt
+    .row
+      .col.nine
+        each article in collections.articles
+          h2 #{article.title}
+          != article.excerpt
+
+      .col.three
+        form.Subscriber
+          h4 Get new articles by email
+          input(name='email' placeholder='enter your email address')
+          a.Button Subscribe
+            span.Button-sub (it's free!)
+        section.RecentArticles
+          h4 Recent Articles
+          each article in collections.articles
+            a(href=article.url) #{article.title}
