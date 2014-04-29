@@ -10,8 +10,8 @@ html {
   line-height: 1.5;
 }
 body {
-  background: #ccc;
-  color: #333;
+  background: #f8ecc2;
+  color: #334;
   font-family: 'Open Sans', helvetica, arial, sans-serif;
   font-weight: 300;
   margin: 0;
@@ -24,7 +24,7 @@ h4,
 h5 {
   font-family: 'Open Sans';
   font-weight: 700;
-  color: #333;
+  color: #334;
 }
 h1 {
   padding: 0;
@@ -39,8 +39,16 @@ h4 {
   margin: 15px 0 5px 0;
 }
 a {
-  color: #ff0;
+  color: #e65540;
   text-decoration: none;
+}
+input {
+  color: #334;
+  font-size: 0.9rem;
+  padding: 8px;
+  border-radius: 3px;
+  background: #fff;
+  border: solid 1px #ccc;
 }
 .center {
   text-align: center;
@@ -59,6 +67,9 @@ a {
   .col.four {
     width: 33.33333333333333%;
   }
+  .col.six {
+    width: 50%;
+  }
   .col.eight {
     width: 66.66666666666666%;
   }
@@ -70,10 +81,19 @@ a {
   }
 }
 .Header {
-  background: #777;
+  background: #65a8a6;
   color: #fff;
   padding: 20px 0 30px 0;
   text-align: center;
+  border-bottom: solid 16px #e65540;
+}
+.Header a {
+  color: #f8ecc2;
+  text-shadow: none;
+  font-weight: 700;
+}
+.Header a:hover {
+  text-decoration: underline;
 }
 .Header-logo {
   text-align: center;
@@ -81,22 +101,22 @@ a {
   font-size: 4rem;
   line-height: 1.9;
   color: #fff;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  text-shadow: 0 2px 16px rgba(0,0,0,0.2);
 }
 .Header-avatar {
   width: 128px;
   height: 128px;
   border-radius: 50%;
-  background: #333;
+  background: #334;
   display: inline-block;
 }
 .Header-contents {
-  text-shadow: 0 1px 0px #000;
+  text-shadow: 0 1px 0px rgba(0,0,0,0.2);
 }
 .Header-actions {
   font-size: 0.9rem;
   text-align: center;
-  text-shadow: 0 1px 0px #000;
+  text-shadow: 0 1px 0px rgba(0,0,0,0.2);
 }
 @media only screen and (min-width: 800px) {
   .Header {
@@ -115,13 +135,6 @@ a {
 .Subscriber button {
   width: 100%;
 }
-.Subscriber input {
-  font-size: 0.9rem;
-  padding: 5px;
-  border-radius: 3px;
-  background: #fff;
-  border: solid 1px #ccc;
-}
 .Button {
   font-size: 0.9rem;
   padding: 8px 10px;
@@ -139,4 +152,27 @@ a {
   margin: 3px 0 3px 5px;
   font-weight: 500;
   color: #333;
+}
+.Recent {
+  padding-top: 10px;
+  text-align: center;
+}
+.Recent a {
+  display: block;
+  text-align: left;
+  padding: 10px 10px 0 10px;
+  margin: 10px 0 0 0;
+  color: #e65540;
+  border-top: dashed 1px #e65540;
+}
+.Recent a:hover {
+  text-decoration: underline;
+}
+.Article-date {
+  font-style: italic;
+  text-align: left;
+  font-size: 0.9rem;
+}
+.Article-list {
+  padding-bottom: 40px;
 }
