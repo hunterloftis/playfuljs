@@ -1,6 +1,14 @@
 @import url('http://fonts.googleapis.com/css?family=Satisfy&text=PlayfulJS');
 @import url('http://fonts.googleapis.com/css?family=Open+Sans:300,700');
 
+base-color = #F8ECC2
+alt-color = #65A8A6
+splash-color = #E65540
+
+light-color = #fff
+mid-color = #ccc
+dark-color = #334
+
 *
   box-sizing border-box
 
@@ -9,8 +17,8 @@ html
   line-height 1.5
 
 body
-  background #ccc
-  color #333
+  background base-color
+  color dark-color
   font-family 'Open Sans', helvetica, arial, sans-serif
   font-weight 300
   margin 0
@@ -19,7 +27,7 @@ body
 h1, h2, h3, h4, h5
   font-family 'Open Sans'
   font-weight 700
-  color #333
+  color dark-color
 
 h1
   padding 0
@@ -34,6 +42,14 @@ h4
   margin 15px 0 5px 0
 
 a
-  color #ff0
+  color splash-color
   text-decoration none
+
+input
+  color dark-color
+  font-size 0.9rem
+  padding 8px
+  border-radius 3px
+  background #fff
+  border solid 1px mid-color
 

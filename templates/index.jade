@@ -1,8 +1,23 @@
+mixin articleColumn(article)
+  .col.six
+    h2 #{article.title}
+    p.Article-date #{article.date && [article.date.getFullYear(), article.date.getMonth(), article.date.getDay()].join('.') }
+    != article.excerpt
+
+- function pairUp(list) {
+-   return list.reduce(function(memo, article, i) {
+-     if (i % 2 === 0) memo.push([article, false]);
+-     else memo[memo.length - 1][1] = article;
+-     return memo;
+-   }, []);
+- }
+
 doctype html
 html
   head
     title= title
     meta(name='description', content= description)
+    meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
     link(rel='stylesheet' type='text/css' href='styles/global.css')
     link(rel='stylesheet' type='text/css' href='styles/grid.css')
   body
@@ -19,11 +34,12 @@ html
             span Need help with a node.js or HTML5 project?&nbsp;
             a(href='mailto:hunter@hunterloftis.com') Email me!
 
-    .row
+    .row.Article-list
       .col.nine
-        each article in collections.articles
-          h2 #{article.title}
-          != article.excerpt
+        each pair in pairUp(collections.articles)
+          .row
+            +articleColumn(pair[0])
+            +articleColumn(pair[1])
 
       .col.three
         form.Subscriber
@@ -31,7 +47,7 @@ html
           input(name='email' placeholder='enter your email address')
           a.Button Subscribe
             span.Button-sub (it's free!)
-        section.RecentArticles
+        section.Recent
           h4 Recent Articles
-          each article in collections.articles
-            a(href=article.url) #{article.title}
+          each article in collections.articles.slice(0, 3)
+            a(href=article.path) #{article.title}
