@@ -2,21 +2,21 @@
   "source": "./content",
   "destination": "./build",
   "metadata": {
-    "title": "Hunter Loftis",
-    "description": "Blog"
+    "title": "PlayfulJS",
+    "description": "Adventures in the land of JavaScript"
   },
   "plugins": {
     "metalsmith-drafts": true,
     "metalsmith-excerpts": true,
     "metalsmith-assets": {
-      "source": "templates/styles",
+      "source": "styles",
       "destination": "styles"
     },
     "metalsmith-ignore": [
       "styles/!(global).styl"
     ],
     "metalsmith-stylus": {
-      "paths": ["templates/styles"]
+      "paths": ["styles"]
     },
     "metalsmith-markdown": {},
     "metalsmith-collections": {
