@@ -110,8 +110,9 @@ input {
   background: #334 url("images/avatar.jpg") center center no-repeat;
   -webkit-background-size: cover;
   background-size: cover;
-  -webkit-box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  border: solid 4px #fff;
   display: inline-block;
 }
 .Header-contents {
