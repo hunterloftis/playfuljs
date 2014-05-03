@@ -7,5 +7,6 @@
 - }
 
 - function simpleDate(date) {
-  - return date && [date.getFullYear(), date.getMonth(), date.getDay()].join('.')
+  - var month = date && ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'][date.getMonth()];
+  - return date && [date.getDay(), month, date.getFullYear()].join(' ');
 - }
