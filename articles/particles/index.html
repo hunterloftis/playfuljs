@@ -1,0 +1,26 @@
+<doctype html>
+<html>
+  <head>
+    <style>
+      html, body {
+        min-height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+      }
+    </style>
+  </head>
+  <body>
+    <script src='screenfull.min.js'></script>
+    <script src='pixi.js'></script>
+    <script src='stage.js'></script>
+    <script>
+      var graphics = new PIXI.Graphics();
+      graphics.lineStyle(2, 0xffffff, 1);
+      graphics.drawCircle(100, 100, 10);
+      stage.addChild(graphics);
+    </script>
+  </body>
+</html>
