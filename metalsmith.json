@@ -13,7 +13,8 @@
       "destination": "styles"
     },
     "metalsmith-ignore": [
-      "styles/!(global).styl"
+      "styles/!(global).styl",
+      "drafts/*"
     ],
     "metalsmith-stylus": {
       "paths": ["styles"]
@@ -27,7 +28,8 @@
       }
     },
     "metalsmith-permalinks": {
-      "pattern": ":title"
+      "pattern": ":title",
+      "relative": false
     },
     "metalsmith-templates": {
       "engine": "jade",
