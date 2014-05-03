@@ -1,4 +1,3 @@
-@import url("http://fonts.googleapis.com/css?family=Satisfy&text=PlayfulJS");
 @import url("http://fonts.googleapis.com/css?family=Open+Sans:300,700");
 * {
   -webkit-box-sizing: border-box;
@@ -10,7 +9,7 @@ html {
   line-height: 1.5;
 }
 body {
-  background: #f8ecc2;
+  background: #eee;
   color: #334;
   font-family: 'Open Sans', helvetica, arial, sans-serif;
   font-weight: 300;
@@ -23,7 +22,7 @@ h3,
 h4,
 h5 {
   font-family: 'Open Sans';
-  font-weight: 700;
+  font-weight: 300;
   color: #334;
 }
 h1 {
@@ -31,15 +30,15 @@ h1 {
   margin: 0;
 }
 h2 {
-  font-size: 1.9rem;
+  font-size: 2rem;
   margin: 25px 0 10px 0;
 }
 h4 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin: 15px 0 5px 0;
 }
 a {
-  color: #e65540;
+  color: #e33258;
   text-decoration: none;
 }
 input {
@@ -81,14 +80,14 @@ input {
   }
 }
 .Header {
-  background: #65a8a6;
-  color: #fff;
+  background: #000;
+  color: #eee;
   padding: 20px 0 30px 0;
   text-align: center;
-  border-bottom: solid 16px #e65540;
+  border-bottom: solid 16px #e33258;
 }
 .Header a {
-  color: #f8ecc2;
+  color: #e33258;
   text-shadow: none;
   font-weight: 700;
 }
@@ -97,11 +96,10 @@ input {
 }
 .Header-logo {
   text-align: center;
-  font-family: 'Satisfy';
   font-size: 4rem;
   line-height: 1.9;
-  color: #fff;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  color: #e33258;
+  text-shadow: 0 0 10px #e33258;
 }
 .Header-avatar {
   width: 128px;
@@ -112,7 +110,7 @@ input {
   background-size: cover;
   -webkit-box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  border: solid 4px #fff;
+  border: solid 4px #eee;
   display: inline-block;
 }
 .Header-contents {
@@ -167,8 +165,8 @@ input {
   text-align: left;
   padding: 10px 10px 0 10px;
   margin: 10px 0 0 0;
-  color: #e65540;
-  border-top: dashed 1px #e65540;
+  color: #e33258;
+  border-top: dashed 1px #e33258;
 }
 .Recent a:hover {
   text-decoration: underline;
@@ -180,4 +178,15 @@ input {
 }
 .Article-list {
   padding-bottom: 40px;
+}
+.SmallHeader {
+  background: #e33258;
+  color: #eee;
+  padding: 20px 0 0 0;
+  border-bottom: solid 16px #fff;
+}
+.SmallHeader-logo {
+  font-size: 3.2rem;
+  line-height: 3.5rem;
+  color: #fff;
 }

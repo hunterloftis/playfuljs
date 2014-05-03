@@ -6,4 +6,6 @@ template: article.jade
 
 Particles are awesome.
 
-
+```js
+var test = 'test';
+```

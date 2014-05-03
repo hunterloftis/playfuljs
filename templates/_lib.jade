@@ -1,0 +1,11 @@
+- function pairUp(list) {
+-   return list.reduce(function(memo, article, i) {
+-     if (i % 2 === 0) memo.push([article, false]);
+-     else memo[memo.length - 1][1] = article;
+-     return memo;
+-   }, []);
+- }
+
+- function simpleDate(date) {
+  - return date && [date.getFullYear(), date.getMonth(), date.getDay()].join('.')
+- }

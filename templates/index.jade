@@ -1,16 +1,11 @@
+include _lib
+
 mixin articleColumn(article)
   .col.six
-    h2 #{article.title}
-    p.Article-date #{article.date && [article.date.getFullYear(), article.date.getMonth(), article.date.getDay()].join('.') }
+    a(href=article.path)
+      h2 #{article.title}
+    p.Article-date= simpleDate(article.date)
     != article.excerpt
-
-- function pairUp(list) {
--   return list.reduce(function(memo, article, i) {
--     if (i % 2 === 0) memo.push([article, false]);
--     else memo[memo.length - 1][1] = article;
--     return memo;
--   }, []);
-- }
 
 doctype html
 html
@@ -42,12 +37,4 @@ html
             +articleColumn(pair[1])
 
       .col.three
-        form.Subscriber
-          h4 Get new articles by email
-          input(name='email' placeholder='enter your email address')
-          a.Button Subscribe
-            span.Button-sub (it's free!)
-        section.Recent
-          h4 Recent Articles
-          each article in collections.articles.slice(0, 3)
-            a(href=article.path) #{article.title}
+        include _nav
