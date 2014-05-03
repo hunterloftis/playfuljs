@@ -180,6 +180,7 @@ input {
   padding-bottom: 40px;
 }
 .Article-contents code {
+  white-space: pre;
   background: #23241f;
   color: #f8f8f2;
   padding: 10px;
