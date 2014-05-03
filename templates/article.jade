@@ -8,6 +8,8 @@ html
     meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
     link(rel='stylesheet' type='text/css' href='../styles/global.css')
     link(rel='stylesheet' type='text/css' href='../styles/grid.css')
+    link(rel='stylesheet' href='https://rawgit.com/isagalaev/highlight.js/master/src/styles/monokai_sublime.css')
+
   body
     header.SmallHeader
       .row
@@ -18,7 +20,7 @@ html
       .col.nine
         h2= title
         p.Article-date= simpleDate(date)
-        main!= contents
+        main.Article-contents!= contents
 
       .col.three
         include _nav

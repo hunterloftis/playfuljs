@@ -27,6 +27,7 @@
     "metalsmith-stylus": "git://github.com/hunterloftis/metalsmith-stylus.git#master",
     "metalsmith-assets": "0.0.1",
     "metalsmith-autoprefixer": "^0.1.2",
-    "metalsmith-ignore": "^0.1.2"
+    "metalsmith-ignore": "^0.1.2",
+    "metalsmith-metallic": "^0.1.1"
   }
 }

@@ -19,7 +19,10 @@
     "metalsmith-stylus": {
       "paths": ["styles"]
     },
-    "metalsmith-markdown": {},
+    "metalsmith-metallic": true,
+    "metalsmith-markdown": {
+      "gfm": true
+    },
     "metalsmith-collections": {
       "articles": {
         "pattern": "articles/*",
