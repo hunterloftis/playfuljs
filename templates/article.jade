@@ -8,7 +8,7 @@ html
     meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
     link(rel='stylesheet' type='text/css' href='../styles/global.css')
     link(rel='stylesheet' type='text/css' href='../styles/grid.css')
-    link(rel='stylesheet' href='../styles/hljs-monokai_sublime.css')
+    link(rel='stylesheet' href='http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css')
 
   body
     header.SmallHeader
@@ -24,3 +24,6 @@ html
 
       .col.three
         include _nav
+
+    script(src='http://yandex.st/highlightjs/8.0/highlight.min.js')
+    script hljs.initHighlightingOnLoad();

@@ -19,7 +19,6 @@
     "metalsmith-stylus": {
       "paths": ["styles"]
     },
-    "metalsmith-metallic": true,
     "metalsmith-markdown": {
       "gfm": true
     },

@@ -101,6 +101,9 @@ input {
   color: #e33258;
   text-shadow: 0 0 10px #e33258;
 }
+.Header-logo span {
+  color: #eee;
+}
 .Header-avatar {
   width: 128px;
   height: 128px;
@@ -180,9 +183,6 @@ input {
   padding-bottom: 40px;
 }
 .Article-contents code {
-  white-space: pre;
-  background: #23241f;
-  color: #f8f8f2;
   padding: 10px;
   display: block;
 }
