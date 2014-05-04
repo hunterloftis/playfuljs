@@ -9,7 +9,8 @@ fire, smoke, explosions, fabric, water, gunfire, and more.
 Learn how to use this simple yet powerful technique to build your own stunning visuals.
 [ [Demo] ](/demos/particles)
 
-*The humble particle*
+### The humble particle
+
 ```js
 function Particle(x, y) {
   this.x = this.oldX = x;
@@ -21,11 +22,12 @@ First, we define what a particle is: a *current position* (x, y),
 plus an *old position* (oldX, oldY). At first, they're the same thing
 because the particle isn't moving yet.
 
+### Euler integration
+
 Now, let's teach our particle how to move with *Euler integration.*
 That's just a fancy way to say that we're going to find out how fast our
 particle is moving by comparing its position this frame to its position last frame.
 
-*Euler integration*
 ```js
 Particle.prototype.integrate = function() {
   var velocityX = this.x - this.oldX;
@@ -37,10 +39,11 @@ Particle.prototype.integrate = function() {
 };
 ```
 
+### Flocking
+
 For this demo, let's push each particle towards the mouse on every frame.
 This will make a cloud of particles that tends to flock around the cursor.
 
-*Flocking behavior*
 ```js
 Particle.prototype.attract = function(x, y) {
   var dx = x - this.x;
@@ -54,10 +57,11 @@ Particle.prototype.attract = function(x, y) {
 Since we're dividing the push by distance, closer particles will
 be more attracted to the mouse than more distant particles.
 
+### Putting it all together
+
 Each frame we loop through all of our particles, attracting, integrating,
 and drawing as fast as possible for smooth animation.
 
-*The main loop*
 ```js
 for (var i = 0; i < particles.length; i++) {
   particles[i].attract(mouse.x, mouse.y);
@@ -70,3 +74,10 @@ for (var i = 0; i < particles.length; i++) {
 
 If an image is worth 1000 words, a [60fps Demo](/demos/particles) must be priceless.
 
+## Get creative!
+
+- Can you make the particles slow down over time? (damping)
+- What happens if the attraction doesn't care about distance?
+- Can you draw each particle in a different random color?
+- What's it like with 20 particles? With 2,000?
+- Can you make the particles be attracted to each other as well as the mouse?

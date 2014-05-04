@@ -1,8 +1,8 @@
-<!DOCTYPE html><html><head><title>Particle effects are easy</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Particle effects are easy</h2><p class="Article-date">5 May 2014</p><main class="Article-contents"><p>Almost every game uses particles to create engaging effects for
+<!DOCTYPE html><html><head><title>Particle effects are easy</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Particle effects are easy</h2><p class="Article-date">3 May 2014</p><main class="Article-contents"><p>Almost every game uses particles to create engaging effects for
 fire, smoke, explosions, fabric, water, gunfire, and more.
 Learn how to use this simple yet powerful technique to build your own stunning visuals.
 <a href="/demos/particles"> [Demo] </a></p>
-<p><em>The humble particle</em></p>
+<h3 id="the-humble-particle">The humble particle</h3>
 <pre><code class="lang-js">function Particle(x, y) {
   this.x = this.oldX = x;
   this.y = this.oldY = y;
@@ -11,10 +11,10 @@ Learn how to use this simple yet powerful technique to build your own stunning v
 <p>First, we define what a particle is: a <em>current position</em> (x, y),
 plus an <em>old position</em> (oldX, oldY). At first, they&#39;re the same thing
 because the particle isn&#39;t moving yet.</p>
+<h3 id="euler-integration">Euler integration</h3>
 <p>Now, let&#39;s teach our particle how to move with <em>Euler integration.</em>
 That&#39;s just a fancy way to say that we&#39;re going to find out how fast our
 particle is moving by comparing its position this frame to its position last frame.</p>
-<p><em>Euler integration</em></p>
 <pre><code class="lang-js">Particle.prototype.integrate = function() {
   var velocityX = this.x - this.oldX;
   var velocityY = this.y - this.oldY;
@@ -24,9 +24,9 @@ particle is moving by comparing its position this frame to its position last fra
   this.y += velocityY;
 };
 </code></pre>
+<h3 id="flocking">Flocking</h3>
 <p>For this demo, let&#39;s push each particle towards the mouse on every frame.
 This will make a cloud of particles that tends to flock around the cursor.</p>
-<p><em>Flocking behavior</em></p>
 <pre><code class="lang-js">Particle.prototype.attract = function(x, y) {
   var dx = x - this.x;
   var dy = y - this.y;
@@ -37,9 +37,9 @@ This will make a cloud of particles that tends to flock around the cursor.</p>
 </code></pre>
 <p>Since we&#39;re dividing the push by distance, closer particles will
 be more attracted to the mouse than more distant particles.</p>
+<h3 id="putting-it-all-together">Putting it all together</h3>
 <p>Each frame we loop through all of our particles, attracting, integrating,
 and drawing as fast as possible for smooth animation.</p>
-<p><em>The main loop</em></p>
 <pre><code class="lang-js">for (var i = 0; i &lt; particles.length; i++) {
   particles[i].attract(mouse.x, mouse.y);
   particles[i].integrate();
@@ -48,4 +48,12 @@ and drawing as fast as possible for smooth animation.</p>
 </code></pre>
 <h2 id="try-it-out">Try it out</h2>
 <p>If an image is worth 1000 words, a <a href="/demos/particles">60fps Demo</a> must be priceless.</p>
-</main></div><div class="col three"><div class="Nav"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Recent Articles</h4><a href="/particle-effects-are-easy">Particle effects are easy</a><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script></body></html>
+<h2 id="get-creative-">Get creative!</h2>
+<ul>
+<li>Can you make the particles slow down over time? (damping)</li>
+<li>What happens if the attraction doesn&#39;t care about distance?</li>
+<li>Can you draw each particle in a different random color?</li>
+<li>What&#39;s it like with 20 particles? With 2,000?</li>
+<li>Can you make the particles be attracted to each other as well as the mouse?</li>
+</ul>
+</main></div><div class="col three"><div class="Nav"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Recent Articles</h4><a href="/a-particle-fountain">A particle fountain</a><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script></body></html>
