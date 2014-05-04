@@ -7,7 +7,7 @@ template: article.jade
 Almost every game uses particles to create engaging effects for
 fire, smoke, explosions, fabric, water, gunfire, and more.
 Learn how to use this simple yet powerful technique to build your own stunning visuals.
-[ [Demo] ](/articles/particles-demo/)
+[ [Demo] ](/demos/particles)
 
 *The humble particle*
 ```js
@@ -37,24 +37,27 @@ Particle.prototype.integrate = function() {
 };
 ```
 
-For this demo, let's push that particle towards the mouse on every frame.
+For this demo, let's push each particle towards the mouse on every frame.
 This will make a cloud of particles that tends to flock around the cursor.
 
 *Flocking behavior*
 ```js
 Particle.prototype.attract = function(x, y) {
-  var xDistance = x - this.x;
-  var yDistance = y - this.y;
-  this.x += xDistance * 0.1;
-  this.y += yDistance * 0.1;
+  var dx = x - this.x;
+  var dy = y - this.y;
+  var distance = Math.sqrt(dx * dx + dy * dy);
+  this.x += dx / distance;
+  this.y += dy / distance;
 };
 ```
 
-Now we just loop through all of our particles to
-push each one towards the mouse, integrate it, and finally draw it.
-We'll want to do this as fast as possible for smooth animation.
+Since we're dividing the push by distance, closer particles will
+be more attracted to the mouse than more distant particles.
 
-*Each frame*
+Each frame we loop through all of our particles, attracting, integrating,
+and drawing as fast as possible for smooth animation.
+
+*The main loop*
 ```js
 for (var i = 0; i < particles.length; i++) {
   particles[i].attract(mouse.x, mouse.y);
@@ -62,3 +65,8 @@ for (var i = 0; i < particles.length; i++) {
   particles[i].draw();
 }
 ```
+
+## Try it out
+
+If an image is worth 1000 words, a [60fps Demo](/demos/particles) must be priceless.
+
