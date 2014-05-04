@@ -91,3 +91,5 @@ Splash around in the [water fountain demo](/demos/particles2).
 - How would you increase or decrease the density of the droplets?
 - What happens if you eliminate gravity or make it very powerful?
 - What does multiplying velocity by 0.3 do in the *bounce* method?
+- Can you turn this water fountain into fireworks?
+- Can you 'reset' droplets that have already fallen to make the fountain run forever?
