@@ -37,8 +37,8 @@ Particle.prototype.integrate = function() {
 };
 ```
 
-Now let's push that particle towards the mouse on every frame.
-This will make a cloud of particles tend to flock around the cursor.
+For this demo, let's push that particle towards the mouse on every frame.
+This will make a cloud of particles that tends to flock around the cursor.
 
 *Flocking behavior*
 ```js
