@@ -188,6 +188,8 @@ input {
 .Article-contents code {
   padding: 10px;
   display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .Article-contents img {
   display: block;
