@@ -14,7 +14,9 @@ because the particle isn&#39;t moving yet.</p>
 <h3 id="verlet-integration">Verlet integration</h3>
 <p>Now, let&#39;s teach our particle how to move with <em>Verlet integration.</em>
 That&#39;s just a fancy way to say that we&#39;re going to find out how fast our
-particle is moving by comparing its position this frame to its position last frame.</p>
+particle is moving by comparing its position this frame to its position last frame.
+Why? Because that gives us <em>implicit velocity</em> -
+any change to the particle&#39;s current position will automatically update its velocity.</p>
 <pre><code class="lang-js">Particle.prototype.integrate = function() {
   var velocityX = this.x - this.oldX;
   var velocityY = this.y - this.oldY;
@@ -26,17 +28,19 @@ particle is moving by comparing its position this frame to its position last fra
 </code></pre>
 <h3 id="flocking">Flocking</h3>
 <p>For this demo, let&#39;s push each particle towards the mouse on every frame.
-This will make a cloud of particles that tends to flock around the cursor.</p>
+This will make a cloud of particles that tends to flock around the cursor.
+Since we&#39;re using Verlet integration, shifting the particle&#39;s position
+in the direction of the mouse will automatically change its velocity as if it were pushed.</p>
 <pre><code class="lang-js">Particle.prototype.attract = function(x, y) {
   var dx = x - this.x;
   var dy = y - this.y;
-  var distance = Math.sqrt(dx * dx + dy * dy);
+  var distance = Math.sqrt(dx * dx + dy * dy);  // Pythagorean theorum
   this.x += dx / distance;
   this.y += dy / distance;
 };
 </code></pre>
 <p>Since we&#39;re dividing the push by distance, closer particles will
-be more attracted to the mouse than more distant particles.</p>
+be more strongly attracted to the mouse than more distant particles.</p>
 <h3 id="putting-it-all-together">Putting it all together</h3>
 <p>Each frame we loop through all of our particles, attracting, integrating,
 and drawing as fast as possible for smooth animation.</p>

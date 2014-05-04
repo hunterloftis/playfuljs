@@ -5,15 +5,16 @@ a particle-based water fountain.
 <a href="/demos/particles2"> [Demo] </a></p>
 <h3 id="moving-particles">Moving particles</h3>
 <p>We want to launch our water droplets into the air with some velocity,
-so let&#39;s give Particle a <em>move</em> method that we&#39;ll use to create a spray.</p>
+so let&#39;s give Particle a <em>move</em> method that we&#39;ll use to spray particles
+at some horizontal (x) and vertical (y) speed.</p>
 <pre><code class="lang-js">Particle.prototype.move = function(x, y) {
   this.x += x;
   this.y += y;
 };
 </code></pre>
-<p>Since Euler integration finds velocity by comparing the current
-position to the last position, moving x and y once will
-give the particles a permanent push.</p>
+<p>Since Verlet integration finds velocity by comparing the current
+position to the last position, changing x and y without changing oldX and oldY will <em>push</em>
+the particles.</p>
 <h3 id="applying-gravity">Applying gravity</h3>
 <p>Every frame, we want gravity to pull our particles back down to earth.
 With our <em>move</em> method, this is dead simple:</p>
@@ -21,8 +22,9 @@ With our <em>move</em> method, this is dead simple:</p>
 </code></pre>
 <h3 id="bouncing">Bouncing</h3>
 <p>Let&#39;s give our water droplets a little bounce as they splash to the ground.
-We&#39;ll need to reverse their vertical velocity whenever their y position
-passes through the ground.</p>
+Since a <em>bounce</em> is just a change in direction from down to up,
+we&#39;ll need to reverse their vertical velocity whenever their y position
+is outside of the container.</p>
 <pre><code class="lang-js">Particle.prototype.bounce = function() {
   if (this.y &gt; height) {
     var velocity = this.getVelocity();
@@ -32,21 +34,26 @@ passes through the ground.</p>
 };
 </code></pre>
 <h3 id="putting-it-all-together">Putting it all together</h3>
-<p>Each frame, we&#39;ll spray five water droplets into the air with
+<p>Each frame, we&#39;ll spray five new water droplets into the air with
 a somewhat random trajectory. Then, we&#39;ll loop through
-all the droplets and apply gravity to them, integrate their positions,
-check whether or not they&#39;re bouncing off the ground, and finally draw them.</p>
+all the droplets and push each one down with gravity, integrate (update) its position,
+and check whether or not it needs to bounce.
+Finally, we&#39;ll draw each particle as a line from its last position to its current position.</p>
 <pre><code class="lang-js">for (var j = 0; j &lt; 5; j++) {
+
+  // &quot;stop&quot; the water after 1000 drops
   if (drops.length &lt; 1000) {
     var drop = new Particle(width * 0.5, height);
+
+    // up and a little to the left or right
     drop.move(Math.random() * 4 - 2, Math.random() * -2 - 15);
     drops.push(drop);
   }
 }
 for (var i = 0; i &lt; drops.length; i++) {
-  drops[i].move(0, GRAVITY);
-  drops[i].integrate();
-  drops[i].bounce();
+  drops[i].move(0, GRAVITY);    // add a downward force
+  drops[i].integrate();         // move based on current velocity
+  drops[i].bounce();            // check y against the ground
   drops[i].draw();
 }
 </code></pre>
