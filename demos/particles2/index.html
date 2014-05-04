@@ -62,14 +62,14 @@
 
       function frame() {
         requestAnimationFrame(frame);
-        for (var i = 0; i < 5; i++) {
+        ctx.clearRect(0, 0, width, height);
+        for (var j = 0; j < 5; j++) {
           if (drops.length < 1000) {
             var drop = new Particle(width * 0.5, height);
             drop.move(Math.random() * 4 - 2, Math.random() * -2 - 15);
             drops.push(drop);
           }
         }
-        ctx.clearRect(0, 0, width, height);
         for (var i = 0; i < drops.length; i++) {
           drops[i].move(0, GRAVITY);
           drops[i].integrate();
