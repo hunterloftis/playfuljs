@@ -24,8 +24,8 @@ particle is moving by comparing its position this frame to its position last fra
   this.y += velocityY;
 };
 </code></pre>
-<p>Now let&#39;s push that particle towards the mouse on every frame.
-This will make a cloud of particles tend to flock around the cursor.</p>
+<p>For this demo, let&#39;s push that particle towards the mouse on every frame.
+This will make a cloud of particles that tends to flock around the cursor.</p>
 <p><em>Flocking behavior</em></p>
 <pre><code class="lang-js">Particle.prototype.attract = function(x, y) {
   var xDistance = x - this.x;
