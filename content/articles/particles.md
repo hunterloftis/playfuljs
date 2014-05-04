@@ -22,9 +22,9 @@ First, we define what a particle is: a *current position* (x, y),
 plus an *old position* (oldX, oldY). At first, they're the same thing
 because the particle isn't moving yet.
 
-### Euler integration
+### Verlet integration
 
-Now, let's teach our particle how to move with *Euler integration.*
+Now, let's teach our particle how to move with *Verlet integration.*
 That's just a fancy way to say that we're going to find out how fast our
 particle is moving by comparing its position this frame to its position last frame.
 

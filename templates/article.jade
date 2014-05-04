@@ -23,7 +23,9 @@ html
         main.Article-contents!= contents
 
       .col.three
-        include _nav
+        +Subscriber
+        +PrevNext(locals)
+        +Recent
 
     script(src='http://yandex.st/highlightjs/8.0/highlight.min.js')
     script hljs.initHighlightingOnLoad();

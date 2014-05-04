@@ -76,11 +76,11 @@ for (var i = 0; i < drops.length; i++) {
 
 ## Try it out
 
-Splash around in our [water fountain demo](/demos/particles2).
+Splash around in the [water fountain demo](/demos/particles2).
 
 ## Get creative!
 
 - Can you change the shape of the fountain?
-- How would you make a denser or less-dense spray?
+- How would you increase or decrease the density of the droplets?
 - What happens if you eliminate gravity or make it very powerful?
 - What does multiplying velocity by 0.3 do in the *bounce* method?

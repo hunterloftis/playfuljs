@@ -1,12 +1,5 @@
 include _lib
 
-mixin articleColumn(article)
-  .col.six
-    a(href=article.path)
-      h2 #{article.title}
-    p.Article-date= simpleDate(article.date)
-    .Article-contents!= article.excerpt
-
 doctype html
 html
   head
@@ -35,11 +28,12 @@ html
       .col.nine
         each pair in pairUp(collections.articles)
           .row
-            +articleColumn(pair[0])
-            +articleColumn(pair[1])
+            +ArticleColumn(pair[0])
+            +ArticleColumn(pair[1])
 
       .col.three
-        include _nav
+        +Subscriber
+        +Recent
 
     script(src='http://yandex.st/highlightjs/8.0/highlight.min.js')
     script hljs.initHighlightingOnLoad();

@@ -1,3 +1,33 @@
+mixin ArticleColumn(article)
+  .col.six
+    a(href=article.path)
+      h2 #{article.title}
+    p.Article-date= simpleDate(article.date)
+    .Article-contents!= article.excerpt
+
+mixin Subscriber
+  form.Subscriber
+    h4 Get new articles by email
+    input(name='email' placeholder='enter your email address')
+    a.Button Subscribe
+      span.Button-sub (it's free!)
+
+mixin PrevNext(article)
+  if article.next || article.previous
+    section.Recent
+      if article.next
+        h4 Next Article
+          a(href='/' + article.next.path)= article.next.title
+      if article.previous
+        h4 Previous Article
+          a(href='/' + article.previous.path)= article.previous.title
+
+mixin Recent
+  section.Recent
+    h4 Recent Articles
+    each article in collections.articles.slice(0, 3)
+      a(href='/' + article.path) #{article.title}
+
 - function pairUp(list) {
 -   return list.reduce(function(memo, article, i) {
 -     if (i % 2 === 0) memo.push([article, false]);
