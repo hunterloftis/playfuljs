@@ -1,7 +1,7 @@
-<!DOCTYPE html><html><head><title>Particle effects are easy</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Particle effects are easy</h2><p class="Article-date">5 May 2014</p><main class="Article-contents"><p>Almost every game uses particles to create engaging effects for
+<!DOCTYPE html><html><head><title>Particle effects are easy</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Particle effects are easy</h2><p class="Article-date">5 May 2014</p><main class="Article-contents"><p>Almost every game uses particles to create engaging effects for
 fire, smoke, explosions, fabric, water, gunfire, and more.
 Learn how to use this simple yet powerful technique to build your own stunning visuals.
-<a href="/articles/particles-demo/"> [Demo] </a></p>
+<a href="/demos/particles"> [Demo] </a></p>
 <p><em>The humble particle</em></p>
 <pre><code class="lang-js">function Particle(x, y) {
   this.x = this.oldX = x;
@@ -24,24 +24,28 @@ particle is moving by comparing its position this frame to its position last fra
   this.y += velocityY;
 };
 </code></pre>
-<p>For this demo, let&#39;s push that particle towards the mouse on every frame.
+<p>For this demo, let&#39;s push each particle towards the mouse on every frame.
 This will make a cloud of particles that tends to flock around the cursor.</p>
 <p><em>Flocking behavior</em></p>
 <pre><code class="lang-js">Particle.prototype.attract = function(x, y) {
-  var xDistance = x - this.x;
-  var yDistance = y - this.y;
-  this.x += xDistance * 0.1;
-  this.y += yDistance * 0.1;
+  var dx = x - this.x;
+  var dy = y - this.y;
+  var distance = Math.sqrt(dx * dx + dy * dy);
+  this.x += dx / distance;
+  this.y += dy / distance;
 };
 </code></pre>
-<p>Now we just loop through all of our particles to
-push each one towards the mouse, integrate it, and finally draw it.
-We&#39;ll want to do this as fast as possible for smooth animation.</p>
-<p><em>Each frame</em></p>
+<p>Since we&#39;re dividing the push by distance, closer particles will
+be more attracted to the mouse than more distant particles.</p>
+<p>Each frame we loop through all of our particles, attracting, integrating,
+and drawing as fast as possible for smooth animation.</p>
+<p><em>The main loop</em></p>
 <pre><code class="lang-js">for (var i = 0; i &lt; particles.length; i++) {
   particles[i].attract(mouse.x, mouse.y);
   particles[i].integrate();
   particles[i].draw();
 }
 </code></pre>
-</main></div><div class="col three"><div class="Nav"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Recent Articles</h4><a href="/particle-effects-are-easy">Particle effects are easy</a><a href="/articles/particles-demo"></a></section></div></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script></body></html>
+<h2 id="try-it-out">Try it out</h2>
+<p>If an image is worth 1000 words, a <a href="/demos/particles">60fps Demo</a> must be priceless.</p>
+</main></div><div class="col three"><div class="Nav"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Recent Articles</h4><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script></body></html>
