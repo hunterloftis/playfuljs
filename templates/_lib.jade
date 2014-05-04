@@ -37,6 +37,7 @@ mixin Recent
 - }
 
 - function simpleDate(date) {
-  - var month = date && ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'][date.getMonth()];
-  - return date && [date.getDay() - 2, month, date.getFullYear()].join(' ');
+  - if (!date) return '';
+  - var month = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'][date.getMonth()];
+  - return [date.getDate() + 1, month, date.getFullYear()].join(' ');
 - }

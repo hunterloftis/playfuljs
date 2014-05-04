@@ -10,4 +10,5 @@ You can find me on
 [Twitter](http://twitter.com/hunterloftis),
 and [LinkedIn](https://www.linkedin.com/pub/hunter-loftis/11/746/96a).
 Originally from Charlotte, NC, I'm now a small fish in the big pond of San Francisco.
-Here at PlayfulJS I demonstrate simple, fun, and powerful techniques in the world's most popular language.
+Here at PlayfulJS I distill powerful computer-sciency madness into simple techniques
+in the world's most popular language.

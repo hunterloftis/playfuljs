@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <title>Terrain Demo - PlayfulJS</title>
+  </head>
+  <body style='background: #000'>
+    <canvas id='display' width='1' height='1' />
+
+    <script>
+
+      function Terrain(size) {
+        this.size = size;
+        this.map = new Uint8ClampedArray(size * size);
+      }
+
+      Terrain.prototype.get = function(x, y) {
+        return this.map[x + this.size * y];
+      };
+
+      Terrain.prototype.set = function(x, y, val) {
+        this.map[x + this.size * y] = val;
+      };
+
+      Terrain.prototype.average = function(x, y, half) {
+        return (
+          this.get(x - half, y - half) +
+          this.get(x + half, y - half) +
+          this.get(x + half, y + half) +
+          this.get(x - half, y - half)
+        ) / 4;
+      };
+
+      Terrain.prototype.edge = function(base) {
+        for (var i = 0; i < this.size; i++) {
+          this.set(i, 0, base);
+          this.set(i, this.size - 1, base);
+          this.set(0, i, base);
+          this.set(this.size - 1, i, base);
+        }
+        this.set((this.size - 1) / 2, (this.size - 1) / 2, base);
+      };
+
+      Terrain.prototype.tesselate = function(roughness) {
+        var self = this;
+
+        divide(0, 0, this.size);
+
+        function divide(x, y, size) {
+          if (size < 3) return;
+          var half = (size - 1) / 2;
+          var average = self.average(x + half, y + half, half);
+
+          self.set(x + half, y + half, average);
+
+          divide(x, y, half + 1);
+          divide(x + half, y, half + 1);
+          divide(x, y + half, half + 1);
+          divide(x + half, y + half, half + 1);
+        }
+      };
+
+      var terrain = new Terrain(5);
+
+      terrain.edge(128);
+      terrain.tesselate(0);
+
+      console.log(terrain.map);
+
+    </script>
+  </body>
+</html>
