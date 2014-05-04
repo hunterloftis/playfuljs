@@ -16,10 +16,10 @@ mixin PrevNext(article)
   if article.next || article.previous
     section.Recent
       if article.next
-        h4 Next Article
+        h4 Previous Article
           a(href='/' + article.next.path)= article.next.title
       if article.previous
-        h4 Previous Article
+        h4 Next Article
           a(href='/' + article.previous.path)= article.previous.title
 
 mixin Recent
