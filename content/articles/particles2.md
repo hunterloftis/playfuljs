@@ -13,7 +13,8 @@ a particle-based water fountain.
 ### Moving particles
 
 We want to launch our water droplets into the air with some velocity,
-so let's give Particle a *move* method that we'll use to create a spray.
+so let's give Particle a *move* method that we'll use to spray particles
+at some horizontal (x) and vertical (y) speed.
 
 ```js
 Particle.prototype.move = function(x, y) {
@@ -22,9 +23,9 @@ Particle.prototype.move = function(x, y) {
 };
 ```
 
-Since Euler integration finds velocity by comparing the current
-position to the last position, moving x and y once will
-give the particles a permanent push.
+Since Verlet integration finds velocity by comparing the current
+position to the last position, changing x and y without changing oldX and oldY will *push*
+the particles.
 
 ### Applying gravity
 
@@ -38,8 +39,9 @@ drops[i].move(0, GRAVITY);
 ### Bouncing
 
 Let's give our water droplets a little bounce as they splash to the ground.
-We'll need to reverse their vertical velocity whenever their y position
-passes through the ground.
+Since a *bounce* is just a change in direction from down to up,
+we'll need to reverse their vertical velocity whenever their y position
+is outside of the container.
 
 ```js
 Particle.prototype.bounce = function() {
@@ -53,23 +55,28 @@ Particle.prototype.bounce = function() {
 
 ### Putting it all together
 
-Each frame, we'll spray five water droplets into the air with
+Each frame, we'll spray five new water droplets into the air with
 a somewhat random trajectory. Then, we'll loop through
-all the droplets and apply gravity to them, integrate their positions,
-check whether or not they're bouncing off the ground, and finally draw them.
+all the droplets and push each one down with gravity, integrate (update) its position,
+and check whether or not it needs to bounce.
+Finally, we'll draw each particle as a line from its last position to its current position.
 
 ```js
 for (var j = 0; j < 5; j++) {
+
+  // "stop" the water after 1000 drops
   if (drops.length < 1000) {
     var drop = new Particle(width * 0.5, height);
+
+    // up and a little to the left or right
     drop.move(Math.random() * 4 - 2, Math.random() * -2 - 15);
     drops.push(drop);
   }
 }
 for (var i = 0; i < drops.length; i++) {
-  drops[i].move(0, GRAVITY);
-  drops[i].integrate();
-  drops[i].bounce();
+  drops[i].move(0, GRAVITY);    // add a downward force
+  drops[i].integrate();         // move based on current velocity
+  drops[i].bounce();            // check y against the ground
   drops[i].draw();
 }
 ```

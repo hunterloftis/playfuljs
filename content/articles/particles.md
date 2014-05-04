@@ -27,6 +27,8 @@ because the particle isn't moving yet.
 Now, let's teach our particle how to move with *Verlet integration.*
 That's just a fancy way to say that we're going to find out how fast our
 particle is moving by comparing its position this frame to its position last frame.
+Why? Because that gives us *implicit velocity* -
+any change to the particle's current position will automatically update its velocity.
 
 ```js
 Particle.prototype.integrate = function() {
@@ -43,19 +45,21 @@ Particle.prototype.integrate = function() {
 
 For this demo, let's push each particle towards the mouse on every frame.
 This will make a cloud of particles that tends to flock around the cursor.
+Since we're using Verlet integration, shifting the particle's position
+in the direction of the mouse will automatically change its velocity as if it were pushed.
 
 ```js
 Particle.prototype.attract = function(x, y) {
   var dx = x - this.x;
   var dy = y - this.y;
-  var distance = Math.sqrt(dx * dx + dy * dy);
+  var distance = Math.sqrt(dx * dx + dy * dy);  // Pythagorean theorum
   this.x += dx / distance;
   this.y += dy / distance;
 };
 ```
 
 Since we're dividing the push by distance, closer particles will
-be more attracted to the mouse than more distant particles.
+be more strongly attracted to the mouse than more distant particles.
 
 ### Putting it all together
 
