@@ -28,14 +28,16 @@
         return sum / values.length;
       };
 
-      Terrain.prototype.generate = function(base) {
+      Terrain.prototype.generate = function(roughness) {
         var self = this;
+        var divisions = Math.log(this.size) / Math.log(2) - 1;
+        var scale = (128 / divisions) * roughness * 0.5;
 
         // Initialize the corners
-        this.set(0, 0, base);
-        this.set(this.max, 0, base);
-        this.set(this.max, this.max, base);
-        this.set(0, this.max, base);
+        this.set(0, 0, 128);
+        this.set(this.max, 0, 128);
+        this.set(this.max, this.max, 128);
+        this.set(0, this.max, 128);
 
         divide(this.max);
 
@@ -72,7 +74,7 @@
             self.get(x + size, y + size),   // lower right
             self.get(x - size, y + size)    // lower left
           ]);
-          self.set(x, y, average);
+          self.set(x, y, average + Math.random() * scale * 2 - scale);
         }
 
         function diamond(x, y, size) {
@@ -82,13 +84,17 @@
             self.get(x, y + size),      // bottom
             self.get(x - size, y)       // left
           ]);
-          self.set(x, y, average);
+          self.set(x, y, average + Math.random() * scale * 2 - scale);
         }
       };
 
+      function log(x, y) {
+          return Math.log(y) / Math.log(x);
+      }
+
       var terrain = new Terrain(5);
 
-      terrain.generate(128);
+      terrain.generate(1);
 
       console.log(terrain.map);
 
