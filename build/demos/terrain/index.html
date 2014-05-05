@@ -45,6 +45,8 @@
           var half = size / 2;
           if (half < 1) return;
 
+          scale *= 0.8;
+
           grid(size, function(x, y) {
             square(x + half, y + half, half);    // center
           });
@@ -91,7 +93,7 @@
       Terrain.prototype.draw = function() {
         var self = this;
         var point, x, y;
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
         ctx.lineWidth = 1;
         for (x = 0; x < this.size; x++) {
           point = project(x, 0, this.get(x, 0));
@@ -116,7 +118,7 @@
         function project(x, y, z) {
           var xScale = width / self.size * 0.8;
           var yScale = height / self.size * 0.8;
-          var peak = (255 - z) * 0.01;
+          var peak = (128 - z);
           return {
             x: (x * 0.5 + y * 0.5) * xScale,
             y: height * 0.5 + (-x * 0.5 + y * 0.5 + peak) * yScale
@@ -124,17 +126,16 @@
         }
       };
 
-      var terrain = new Terrain(5);
+      var terrain = new Terrain(129);
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var drops = [];
       var width = display.width = window.innerWidth;
       var height = display.height = window.innerHeight;
 
-      terrain.generate(1);
+      ctx.globalCompositeOperation = 'overlay';
+      terrain.generate(0.5);
       terrain.draw();
-
-      console.log(terrain.map);
 
     </script>
   </body>
