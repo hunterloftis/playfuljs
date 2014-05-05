@@ -36,45 +36,46 @@
         this.set(this.size - 1, this.size - 1, base);
         this.set(0, this.size - 1, base);
 
-        divide((this.size - 1) / 2);
+        divide(this.size - 1);
 
-        function divide(step) {
-          if (step < 1) return;
+        function divide(size) {
+          var half = size / 2;
+          if (half < 1) return;
 
           var x, y;
 
-          for (y = step; y < self.size; y += step) {
-            for (x = step; x < self.size; x += step) {
-              square(x, y, step);           // center
+          for (y = 0; y < self.size - 1; y += size) {
+            for (x = 0; x < self.size - 1; x += size) {
+              square(x + half, y + half, half);           // center
             }
           }
-          for (y = step; y < self.size; y += step) {
-            for (x = step; x < self.size; x += step) {
-              diamond(x, y - step, step);   // top
-              diamond(x + step, y, step);   // right
-              diamond(x, y + step, step);   // bottom
-              diamond(x - step, y, step);   // left
+          for (y = 0; y < self.size - 1; y += size) {
+            for (x = 0; x < self.size - 1; x += size) {
+              diamond(x + half, y, half);   // top
+              diamond(x + size, y + half, half);   // right
+              diamond(x + half, y + size, half);   // bottom
+              diamond(x, y + half, half);   // left
             }
           }
-          divide(step / 2);
+          divide(half);
         }
 
         function square(x, y, size) {
           var average = self.average([
-            self.get(x - size, y - size),
-            self.get(x - size, y - size),
-            self.get(x + size, y - size),
-            self.get(x + size, y + size)
+            self.get(x - size, y - size), // upper left
+            self.get(x + size, y - size), // upper right
+            self.get(x + size, y + size), // lower right
+            self.get(x - size, y + size)  // lower left
           ]);
           self.set(x, y, average);
         }
 
         function diamond(x, y, size) {
           var average = self.average([
-            self.get(x, y - size),
-            self.get(x + size, y),
-            self.get(x, y + size),
-            self.get(x - size, y)
+            self.get(x, y - size),      // top
+            self.get(x + size, y),      // right
+            self.get(x, y + size),      // bottom
+            self.get(x - size, y)       // left
           ]);
           self.set(x, y, average);
         }
