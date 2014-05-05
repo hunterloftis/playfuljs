@@ -14,18 +14,12 @@
       }
 
       Terrain.prototype.get = function(x, y) {
-        if (x < 0 || x > this.max || y < 0 || y > this.max) return -1;
+        if (x < 0 || x > this.max || y < 0 || y > this.max) return 128;
         return this.map[x + this.size * y];
       };
 
       Terrain.prototype.set = function(x, y, val) {
         this.map[x + this.size * y] = val;
-      };
-
-      Terrain.prototype.average = function(list) {
-        var values = list.filter(function(val) { return val !== -1; });
-        var sum = values.reduce(function(total, val) { return total + val; }, 0);
-        return sum / values.length;
       };
 
       Terrain.prototype.generate = function(roughness) {
@@ -69,22 +63,22 @@
         }
 
         function square(x, y, size) {
-          var average = self.average([
-            self.get(x - size, y - size),   // upper left
-            self.get(x + size, y - size),   // upper right
-            self.get(x + size, y + size),   // lower right
+          var average = (
+            self.get(x - size, y - size) +   // upper left
+            self.get(x + size, y - size) +   // upper right
+            self.get(x + size, y + size) +   // lower right
             self.get(x - size, y + size)    // lower left
-          ]);
+          ) / 4;
           self.set(x, y, average + Math.random() * scale * 2 - scale);
         }
 
         function diamond(x, y, size) {
-          var average = self.average([
-            self.get(x, y - size),      // top
-            self.get(x + size, y),      // right
-            self.get(x, y + size),      // bottom
+          var average = (
+            self.get(x, y - size) +     // top
+            self.get(x + size, y) +     // right
+            self.get(x, y + size) +     // bottom
             self.get(x - size, y)       // left
-          ]);
+          ) / 4;
           self.set(x, y, average + Math.random() * scale * 2 - scale);
         }
       };
