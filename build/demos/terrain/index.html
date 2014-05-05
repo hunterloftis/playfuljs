@@ -10,7 +10,7 @@
       function Terrain(size) {
         this.size = size;
         this.max = size - 1;
-        this.map = new Uint8ClampedArray(size * size);
+        this.map = new Float32Array(size * size);
       }
 
       Terrain.prototype.get = function(x, y) {
