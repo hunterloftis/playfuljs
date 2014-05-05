@@ -30,8 +30,7 @@
 
       Terrain.prototype.generate = function(roughness) {
         var self = this;
-        var divisions = Math.log(this.size) / Math.log(2) - 1;
-        var scale = (128 / divisions) * roughness * 0.5;
+        var scale = roughness * 128;
 
         // Initialize the corners
         this.set(0, 0, 128);
@@ -45,7 +44,7 @@
           var half = size / 2;
           if (half < 1) return;
 
-          scale *= 0.8;
+          scale *= 0.5;
 
           grid(size, function(x, y) {
             square(x + half, y + half, half);    // center
