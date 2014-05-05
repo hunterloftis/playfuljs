@@ -9,11 +9,12 @@
 
       function Terrain(size) {
         this.size = size;
+        this.max = size - 1;
         this.map = new Uint8ClampedArray(size * size);
       }
 
       Terrain.prototype.get = function(x, y) {
-        if (x < 0 || x >= this.size || y < 0 || y >= this.size) return -1;
+        if (x < 0 || x > this.max || y < 0 || y > this.max) return -1;
         return this.map[x + this.size * y];
       };
 
@@ -32,40 +33,44 @@
 
         // Initialize the corners
         this.set(0, 0, base);
-        this.set(this.size - 1, 0, base);
-        this.set(this.size - 1, this.size - 1, base);
-        this.set(0, this.size - 1, base);
+        this.set(this.max, 0, base);
+        this.set(this.max, this.max, base);
+        this.set(0, this.max, base);
 
-        divide(this.size - 1);
+        divide(this.max);
 
         function divide(size) {
           var half = size / 2;
           if (half < 1) return;
 
-          var x, y;
+          grid(size, function(x, y) {
+            square(x + half, y + half, half);    // center
+          });
 
-          for (y = 0; y < self.size - 1; y += size) {
-            for (x = 0; x < self.size - 1; x += size) {
-              square(x + half, y + half, half);           // center
-            }
-          }
-          for (y = 0; y < self.size - 1; y += size) {
-            for (x = 0; x < self.size - 1; x += size) {
-              diamond(x + half, y, half);   // top
-              diamond(x + size, y + half, half);   // right
-              diamond(x + half, y + size, half);   // bottom
-              diamond(x, y + half, half);   // left
-            }
-          }
+          grid(size, function(x, y) {
+            diamond(x + half, y, half);          // top
+            diamond(x + size, y + half, half);   // right
+            diamond(x + half, y + size, half);   // bottom
+            diamond(x, y + half, half);          // left
+          });
+
           divide(half);
+        }
+
+        function grid(size, fn) {
+          for (var y = 0; y < self.max; y += size) {
+            for (var x = 0; x < self.max; x += size) {
+              fn(x, y);
+            }
+          }
         }
 
         function square(x, y, size) {
           var average = self.average([
-            self.get(x - size, y - size), // upper left
-            self.get(x + size, y - size), // upper right
-            self.get(x + size, y + size), // lower right
-            self.get(x - size, y + size)  // lower left
+            self.get(x - size, y - size),   // upper left
+            self.get(x + size, y - size),   // upper right
+            self.get(x + size, y + size),   // lower right
+            self.get(x - size, y + size)    // lower left
           ]);
           self.set(x, y, average);
         }
