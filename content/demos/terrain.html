@@ -88,13 +88,51 @@
         }
       };
 
-      function log(x, y) {
-          return Math.log(y) / Math.log(x);
-      }
+      Terrain.prototype.draw = function() {
+        var self = this;
+        var point, x, y;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        for (x = 0; x < this.size; x++) {
+          point = project(x, 0, this.get(x, 0));
+          ctx.beginPath();
+          ctx.moveTo(point.x, point.y);
+          for (y = 1; y < this.size; y++) {
+            point = project(x, y, this.get(x, y));
+            ctx.lineTo(point.x, point.y);
+          }
+          ctx.stroke();
+        }
+        for (y = 0; y < this.size; y++) {
+          point = project(0, y, this.get(0, y));
+          ctx.beginPath();
+          ctx.moveTo(point.x, point.y);
+          for (x = 1; x < this.size; x++) {
+            point = project(x, y, this.get(x, y));
+            ctx.lineTo(point.x, point.y);
+          }
+          ctx.stroke();
+        }
+        function project(x, y, z) {
+          var xScale = width / self.size * 0.8;
+          var yScale = height / self.size * 0.8;
+          var peak = (255 - z) * 0.01;
+          return {
+            x: (x * 0.5 + y * 0.5) * xScale,
+            y: height * 0.5 + (-x * 0.5 + y * 0.5 + peak) * yScale
+          };
+        }
+      };
 
       var terrain = new Terrain(5);
+      var display = document.getElementById('display');
+      var ctx = display.getContext('2d');
+      var drops = [];
+      var width = display.width = window.innerWidth;
+      var height = display.height = window.innerHeight;
 
       terrain.generate(1);
+      terrain.draw();
 
       console.log(terrain.map);
 
