@@ -13,6 +13,7 @@
       }
 
       Terrain.prototype.get = function(x, y) {
+        if (x < 0 || x >= this.size || y < 0 || y >= this.size) return -1;
         return this.map[x + this.size * y];
       };
 
@@ -20,46 +21,68 @@
         this.map[x + this.size * y] = val;
       };
 
-      Terrain.prototype.average = function(x, y, half) {
-        return (
-          this.get(x - half, y - half) +
-          this.get(x + half, y - half) +
-          this.get(x + half, y + half) +
-          this.get(x - half, y - half)
-        ) / 4;
+      Terrain.prototype.average = function(list) {
+        var values = list.filter(function(val) { return val !== -1; });
+        var sum = values.reduce(function(total, val) { return total + val; }, 0);
+        return sum / values.length;
       };
 
-      Terrain.prototype.flatten = function(base) {
-        for (var y = 0; y < this.size; y++) {
-          for (var x = 0; x < this.size; x++) {
-            this.set(x, y, base);
-          }
-        }
-      };
-
-      Terrain.prototype.tesselate = function(roughness) {
+      Terrain.prototype.generate = function(base) {
         var self = this;
 
-        divide(0, 0, this.size);
+        // Initialize the corners
+        this.set(0, 0, base);
+        this.set(this.size - 1, 0, base);
+        this.set(this.size - 1, this.size - 1, base);
+        this.set(0, this.size - 1, base);
 
-        function divide(x, y, size) {
-          if (size < 3) return;
-          var half = (size - 1) / 2;
-          var average = self.average(x + half, y + half, half);
+        divide((this.size - 1) / 2);
 
-          self.set(x + half, y + half, average);
+        function divide(step) {
+          if (step < 1) return;
 
-          divide(x, y, half + 1);
-          divide(x + half, y, half + 1);
-          divide(x, y + half, half + 1);
-          divide(x + half, y + half, half + 1);
+          var x, y;
+
+          for (y = step; y < self.size; y += step) {
+            for (x = step; x < self.size; x += step) {
+              square(x, y, step);           // center
+            }
+          }
+          for (y = step; y < self.size; y += step) {
+            for (x = step; x < self.size; x += step) {
+              diamond(x, y - step, step);   // top
+              diamond(x + step, y, step);   // right
+              diamond(x, y + step, step);   // bottom
+              diamond(x - step, y, step);   // left
+            }
+          }
+          divide(step / 2);
+        }
+
+        function square(x, y, size) {
+          var average = self.average([
+            self.get(x - size, y - size),
+            self.get(x - size, y - size),
+            self.get(x + size, y - size),
+            self.get(x + size, y + size)
+          ]);
+          self.set(x, y, average);
+        }
+
+        function diamond(x, y, size) {
+          var average = self.average([
+            self.get(x, y - size),
+            self.get(x + size, y),
+            self.get(x, y + size),
+            self.get(x - size, y)
+          ]);
+          self.set(x, y, average);
         }
       };
 
       var terrain = new Terrain(5);
 
-      terrain.flatten(128);
-      terrain.tesselate(0);
+      terrain.generate(128);
 
       console.log(terrain.map);
 
