@@ -14,7 +14,7 @@
       }
 
       Terrain.prototype.get = function(x, y) {
-        if (x < 0 || x > this.max || y < 0 || y > this.max) return 128;
+        if (x < 0 || x > this.max || y < 0 || y > this.max) return -1;
         return this.map[x + this.size * y];
       };
 
@@ -24,7 +24,6 @@
 
       Terrain.prototype.generate = function(roughness) {
         var self = this;
-        var scale = roughness * 128;
 
         // Initialize the corners
         this.set(0, 0, 128);
@@ -32,54 +31,50 @@
         this.set(this.max, this.max, 128);
         this.set(0, this.max, 128);
 
-        divide(this.max);
+        divide(this.max, roughness * 64);
 
-        function divide(size) {
-          var half = size / 2;
+        function divide(size, scale) {
+          var x, y, half = size / 2;
           if (half < 1) return;
 
-          scale *= 0.5;
-
-          grid(size, function(x, y) {
-            square(x + half, y + half, half);    // center
-          });
-
-          grid(size, function(x, y) {
-            diamond(x + half, y, half);          // top
-            diamond(x + size, y + half, half);   // right
-            diamond(x + half, y + size, half);   // bottom
-            diamond(x, y + half, half);          // left
-          });
-
-          divide(half);
-        }
-
-        function grid(size, fn) {
-          for (var y = 0; y < self.max; y += size) {
-            for (var x = 0; x < self.max; x += size) {
-              fn(x, y);
+          for (y = half; y < self.max; y += size) {
+            for (x = half; x < self.max; x += size) {
+              square(x, y, half, Math.random() * scale * 2 - scale);
             }
           }
+          for (y = 0; y <= self.max; y += half) {
+            for (x = (y + half) % size; x <= self.max; x += size) {
+              diamond(x, y, half, Math.random() * scale * 2 - scale);
+            }
+          }
+
+          divide(half, scale / 2);
         }
 
-        function square(x, y, size) {
-          var average = (
-            self.get(x - size, y - size) +   // upper left
-            self.get(x + size, y - size) +   // upper right
-            self.get(x + size, y + size) +   // lower right
+        function average(values) {
+          var valid = values.filter(function(val) { return val !== -1; });
+          var total = valid.reduce(function(sum, val) { return sum + val; }, 0);
+          return total / valid.length;
+        }
+
+        function square(x, y, size, offset) {
+          var ave = average([
+            self.get(x - size, y - size),   // upper left
+            self.get(x + size, y - size),   // upper right
+            self.get(x + size, y + size),   // lower right
             self.get(x - size, y + size)    // lower left
-          ) / 4;
-          self.set(x, y, average + Math.random() * scale * 2 - scale);
+          ]);
+          self.set(x, y, ave + offset);
         }
 
-        function diamond(x, y, size) {
-          var average = (
-            self.get(x, y - size) +     // top
-            self.get(x + size, y) +     // right
-            self.get(x, y + size) +     // bottom
+        function diamond(x, y, size, offset) {
+          var ave = average([
+            self.get(x, y - size),      // top
+            self.get(x + size, y),      // right
+            self.get(x, y + size),      // bottom
             self.get(x - size, y)       // left
-          ) / 4;
-          self.set(x, y, average + Math.random() * scale * 2 - scale);
+          ]);
+          self.set(x, y, ave + offset);
         }
       };
 
