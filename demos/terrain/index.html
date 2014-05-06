@@ -84,21 +84,10 @@
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.lineWidth = 1;
-            ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
-            ctx.lineTo.apply( ctx, project(x + 1, y, this.get(x + 1, y)) );
-            ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
-            ctx.lineTo.apply( ctx, project(x, y + 1, this.get(x, y + 1)) );
-            ctx.stroke();
+            line(x, y, x + 1, y, 'rgba(255, 255, 255, 0.7)', 1);
+            line(x, y, x, y + 1, 'rgba(255, 255, 255, 0.7)', 1);
             if (this.get(x, y) < this.size * 0.4) {
-              ctx.beginPath();
-              ctx.strokeStyle = 'rgba(0, 128, 255, 0.7)';
-              ctx.lineWidth = 2;
-              ctx.moveTo.apply( ctx, project(x, y, this.size * 0.4) );
-              ctx.lineTo.apply( ctx, project(x + 1, y, this.size * 0.4) );
-              ctx.stroke();
+              line(x, y, x + 1, y, 'rgba(0, 128, 255, 0.7)', 2, this.size * 0.4);
             }
           }
         }
@@ -107,10 +96,21 @@
           var xScale = width / self.size * 0.8;
           var yScale = height / self.size * 0.8;
           var peak = (self.max / 2 - z);
-          return [
-            width * 0.5 + (x * 0.5 - y * 0.5) * xScale,
-            height * 0.1 + (x * 0.5 + y * 0.5 + peak) * yScale
-          ];
+          return {
+            x: width * 0.5 + (x * 0.5 - y * 0.5) * xScale,
+            y: height * 0.1 + (x * 0.5 + y * 0.5 + peak) * yScale
+          };
+        }
+
+        function line(x1, y1, x2, y2, style, width, z) {
+          var a = project(x1, y1, z || self.get(x1, y1));
+          var b = project(x2, y2, z || self.get(x2, y2));
+          ctx.beginPath();
+          ctx.strokeStyle = style;
+          ctx.lineWidth = width;
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
         }
       };
 
