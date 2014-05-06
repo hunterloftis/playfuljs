@@ -84,13 +84,24 @@
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 1;
             ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
             ctx.lineTo.apply( ctx, project(x + 1, y, this.get(x + 1, y)) );
             ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
             ctx.lineTo.apply( ctx, project(x, y + 1, this.get(x, y + 1)) );
+            ctx.stroke();
+            if (this.get(x, y) < this.size * 0.33) {
+              ctx.beginPath();
+              ctx.strokeStyle = 'rgba(0, 128, 255, 0.7)';
+              ctx.lineWidth = 2;
+              ctx.moveTo.apply( ctx, project(x, y, this.size * 0.33) );
+              ctx.lineTo.apply( ctx, project(x + 1, y, this.size * 0.33) );
+              ctx.stroke();
+            }
           }
         }
-        ctx.stroke();
 
         function project(x, y, z) {
           var xScale = width / self.size * 0.8;
@@ -110,11 +121,9 @@
       var width = display.width = window.innerWidth;
       var height = display.height = window.innerHeight;
 
-      ctx.globalCompositeOperation = 'overlay';
       ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
 
-      terrain.generate(0.5);
+      terrain.generate(0.7);
       terrain.draw();
 
     </script>
