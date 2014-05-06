@@ -48,7 +48,7 @@
             }
           }
 
-          divide(half, scale / 2);
+          divide(size / 2, scale / 2);
         }
 
         function average(values) {
@@ -80,37 +80,25 @@
 
       Terrain.prototype.draw = function() {
         var self = this;
-        var point, x, y;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.lineWidth = 1;
-        for (x = 0; x < this.size; x++) {
-          point = project(x, 0, this.get(x, 0));
-          ctx.beginPath();
-          ctx.moveTo(point.x, point.y);
-          for (y = 1; y < this.size; y++) {
-            point = project(x, y, this.get(x, y));
-            ctx.lineTo(point.x, point.y);
+
+        for (var y = 0; y < this.size; y++) {
+          for (var x = 0; x < this.size; x++) {
+            ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
+            ctx.lineTo.apply( ctx, project(x + 1, y, this.get(x + 1, y)) );
+            ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
+            ctx.lineTo.apply( ctx, project(x, y + 1, this.get(x, y + 1)) );
           }
-          ctx.stroke();
         }
-        for (y = 0; y < this.size; y++) {
-          point = project(0, y, this.get(0, y));
-          ctx.beginPath();
-          ctx.moveTo(point.x, point.y);
-          for (x = 1; x < this.size; x++) {
-            point = project(x, y, this.get(x, y));
-            ctx.lineTo(point.x, point.y);
-          }
-          ctx.stroke();
-        }
+        ctx.stroke();
+
         function project(x, y, z) {
           var xScale = width / self.size * 0.8;
           var yScale = height / self.size * 0.8;
           var peak = (128 - z);
-          return {
-            x: (x * 0.5 + y * 0.5) * xScale,
-            y: height * 0.5 + (-x * 0.5 + y * 0.5 + peak) * yScale
-          };
+          return [
+            width * 0.5 + (x * 0.5 - y * 0.5) * xScale,
+            height * 0.1 + (x * 0.5 + y * 0.5 + peak) * yScale
+          ];
         }
       };
 
@@ -122,6 +110,9 @@
       var height = display.height = window.innerHeight;
 
       ctx.globalCompositeOperation = 'overlay';
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+
       terrain.generate(0.5);
       terrain.draw();
 
