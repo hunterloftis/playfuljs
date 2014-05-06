@@ -92,12 +92,12 @@
             ctx.moveTo.apply( ctx, project(x, y, this.get(x, y)) );
             ctx.lineTo.apply( ctx, project(x, y + 1, this.get(x, y + 1)) );
             ctx.stroke();
-            if (this.get(x, y) < this.size * 0.33) {
+            if (this.get(x, y) < this.size * 0.4) {
               ctx.beginPath();
               ctx.strokeStyle = 'rgba(0, 128, 255, 0.7)';
               ctx.lineWidth = 2;
-              ctx.moveTo.apply( ctx, project(x, y, this.size * 0.33) );
-              ctx.lineTo.apply( ctx, project(x + 1, y, this.size * 0.33) );
+              ctx.moveTo.apply( ctx, project(x, y, this.size * 0.4) );
+              ctx.lineTo.apply( ctx, project(x + 1, y, this.size * 0.4) );
               ctx.stroke();
             }
           }
@@ -123,7 +123,7 @@
 
       ctx.lineWidth = 1;
 
-      terrain.generate(0.7);
+      terrain.generate(0.6);
       terrain.draw();
 
     </script>
