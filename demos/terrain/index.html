@@ -7,10 +7,10 @@
 
     <script>
 
-      function Terrain(size) {
-        this.size = size;
-        this.max = size - 1;
-        this.map = new Float32Array(size * size);
+      function Terrain(detail) {
+        this.size = Math.pow(2, detail) + 1;
+        this.max = this.size - 1;
+        this.map = new Float32Array(this.size * this.size);
       }
 
       Terrain.prototype.get = function(x, y) {
@@ -103,7 +103,7 @@
         }
       };
 
-      var terrain = new Terrain(129);
+      var terrain = new Terrain(8);
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var drops = [];
