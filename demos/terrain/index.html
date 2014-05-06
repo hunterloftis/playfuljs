@@ -25,16 +25,17 @@
       Terrain.prototype.generate = function(roughness) {
         var self = this;
 
-        // Initialize the corners
-        this.set(0, 0, 128);
-        this.set(this.max, 0, 128);
-        this.set(this.max, this.max, 128);
-        this.set(0, this.max, 128);
+        this.set(0, 0, self.max / 2);
+        this.set(this.max, 0, self.max / 2);
+        this.set(this.max, this.max, self.max / 2);
+        this.set(0, this.max, self.max / 2);
 
-        divide(this.max, roughness * 64);
+        divide(this.max);
 
-        function divide(size, scale) {
+        function divide(size) {
           var x, y, half = size / 2;
+          var scale = roughness * size / 2;
+
           if (half < 1) return;
 
           for (y = half; y < self.max; y += size) {
@@ -48,7 +49,7 @@
             }
           }
 
-          divide(size / 2, scale / 2);
+          divide(size / 2);
         }
 
         function average(values) {
@@ -94,7 +95,7 @@
         function project(x, y, z) {
           var xScale = width / self.size * 0.8;
           var yScale = height / self.size * 0.8;
-          var peak = (128 - z);
+          var peak = (self.max / 2 - z);
           return [
             width * 0.5 + (x * 0.5 - y * 0.5) * xScale,
             height * 0.1 + (x * 0.5 + y * 0.5 + peak) * yScale
