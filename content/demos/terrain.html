@@ -80,18 +80,20 @@
       };
 
       Terrain.prototype.draw = function() {
-        var levelScale = 0.3;
+        var levelScale = 0.5;
         var xScale = width / this.size;
-        var yScale = height / (this.size);
+        var yScale = height / (this.size) * 0.8;
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
             var val = this.get(x, y);
-            var color = ~~(val / this.size * 255);
+            var nextVal = this.get(x + 1, y);
+            //var color = ~~(val / this.size * 255);
+            var color = 128 + ~~((nextVal - val) * 100);
             var rgba = ['rgba(', color, ',', color, ',', color, ',1)'].join('');
             var level = val * levelScale;
             ctx.fillStyle = rgba;
-            ctx.fillRect(x * xScale, height - (y - level) * yScale, xScale, level * yScale);
+            ctx.fillRect(x * xScale, (y - level + levelScale * this.size) * yScale, xScale, level * yScale);
             if (this.get(x, y) < this.size * 0.4) {
 
             }
@@ -99,7 +101,7 @@
         }
       };
 
-      var terrain = new Terrain(8);
+      var terrain = new Terrain(9);
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var drops = [];
