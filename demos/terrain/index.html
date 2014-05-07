@@ -83,19 +83,21 @@
         var levelScale = 0.5;
         var xScale = width / this.size;
         var yScale = height / (this.size + this.size * levelScale);
+        var waterLevel = this.size * levelScale * 0.4;
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
             var val = this.get(x, y);
             var nextVal = this.get(x + 1, y);
             //var color = ~~(val / this.size * 255);
-            var color = 128 + ~~((nextVal - val) * 50);
+            var color = y === this.size - 1 ? 0 : 128 + ~~((nextVal - val) * 50);
             var rgba = ['rgba(', color, ',', color, ',', color, ',1)'].join('');
             var level = 1 + this.size * levelScale * (val / this.size);
             ctx.fillStyle = rgba;
             ctx.fillRect(x * xScale, (y - level) * yScale + this.size * levelScale, xScale, level * yScale);
-            if (this.get(x, y) < this.size * 0.4) {
-
+            if (level < waterLevel) {
+              ctx.fillStyle = 'rgba(0, 150, 200, 0.1)';
+              ctx.fillRect(x * xScale, (y - waterLevel) * yScale + this.size * levelScale, xScale, (waterLevel - level) * yScale);
             }
           }
         }
