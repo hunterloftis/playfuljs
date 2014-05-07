@@ -83,7 +83,7 @@
         var levelScale = 1;
         var xScale = width / this.size;
         var yScale = height / (this.size + this.size * levelScale);
-        var waterLevel = this.size * levelScale * 0.4;
+        var waterLevel = this.size * levelScale * 0.5;
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
@@ -112,7 +112,7 @@
 
       ctx.lineWidth = 1;
 
-      terrain.generate(1);
+      terrain.generate(0.7);
       terrain.draw();
 
     </script>
