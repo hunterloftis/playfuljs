@@ -96,7 +96,7 @@
             ctx.fillStyle = rgba;
             ctx.fillRect(x * xScale, (y - level) * yScale + this.size * levelScale, xScale, level * yScale);
             if (level < waterLevel) {
-              ctx.fillStyle = 'rgba(0, 150, 200, 0.1)';
+              ctx.fillStyle = 'rgba(0, 150, 200, 0.08)';
               ctx.fillRect(x * xScale, (y - waterLevel) * yScale + this.size * levelScale, xScale, (waterLevel - level) * yScale);
             }
           }
