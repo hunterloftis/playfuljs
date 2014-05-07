@@ -89,7 +89,7 @@
             var val = this.get(x, y);
             var nextVal = this.get(x + 1, y);
             //var color = ~~(val / this.size * 255);
-            var color = 128 + ~~((nextVal - val) * 50);
+            var color = y === this.size - 1 ? 128 : 128 + ~~((nextVal - val) * 50);
             var rgba = ['rgba(', color, ',', color, ',', color, ',1)'].join('');
             var level = 1 + this.size * levelScale * (val / this.size);
             ctx.fillStyle = rgba;
