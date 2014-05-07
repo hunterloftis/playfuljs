@@ -80,7 +80,7 @@
       };
 
       Terrain.prototype.draw = function() {
-        var levelScale = 0.5;
+        var levelScale = 1;
         var xScale = width / this.size;
         var yScale = height / (this.size + this.size * levelScale);
         var waterLevel = this.size * levelScale * 0.4;
