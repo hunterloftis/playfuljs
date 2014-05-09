@@ -105,7 +105,7 @@
         }
 
         function col(x, y, val, next) {
-          if (y === this.max || x === this.max) return '#000';
+          if (y === self.max || x === self.max) return '#000';
           var b = ~~((next - val) * 50) + 128;
           return ['rgba(', b, ',', b, ',', b, ',1)'].join('');
         }
@@ -132,7 +132,7 @@
         }
       };
 
-      var terrain = new Terrain(9);
+      var terrain = new Terrain(10);
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var drops = [];
