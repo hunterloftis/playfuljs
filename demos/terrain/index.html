@@ -35,7 +35,7 @@
 
         function divide(size) {
           var x, y, half = size / 2;
-          var scale = roughness * size / 2;
+          var scale = roughness * size;
 
           if (half < 1) return;
 
@@ -81,26 +81,44 @@
       };
 
       Terrain.prototype.draw = function() {
-        var levelScale = 1;
-        var xScale = width / this.size;
-        var yScale = height / (this.size + this.size * levelScale);
-        var waterLevel = this.size * levelScale * 0.5;
+        var self = this;
+        var waterVal = this.size * 0.5;
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
             var val = this.get(x, y);
             var nextVal = this.get(x + 1, y);
-            //var color = ~~(val / this.size * 255);
-            var color = y === this.size - 1 ? 0 : 128 + ~~((nextVal - val) * 50);
+            var color = y === this.size - 1 || x === this.size - 1 ? 0 : ~~((nextVal - val) * 50) + 128;
             var rgba = ['rgba(', color, ',', color, ',', color, ',1)'].join('');
-            var level = 1 + this.size * levelScale * (val / this.size);
+            // var level = 1 + this.size * levelScale * (val / this.size);
+            var top = project(this.size * 0.5 + x * 0.5 - y * 0.5, 0.5 * x + 0.5 * y, val);
+            var bottom = project(this.size * 0.5 + (x + 1) * 0.5 - y * 0.5, 0.5 * (x + 1) + 0.5 * y, 0);
             ctx.fillStyle = rgba;
-            ctx.fillRect(x * xScale, (y - level) * yScale + this.size * levelScale, xScale, level * yScale);
-            if (level < waterLevel) {
+            ctx.fillRect(top.x, top.y, bottom.x - top.x, bottom.y - top.y);
+            if (val < waterVal) {
+              var water = project(this.size * 0.5 + x * 0.5 - y * 0.5, 0.5 * x + 0.5 * y, waterVal);
               ctx.fillStyle = 'rgba(0, 150, 200, 0.08)';
-              ctx.fillRect(x * xScale, (y - waterLevel) * yScale + this.size * levelScale, xScale, (waterLevel - level) * yScale);
+              ctx.fillRect(water.x, water.y, bottom.x - water.x, bottom.y - top.y);
             }
+            // if (level < waterLevel) {
+            //   ctx.fillStyle = 'rgba(0, 150, 200, 0.08)';
+            //   ctx.fillRect(x * xScale, (y - waterLevel) * yScale + this.size * levelScale, xScale, (waterLevel - level) * yScale);
+            // }
           }
+        }
+
+        function project(x, y, z) {
+          var x0 = width * 0.5;
+          var y0 = height * 0.1;
+
+          z = 600 - z + y * 0.75;
+          x = (x - self.size * 0.5) * 5;
+          y = (self.size - y) * 0.005 + 1;
+
+          return {
+            x: x0 + x / y,
+            y: y0 + z / y
+          };
         }
       };
 
@@ -113,7 +131,7 @@
 
       ctx.lineWidth = 1;
 
-      terrain.generate(0.7);
+      terrain.generate(0.5);
       terrain.draw();
 
     </script>
