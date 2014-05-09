@@ -89,14 +89,12 @@
             var bottom = project(x + 1, y, 0);
 
             rect(top, bottom, mapStyle(x, y, this.get(x + 1, y) - val));
-
-            if (val < waterVal) {
-              rect(project(x, y, waterVal), bottom, 'rgba(50, 150, 200, 0.15)');
-            }
+            rect(project(x, y, waterVal), bottom, 'rgba(50, 150, 200, 0.15)');
           }
         }
 
         function rect(a, b, style) {
+          if (b.y < a.y) return;
           ctx.fillStyle = style;
           ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
         }
@@ -117,9 +115,9 @@
         function project(flatX, flatY, flatZ) {
           var point = iso(flatX, flatY);
           var x0 = width * 0.5;
-          var y0 = 0;
-          var z = 600 - flatZ + point.y * 0.75;
-          var x = (point.x - self.size * 0.5) * 5;
+          var y0 = height * 0.2;
+          var z = self.size * 0.5 - flatZ + point.y * 0.75;
+          var x = (point.x - self.size * 0.5) * 6;
           var y = (self.size - point.y) * 0.005 + 1;
 
           return {
