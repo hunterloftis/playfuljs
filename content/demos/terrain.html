@@ -109,8 +109,8 @@
 
         function iso(x, y) {
           return {
-            x: 100 * (0.5 + (x / self.size) * 0.5 - (y / self.size) * 0.5),
-            y: 100 * (0.5 * (x / self.size) + 0.5 * (y / self.size))
+            x: self.size * 0.5 + x * 0.5 - y * 0.5,
+            y: 0.5 * x + 0.5 * y
           };
         }
 
