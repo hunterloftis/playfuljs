@@ -82,7 +82,7 @@
 
       Terrain.prototype.draw = function() {
         var self = this;
-        var waterVal = this.size * 0.5;
+        var waterVal = this.size * 0.3;
 
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
@@ -90,21 +90,26 @@
             var nextVal = this.get(x + 1, y);
             var color = y === this.size - 1 || x === this.size - 1 ? 0 : ~~((nextVal - val) * 50) + 128;
             var rgba = ['rgba(', color, ',', color, ',', color, ',1)'].join('');
-            // var level = 1 + this.size * levelScale * (val / this.size);
-            var top = project(this.size * 0.5 + x * 0.5 - y * 0.5, 0.5 * x + 0.5 * y, val);
-            var bottom = project(this.size * 0.5 + (x + 1) * 0.5 - y * 0.5, 0.5 * (x + 1) + 0.5 * y, 0);
+            var isoTop = iso(x, y);
+            var isoBottom = iso(x + 1, y);
+            var top = project(isoTop.x, isoTop.y, val);
+            var bottom = project(isoBottom.x, isoBottom.y, 0);
             ctx.fillStyle = rgba;
             ctx.fillRect(top.x, top.y, bottom.x - top.x, bottom.y - top.y);
             if (val < waterVal) {
-              var water = project(this.size * 0.5 + x * 0.5 - y * 0.5, 0.5 * x + 0.5 * y, waterVal);
-              ctx.fillStyle = 'rgba(0, 150, 200, 0.08)';
+              var water = project(isoTop.x, isoTop.y, waterVal);
+              var waterBottom = project(isoBottom.x, isoBottom.y, val)
+              ctx.fillStyle = 'rgba(50, 150, 200, 0.15)';
               ctx.fillRect(water.x, water.y, bottom.x - water.x, bottom.y - top.y);
             }
-            // if (level < waterLevel) {
-            //   ctx.fillStyle = 'rgba(0, 150, 200, 0.08)';
-            //   ctx.fillRect(x * xScale, (y - waterLevel) * yScale + this.size * levelScale, xScale, (waterLevel - level) * yScale);
-            // }
           }
+        }
+
+        function iso(x, y) {
+          return {
+            x: self.size * 0.5 + x * 0.5 - y * 0.5,
+            y: 0.5 * x + 0.5 * y
+          };
         }
 
         function project(x, y, z) {
