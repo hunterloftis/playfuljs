@@ -88,21 +88,26 @@
           for (var x = 0; x < this.size; x++) {
             var val = this.get(x, y);
             var nextVal = this.get(x + 1, y);
-            var color = y === this.size - 1 || x === this.size - 1 ? 0 : ~~((nextVal - val) * 50) + 128;
-            var rgba = ['rgba(', color, ',', color, ',', color, ',1)'].join('');
-            var isoTop = iso(x, y);
-            var isoBottom = iso(x + 1, y);
-            var top = project(isoTop.x, isoTop.y, val);
-            var bottom = project(isoBottom.x, isoBottom.y, 0);
-            ctx.fillStyle = rgba;
+            var color = col(x, y, val, nextVal);
+            var top = project(x, y, val);
+            var bottom = project(x + 1, y, 0);
+
+            ctx.fillStyle = color;
             ctx.fillRect(top.x, top.y, bottom.x - top.x, bottom.y - top.y);
+
             if (val < waterVal) {
-              var water = project(isoTop.x, isoTop.y, waterVal);
-              var waterBottom = project(isoBottom.x, isoBottom.y, val)
+              var water = project(x, y, waterVal);
+              var waterBottom = project(x + 1, y, val)
               ctx.fillStyle = 'rgba(50, 150, 200, 0.15)';
               ctx.fillRect(water.x, water.y, bottom.x - water.x, bottom.y - top.y);
             }
           }
+        }
+
+        function col(x, y, val, next) {
+          if (y === this.max || x === this.max) return '#000';
+          var b = ~~((next - val) * 50) + 128;
+          return ['rgba(', b, ',', b, ',', b, ',1)'].join('');
         }
 
         function iso(x, y) {
@@ -112,13 +117,13 @@
           };
         }
 
-        function project(x, y, z) {
+        function project(flatX, flatY, flatZ) {
+          var point = iso(flatX, flatY);
           var x0 = width * 0.5;
           var y0 = height * 0.1;
-
-          z = 600 - z + y * 0.75;
-          x = (x - self.size * 0.5) * 5;
-          y = (self.size - y) * 0.005 + 1;
+          var z = 600 - flatZ + point.y * 0.75;
+          var x = (point.x - self.size * 0.5) * 5;
+          var y = (self.size - point.y) * 0.005 + 1;
 
           return {
             x: x0 + x / y,
