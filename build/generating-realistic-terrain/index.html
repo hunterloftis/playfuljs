@@ -1,6 +1,83 @@
 <!DOCTYPE html><html><head><title>Generating realistic terrain</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Generating realistic terrain</h2><p class="Article-date">5 May 2014</p><main class="Article-contents"><p>As programmers, we love to build things,
-and what could be more exciting than building a world?
-Today we&#39;ll explore the beautifully simple midpoint displacement algorithm.
-<a href="/demos/terrain"> [Demo] </a></p>
-<p>Paragraph 2</p>
+and what could be more exciting than building a <em>world?</em>
+Minecraft, Terragen, Skyrim, and every flight simulator ever all use some sort of fractal terrain generation.
+Today we&#39;ll explore the beautifully simple diamond-square algorithm so you, too can play God.
+<a href="/demos/terrain"> [Demo] </a>
+<a href="https://github.com/hunterloftis/playfuljs/blob/master/content/demos/terrain.html"> [Source] </a></p>
+<p>Programmers tend to be lazy (I speak from experience), and one nice side effect of laziness is really
+brilliant ways to avoid work. In this case, instead of spending mind-numbing
+hours manually creating what would likely be pretty lame rocky surfaces, we&#39;ll get
+spiritual and teach the computer <em>what it means to be a rock.</em>
+We&#39;ll do this by generating fractals, or shapes that repeat patterns in smaller and smaller variations.</p>
+<p>I don&#39;t have any way to prove that terrain is a fractal but this method looks really damn good,
+so maybe you&#39;ll take it on faith.</p>
+<h3 id="height-maps">Height maps</h3>
+<p>We&#39;ll store our terrain as a simple height map:
+a 2-dimensional array of values that represent the height of terrain at that point.
+With a two-dimensional array, we can render our heights however we like -
+canvas, webgl, etc.</p>
+<pre><code class="lang-js">function Terrain(detail) {
+  this.size = Math.pow(2, detail) + 1;
+  this.max = this.size - 1;
+  this.map = new Float32Array(this.size * this.size);
+}
+</code></pre>
+<p>You can apply this algorithm to any dimension of grid, but it&#39;s easiest with a square
+that&#39;s a power of 2 plus 1.
+The terrain will be a cube where the largest mountain will fit inside of the size as well.</p>
+<h3 id="the-algorithm">The algorithm</h3>
+<p>Here&#39;s the idea: take a flat square. Split it into four sub-squares, and move their middle point
+up or down by a random offset. Split each of those into more sub-squares and repeat,
+each time reducing the range of the random offset so that <em>the first choices matter most</em>
+while <em>the later choices provide smaller details</em>.</p>
+<p>That&#39;s the <a href="http://en.wikipedia.org/wiki/Diamond-square_algorithm#Midpoint_displacement_algorithm">midpoint displacement algorithm</a>.
+The diamond-square algorithm from this tutorial is based on similar principles but generates more natural-looking results.
+Instead of just dividing squares, it alternates between dividing squares and dividing diamonds.</p>
+<h4 id="1-set-the-corners">1. Set the corners</h4>
+<p>First, set the corners to an average value.
+We&#39;ll start all corners halfway between the maximum and minimum values.</p>
+<pre><code class="lang-js">this.set(0, 0, self.max / 2);
+this.set(this.max, 0, self.max / 2);
+this.set(this.max, this.max, self.max / 2);
+this.set(0, this.max, self.max / 2);
+</code></pre>
+<h4 id="2-divide-the-map">2. Divide the map</h4>
+<p>Now, we&#39;ll recursively look at smaller and smaller divisions of the height map.
+At each division, we&#39;ll update a single (center) point during the <em>square</em> phase
+and four (edge) points during the <em>diamond</em> phase.</p>
+<pre><code class="lang-js">divide(this.max);
+
+function divide(size) {
+  var x, y, half = size / 2;
+  var scale = roughness * size;
+  if (half &lt; 1) return;
+
+  for (y = half; y &lt; self.max; y += size) {
+    for (x = half; x &lt; self.max; x += size) {
+      square(x, y, half, Math.random() * scale * 2 - scale);
+    }
+  }
+  for (y = 0; y &lt;= self.max; y += half) {
+    for (x = (y + half) % size; x &lt;= self.max; x += size) {
+      diamond(x, y, half, Math.random() * scale * 2 - scale);
+    }
+  }
+  divide(size / 2);
+}
+</code></pre>
+<h4 id="3-the-shapes">3. The shapes</h4>
+<p>The square step averages the center based on the corner values,
+while the diamond step averages every edge based on a diamond of values around it.</p>
+<p>(picture here)</p>
+<p>They&#39;re both pretty simple:</p>
+<pre><code class="lang-js">function diamond(x, y, size, offset) {
+  var ave = average([
+    self.get(x, y - size),      // top
+    self.get(x + size, y),      // right
+    self.get(x, y + size),      // bottom
+    self.get(x - size, y)       // left
+  ]);
+  self.set(x, y, ave + offset);
+}
+</code></pre>
 </main></div><div class="col three"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"/><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Previous Article<a href="/a-particle-fountain">A particle fountain</a></h4></section><section class="Recent"><h4>Recent Articles</h4><a href="/generating-realistic-terrain">Generating realistic terrain</a><a href="/a-particle-fountain">A particle fountain</a><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script></body></html>
