@@ -26,9 +26,9 @@
       Terrain.prototype.generate = function(roughness) {
         var self = this;
 
-        this.set(0, 0, self.max / 2);
+        this.set(0, 0, self.max);
         this.set(this.max, 0, self.max / 2);
-        this.set(this.max, this.max, self.max / 2);
+        this.set(this.max, this.max, 0);
         this.set(0, this.max, self.max / 2);
 
         divide(this.max);
@@ -78,7 +78,7 @@
         }
       };
 
-      Terrain.prototype.draw = function() {
+      Terrain.prototype.draw = function(ctx, width, height) {
         var self = this;
         var waterVal = this.size * 0.3;
 
@@ -87,9 +87,11 @@
             var val = this.get(x, y);
             var top = project(x, y, val);
             var bottom = project(x + 1, y, 0);
+            var water = project(x, y, waterVal);
+            var style = brightness(x, y, this.get(x + 1, y) - val);
 
-            rect(top, bottom, mapStyle(x, y, this.get(x + 1, y) - val));
-            rect(project(x, y, waterVal), bottom, 'rgba(50, 150, 200, 0.15)');
+            rect(top, bottom, style);
+            rect(water, bottom, 'rgba(50, 150, 200, 0.15)');
           }
         }
 
@@ -99,7 +101,7 @@
           ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
         }
 
-        function mapStyle(x, y, slope) {
+        function brightness(x, y, slope) {
           if (y === self.max || x === self.max) return '#000';
           var b = ~~(slope * 50) + 128;
           return ['rgba(', b, ',', b, ',', b, ',1)'].join('');
@@ -107,8 +109,8 @@
 
         function iso(x, y) {
           return {
-            x: self.size * 0.5 + x * 0.5 - y * 0.5,
-            y: 0.5 * x + 0.5 * y
+            x: 0.5 * (self.size + x - y),
+            y: 0.5 * (x + y)
           };
         }
 
@@ -127,14 +129,14 @@
         }
       };
 
-      var terrain = new Terrain(9);
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var width = display.width = window.innerWidth;
       var height = display.height = window.innerHeight;
 
+      var terrain = new Terrain(9);
       terrain.generate(0.7);
-      terrain.draw();
+      terrain.draw(ctx, width, height);
 
     </script>
   </body>
