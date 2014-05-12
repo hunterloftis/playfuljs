@@ -20,6 +20,8 @@ We'll do this by generating fractals, or shapes that repeat patterns in smaller 
 I don't have any way to prove that terrain is a fractal but this method looks really damn good,
 so maybe you'll take it on faith.
 
+![Algorithm Illustration](../images/terrain-result.jpg)
+
 ### Height maps
 
 We'll store our terrain as a simple height map:
@@ -52,6 +54,8 @@ while *the later choices provide smaller details*.
 That's the [midpoint displacement algorithm](http://en.wikipedia.org/wiki/Diamond-square_algorithm#Midpoint_displacement_algorithm).
 Our diamond-square algorithm is based on similar principles but generates more natural-looking results.
 Instead of just dividing into sub-squares, it alternates between dividing into sub-squares and dividing into sub-diamonds.
+
+![Algorithm Illustration](../images/terrain-algorithm.png)
 
 #### 1. Set the corners
 
