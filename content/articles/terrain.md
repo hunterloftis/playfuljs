@@ -234,3 +234,6 @@ Here are a few things I challenge you to try:
 
 As always, [get in touch](http://twitter.com/hunterloftis) if you'd like to riff on the ideas here.
 
+## Discuss
+
+Join [the discussion](https://news.ycombinator.com/item?id=7734925) at Hacker News.
