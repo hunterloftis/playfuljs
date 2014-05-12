@@ -11,6 +11,7 @@ spiritual and teach the computer <em>what it means to be a rock.</em>
 We&#39;ll do this by generating fractals, or shapes that repeat patterns in smaller and smaller variations.</p>
 <p>I don&#39;t have any way to prove that terrain is a fractal but this method looks really damn good,
 so maybe you&#39;ll take it on faith.</p>
+<p><img src="../images/terrain-result.jpg" alt="Algorithm Illustration"></p>
 <h3 id="height-maps">Height maps</h3>
 <p>We&#39;ll store our terrain as a simple height map:
 a 2-dimensional array of values that represents the height of terrain at any given x, y coordinate.
@@ -36,6 +37,7 @@ while <em>the later choices provide smaller details</em>.</p>
 <p>That&#39;s the <a href="http://en.wikipedia.org/wiki/Diamond-square_algorithm#Midpoint_displacement_algorithm">midpoint displacement algorithm</a>.
 Our diamond-square algorithm is based on similar principles but generates more natural-looking results.
 Instead of just dividing into sub-squares, it alternates between dividing into sub-squares and dividing into sub-diamonds.</p>
+<p><img src="../images/terrain-algorithm.png" alt="Algorithm Illustration"></p>
 <h4 id="1-set-the-corners">1. Set the corners</h4>
 <p>First, set the corners to a &#39;seed&#39; value which will influence the rest of the rendering.
 This would start all the corners halfway up the cube:</p>
