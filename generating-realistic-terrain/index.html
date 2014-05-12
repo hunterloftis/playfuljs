@@ -153,7 +153,7 @@ vertical position by depth so that higher depths render closer to the origin
 <h3 id="putting-it-all-together">Putting it all together</h3>
 <p>First, we create a new Terrain instance with our desired detail level.
 Then, we generate its heightmap, providing a roughness value between 0 and 1.
-Finally, we draw the terrain somehow - in this case, via canvas.</p>
+Finally, we draw the terrain onto a canvas.</p>
 <pre><code class="lang-js">var terrain = new Terrain(9);
 terrain.generate(0.7);
 terrain.draw(canvasContext, width, height);
