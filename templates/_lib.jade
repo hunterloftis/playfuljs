@@ -7,10 +7,10 @@ mixin ArticleColumn(article)
 
 mixin Subscriber
   form.Subscriber
-    h4 Get new articles by email
-    input(name='email' placeholder='enter your email address')
-    a.Button Subscribe
-      span.Button-sub (it's free!)
+    h4 Get updates!
+    p New articles posted weekly.
+    p 
+      a(href='http://twitter.com/hunterloftis') @hunterloftis
 
 mixin PrevNext(article)
   if article.next || article.previous
