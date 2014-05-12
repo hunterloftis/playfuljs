@@ -1,5 +1,5 @@
 ---
-title: 'A particle fountain'
+title: 'Physics for the lazy'
 date: 2014-05-04
 template: article.jade
 ---
@@ -85,7 +85,7 @@ for (var i = 0; i < drops.length; i++) {
 
 Splash around in the [water fountain demo](/demos/particles2).
 
-## Get creative!
+### What's next?
 
 - Can you change the shape of the fountain?
 - How would you increase or decrease the density of the droplets?

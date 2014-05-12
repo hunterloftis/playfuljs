@@ -41,10 +41,10 @@ Particle.prototype.integrate = function() {
 };
 ```
 
-### Flocking
+### Tracking
 
 For this demo, let's push each particle towards the mouse on every frame.
-This will make a cloud of particles that tends to flock around the cursor.
+This will make a cloud of particles that tends to swarm around the cursor.
 Since we're using Verlet integration, shifting the particle's position
 in the direction of the mouse will automatically change its velocity as if it were pushed.
 

@@ -1,5 +1,5 @@
 ---
-title: 'Generating realistic terrain'
+title: 'Realistic terrain in 130 lines'
 date: 2014-05-05
 template: article.jade
 ---
@@ -20,7 +20,7 @@ We'll do this by generating fractals, or shapes that repeat patterns in smaller 
 I don't have any way to prove that terrain is a fractal but this method looks really damn good,
 so maybe you'll take it on faith.
 
-![Algorithm Illustration](../images/terrain-result.jpg)
+![Results](../images/terrain-result.jpg)
 
 ### Height maps
 
@@ -55,7 +55,7 @@ That's the [midpoint displacement algorithm](http://en.wikipedia.org/wiki/Diamon
 Our diamond-square algorithm is based on similar principles but generates more natural-looking results.
 Instead of just dividing into sub-squares, it alternates between dividing into sub-squares and dividing into sub-diamonds.
 
-![Algorithm Illustration](../images/terrain-algorithm.png)
+![Algorithm Illustration](../images/terrain-algorithm.gif)
 
 #### 1. Set the corners
 
@@ -121,15 +121,13 @@ function diamond(x, y, size, offset) {
 }
 ```
 
-We loop through the entire map at every division and apply the square first because its values are used to calculate the diamond. For example, take a 5x5 map:
-
-(illustration here)
-
 ### Rendering
 
 This algorithm just gives us data, which we can render in any number of ways.
 We'll combine a slew of rendering techniques into a rasterized, isometric,
 3d-projected terrain map on a canvas element.
+
+![Flat, Isometric, Perspective](../images/perspective-projection.gif)
 
 #### Back to front
 
@@ -216,3 +214,23 @@ var terrain = new Terrain(9);
 terrain.generate(0.7);
 terrain.draw(canvasContext, width, height);
 ```
+
+## Try it out
+
+Explore the [otherworldly terrain](/demos/terrain).
+
+### What's next?
+
+If you're anything like me, the results of this simple algorithm leave you itching to go
+build an online Terragen, a jetpack-based first person shooter, fishing simulator,
+MMORPG, etc. This single-cube, canvas-projected demo practically begs for extension.
+
+Here are a few things I challenge you to try:
+
+- WebGL rendering
+- Variation by height, where lower altitudes are smoother (like sand) and higher altitudes are more rocky
+- Cast shadows instead of purely slope-based shading
+- A second pass that generates caves and tunnels
+
+As always, [get in touch](http://twitter.com/hunterloftis) if you'd like to riff on the ideas here.
+

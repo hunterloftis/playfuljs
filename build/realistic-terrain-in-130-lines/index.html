@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Generating realistic terrain</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Generating realistic terrain</h2><p class="Article-date">5 May 2014</p><main class="Article-contents"><p>As programmers, we love to build things,
+<!DOCTYPE html><html><head><title>Realistic terrain in 130 lines</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>Realistic terrain in 130 lines</h2><p class="Article-date">5 May 2014</p><main class="Article-contents"><p>As programmers, we love to build things,
 and what could be more exciting than building a <em>world?</em>
 Minecraft, Terragen, Skyrim, and every flight simulator ever all use some sort of fractal terrain generation.
 Today we&#39;ll explore the beautifully simple diamond-square algorithm so you, too can play God.
@@ -11,7 +11,7 @@ spiritual and teach the computer <em>what it means to be a rock.</em>
 We&#39;ll do this by generating fractals, or shapes that repeat patterns in smaller and smaller variations.</p>
 <p>I don&#39;t have any way to prove that terrain is a fractal but this method looks really damn good,
 so maybe you&#39;ll take it on faith.</p>
-<p><img src="../images/terrain-result.jpg" alt="Algorithm Illustration"></p>
+<p><img src="../images/terrain-result.jpg" alt="Results"></p>
 <h3 id="height-maps">Height maps</h3>
 <p>We&#39;ll store our terrain as a simple height map:
 a 2-dimensional array of values that represents the height of terrain at any given x, y coordinate.
@@ -37,7 +37,7 @@ while <em>the later choices provide smaller details</em>.</p>
 <p>That&#39;s the <a href="http://en.wikipedia.org/wiki/Diamond-square_algorithm#Midpoint_displacement_algorithm">midpoint displacement algorithm</a>.
 Our diamond-square algorithm is based on similar principles but generates more natural-looking results.
 Instead of just dividing into sub-squares, it alternates between dividing into sub-squares and dividing into sub-diamonds.</p>
-<p><img src="../images/terrain-algorithm.png" alt="Algorithm Illustration"></p>
+<p><img src="../images/terrain-algorithm.gif" alt="Algorithm Illustration"></p>
 <h4 id="1-set-the-corners">1. Set the corners</h4>
 <p>First, set the corners to a &#39;seed&#39; value which will influence the rest of the rendering.
 This would start all the corners halfway up the cube:</p>
@@ -89,12 +89,11 @@ while the diamond phase averages four edge points before applying a random offse
   self.set(x, y, ave + offset);
 }
 </code></pre>
-<p>We loop through the entire map at every division and apply the square first because its values are used to calculate the diamond. For example, take a 5x5 map:</p>
-<p>(illustration here)</p>
 <h3 id="rendering">Rendering</h3>
 <p>This algorithm just gives us data, which we can render in any number of ways.
 We&#39;ll combine a slew of rendering techniques into a rasterized, isometric,
 3d-projected terrain map on a canvas element.</p>
+<p><img src="../images/perspective-projection.gif" alt="Flat, Isometric, Perspective"></p>
 <h4 id="back-to-front">Back to front</h4>
 <p>First, we create nested loops that drew rectangles from the &#39;back&#39; (y = 0)
 to the &#39;front&#39; (y = this.size) of our map. This is the same loop you&#39;d
@@ -160,7 +159,21 @@ Finally, we draw the terrain onto a canvas.</p>
 terrain.generate(0.7);
 terrain.draw(canvasContext, width, height);
 </code></pre>
-</main></div><div class="col three"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"/><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Previous Article<a href="/a-particle-fountain">A particle fountain</a></h4></section><section class="Recent"><h4>Recent Articles</h4><a href="/generating-realistic-terrain">Generating realistic terrain</a><a href="/a-particle-fountain">A particle fountain</a><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+<h2 id="try-it-out">Try it out</h2>
+<p>Explore the <a href="/demos/terrain">otherworldly terrain</a>.</p>
+<h3 id="what-s-next-">What&#39;s next?</h3>
+<p>If you&#39;re anything like me, the results of this simple algorithm leave you itching to go
+build an online Terragen, a jetpack-based first person shooter, fishing simulator,
+MMORPG, etc. This single-cube, canvas-projected demo practically begs for extension.</p>
+<p>Here are a few things I challenge you to try:</p>
+<ul>
+<li>WebGL rendering</li>
+<li>Variation by height, where lower altitudes are smoother (like sand) and higher altitudes are more rocky</li>
+<li>Cast shadows instead of purely slope-based shading</li>
+<li>A second pass that generates caves and tunnels</li>
+</ul>
+<p>As always, <a href="http://twitter.com/hunterloftis">get in touch</a> if you&#39;d like to riff on the ideas here.</p>
+</main></div><div class="col three"><form class="Subscriber"><h4>Get new articles by email</h4><input name="email" placeholder="enter your email address"/><a class="Button">Subscribe<span class="Button-sub">(it's free!)</span></a></form><section class="Recent"><h4>Previous Article<a href="/physics-for-the-lazy">Physics for the lazy</a></h4></section><section class="Recent"><h4>Recent Articles</h4><a href="/realistic-terrain-in-130-lines">Realistic terrain in 130 lines</a><a href="/physics-for-the-lazy">Physics for the lazy</a><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
