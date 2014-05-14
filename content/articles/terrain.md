@@ -247,6 +247,7 @@ Here are some highlights:
 - [Heightmap-based raycaster](http://namuol.github.io/earf-html5/) by namuol
 - [Procedural demo entry explanation](http://iquilezles.org/www/material/function2009/function2009.pdf) by Inigo Quilez
 - [Fractional Brownian Motion](http://dcc.fceia.unr.edu.ar/~rbaravalle/fractales/brownGL.html) by rbaravaelle
+- [Polygonal game map generation](http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/) by Red Blob Games
 
 ## Discuss
 
