@@ -243,7 +243,6 @@ Here are some highlights:
 - [WebGL rendering implementation](http://callum.com/sandbox/webglex/webgl_terrain/) by callum
 - [Objective C implementation](https://github.com/cieslak/EPTTerrainGenerator/) by Chris Cieslak
 - [Processing implementation](http://p5art.tumblr.com/post/85745180688/processing-port-of-realistic-terrain-in-130) by Jerome Herr
-
 - [Heightmap-based raycaster](http://namuol.github.io/earf-html5/) by namuol
 - [Procedural demo entry explanation](http://iquilezles.org/www/material/function2009/function2009.pdf) by Inigo Quilez
 - [Fractional Brownian Motion](http://dcc.fceia.unr.edu.ar/~rbaravalle/fractales/brownGL.html) by rbaravaelle
