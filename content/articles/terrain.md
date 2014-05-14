@@ -234,6 +234,20 @@ Here are a few things I challenge you to try:
 
 As always, [get in touch](http://twitter.com/hunterloftis) if you'd like to riff on the ideas here.
 
+### Related Work
+
+Lots of folks are playing with this algorithm right now and building cool stuff.
+Also, the Hacker News discussion brought out some really fantastic related examples.
+Here are some highlights:
+
+- [WebGL rendering implementation](http://callum.com/sandbox/webglex/webgl_terrain/) by callum
+- [Objective C implementation](https://github.com/cieslak/EPTTerrainGenerator/) by Chris Cieslak
+- [Processing implementation](http://p5art.tumblr.com/post/85745180688/processing-port-of-realistic-terrain-in-130) by Jerome Herr
+
+- [Heightmap-based raycaster](http://namuol.github.io/earf-html5/) by namuol
+- [Procedural demo entry explanation](http://iquilezles.org/www/material/function2009/function2009.pdf) by Inigo Quilez
+- [Fractional Brownian Motion](http://dcc.fceia.unr.edu.ar/~rbaravalle/fractales/brownGL.html) by rbaravaelle
+
 ## Discuss
 
 Join [the discussion](https://news.ycombinator.com/item?id=7734925) at Hacker News.
