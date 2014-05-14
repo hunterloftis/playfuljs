@@ -144,6 +144,9 @@ input {
 .Subscriber button {
   width: 100%;
 }
+.Subscriber p {
+  font-size: 0.9rem;
+}
 .Button {
   font-size: 0.9rem;
   padding: 8px 10px;
