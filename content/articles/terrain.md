@@ -231,6 +231,7 @@ Here are a few things I challenge you to try:
 - Variation by height, where lower altitudes are smoother (like sand) and higher altitudes are more rocky
 - Cast shadows instead of purely slope-based shading
 - A second pass that generates caves and tunnels
+- Parallelize terrain building with WebWorkers
 
 As always, [get in touch](http://twitter.com/hunterloftis) if you'd like to riff on the ideas here.
 
