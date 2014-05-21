@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Terrain Demo - PlayfulJS</title>
+  </head>
+  <body style='background: #000'>
+    <canvas id='display' width='1' height='1' />
+
+    <script>
+
+      function Keyboard() {
+        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'back' };
+        this.states = {};
+        document.addEventListener('keydown', this.onKeyDown, false);
+        document.addEventListener('keyup', this.onKeyUp, false);
+      }
+
+      Keyboard.prototype.onKeyDown = function(e) {
+        var state = this.codes[e.keyCode];
+        if (!state) return;
+        this.states[state] = true;
+      };
+
+      Keyboard.prototype.onKeyUp = function(e) {
+        var = state = this.codes[e.keyCode];
+        if (!state) return;
+        this.states[state] = false;
+      };
+      
+      var display = document.getElementById('display');
+      var ctx = display.getContext('2d');
+      var width = display.width = window.innerWidth;
+      var height = display.height = window.innerHeight;
+
+      
+
+    </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-50885475-1', 'playfuljs.com');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
