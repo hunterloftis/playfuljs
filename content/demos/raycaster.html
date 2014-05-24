@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Raycaster Demo - PlayfulJS</title>
   </head>
-  <body style='background: #000'>
+  <body style='background: #000; margin: 0; padding: 0'>
     <canvas id='display' width='1' height='1' />
 
     <script>
@@ -82,21 +82,30 @@
         ctx.stroke();
       }
 
-      function Raycaster(canvas) {
+      function Raycaster(canvas, resolution) {
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width = window.innerWidth;
         this.height = canvas.height = window.innerHeight;
+        this.resolution = resolution;
+        this.spacing = this.width / resolution;
       }
 
       Raycaster.prototype.render = function(player, walls) {
         this.ctx.clearRect(0, 0, this.width, this.height);
-        walls.forEach(function(wall) {
-          wall.draw(this.ctx, this.width, this.height);
-        }.bind(this));
-        player.draw(this.ctx, this.width, this.height);
+
+        this.ctx.fillStyle = '#ffffff';
+        for (var x = 0; x < this.resolution; x++) {
+          var distance = 10;
+          this.ctx.fillRect(x * this.spacing, this.height * 0.5 - distance, this.spacing + 1, distance * 2);
+        }
+
+        // walls.forEach(function(wall) {
+        //   wall.draw(this.ctx, this.width, this.height);
+        // }.bind(this));
+        // player.draw(this.ctx, this.width, this.height);
       };
 
-      var raycaster = new Raycaster(document.getElementById('display'));
+      var raycaster = new Raycaster(document.getElementById('display'), 640);
       var keyboard = new Keyboard();
       var player = new Player(0, 0, 0);
       var walls = [
