@@ -55,7 +55,7 @@
         if (controls.backward) this.walk(-this.walkSpeed * seconds);
       };
 
-      Player.prototype.draw = function() {
+      Player.prototype.draw = function(ctx, width, height) {
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -73,7 +73,7 @@
         this.y2 = y2;
       }
 
-      Wall.prototype.draw = function() {
+      Wall.prototype.draw = function(ctx, width, height) {
         ctx.strokeStyle = '#00ffff';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -82,11 +82,21 @@
         ctx.stroke();
       }
 
-      var display = document.getElementById('display');
-      var ctx = display.getContext('2d');
-      var width = display.width = window.innerWidth;
-      var height = display.height = window.innerHeight;
+      function Raycaster(canvas) {
+        this.ctx = canvas.getContext('2d');
+        this.width = canvas.width = window.innerWidth;
+        this.height = canvas.height = window.innerHeight;
+      }
 
+      Raycaster.prototype.render = function(player, walls) {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        walls.forEach(function(wall) {
+          wall.draw(this.ctx, this.width, this.height);
+        }.bind(this));
+        player.draw(this.ctx, this.width, this.height);
+      };
+
+      var raycaster = new Raycaster(document.getElementById('display'));
       var keyboard = new Keyboard();
       var player = new Player(0, 0, 0);
       var walls = [
@@ -108,10 +118,8 @@
         var seconds = (time - lastTime) / 1000;
         lastTime = time;
         if (seconds < 0.2) {
-          ctx.clearRect(0, 0, width, height);
           player.update(keyboard.states, seconds);
-          walls.forEach(function(wall) { wall.draw(); });
-          player.draw();
+          raycaster.render(player, walls);
         }
         requestAnimationFrame(frame);
       }
