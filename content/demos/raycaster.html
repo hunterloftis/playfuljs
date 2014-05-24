@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Terrain Demo - PlayfulJS</title>
+    <title>Raycaster Demo - PlayfulJS</title>
   </head>
   <body style='background: #000'>
     <canvas id='display' width='1' height='1' />
@@ -66,6 +66,22 @@
         ctx.stroke();
       };
 
+      function Wall(x1, y1, x2, y2) {
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+      }
+
+      Wall.prototype.draw = function() {
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(width * 0.5 + this.x1, height * 0.5 + this.y1);
+        ctx.lineTo(width * 0.5 + this.x2, height * 0.5 + this.y2);
+        ctx.stroke();
+      }
+
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var width = display.width = window.innerWidth;
@@ -73,6 +89,17 @@
 
       var keyboard = new Keyboard();
       var player = new Player(0, 0, 0);
+      var walls = [
+        new Wall(-100, -100, 180, -100),
+        new Wall(180, -100, 180, -80),
+        new Wall(180, -80, 100, -80),
+        new Wall(100, -80, 100, 100),
+        new Wall(100, 100, -100, 100),
+        new Wall(-100, 100, -100, -100),
+        new Wall(-50, -80, -50, -50),
+        new Wall(-50, -50, -80, -50),
+        new Wall(-80, -50, -50, -80)
+      ];
       var lastTime = 0;
 
       requestAnimationFrame(frame);
@@ -83,6 +110,7 @@
         if (seconds < 0.2) {
           ctx.clearRect(0, 0, width, height);
           player.update(keyboard.states, seconds);
+          walls.forEach(function(wall) { wall.draw(); });
           player.draw();
         }
         requestAnimationFrame(frame);
