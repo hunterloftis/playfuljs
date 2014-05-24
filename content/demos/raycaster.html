@@ -10,29 +10,83 @@
 
       function Keyboard() {
         this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'back' };
-        this.states = {};
-        document.addEventListener('keydown', this.onKeyDown, false);
-        document.addEventListener('keyup', this.onKeyUp, false);
+        this.states = { 'left': false, 'right': false, 'forward': false, 'back': false };
+        document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+        document.addEventListener('keyup', this.onKeyUp.bind(this), false);
       }
 
       Keyboard.prototype.onKeyDown = function(e) {
         var state = this.codes[e.keyCode];
         if (!state) return;
         this.states[state] = true;
+        e.preventDefault();
+        e.stopPropagation();
       };
 
       Keyboard.prototype.onKeyUp = function(e) {
-        var = state = this.codes[e.keyCode];
+        var state = this.codes[e.keyCode];
         if (!state) return;
         this.states[state] = false;
+        e.preventDefault();
+        e.stopPropagation();
       };
       
+      function Player(x, y, direction) {
+        this.x = x;
+        this.y = y;
+        this.direction = direction;
+        this.turnSpeed = Math.PI * 2;
+        this.walkSpeed = 200;
+      }
+
+      Player.prototype.rotate = function(angle) {
+        this.direction += angle;
+      };
+
+      Player.prototype.walk = function(distance) {
+        this.x += distance * Math.cos(this.direction);
+        this.y += distance * Math.sin(this.direction);
+      };
+
+      Player.prototype.update = function(controls, seconds) {
+        if (controls.left) this.rotate(-this.turnSpeed * seconds);
+        if (controls.right) this.rotate(this.turnSpeed * seconds);
+        if (controls.forward) this.walk(this.walkSpeed * seconds);
+        if (controls.backward) this.walk(-this.walkSpeed * seconds);
+      };
+
+      Player.prototype.draw = function() {
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(width * 0.5 + this.x, height * 0.5 + this.y);
+        var x1 = this.x + 20 * Math.cos(this.direction);
+        var y1 = this.y + 20 * Math.sin(this.direction);
+        ctx.lineTo(width * 0.5 + x1, height * 0.5 + y1);
+        ctx.stroke();
+      };
+
       var display = document.getElementById('display');
       var ctx = display.getContext('2d');
       var width = display.width = window.innerWidth;
       var height = display.height = window.innerHeight;
 
-      
+      var keyboard = new Keyboard();
+      var player = new Player(0, 0, 0);
+      var lastTime = 0;
+
+      requestAnimationFrame(frame);
+
+      function frame(time) {
+        var seconds = (time - lastTime) / 1000;
+        lastTime = time;
+        if (seconds < 0.2) {
+          ctx.clearRect(0, 0, width, height);
+          player.update(keyboard.states, seconds);
+          player.draw();
+        }
+        requestAnimationFrame(frame);
+      }
 
     </script>
     <script>
