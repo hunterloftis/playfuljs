@@ -118,6 +118,15 @@
         var x = point.x;
         var y = point.y;
 
+        while (angle < 0) angle += Math.PI * 2;
+        while (angle > Math.PI * 2) angle -= Math.PI * 2;
+        var incX = angle < Math.PI * 0.5 || angle > Math.PI * 1.5;
+        var incY = angle > Math.PI;
+        var sin = Math.sin(angle);
+        var cos = Math.cos(angle);
+        var slopeX = sin / cos;
+        var slopeY = cos / sin;
+
         while (distance < range) {
           var next = nextGrid(x, y, angle);
           var dx = next.x - point.x;
@@ -131,25 +140,16 @@
         return steps;
 
         function nextGrid(x, y, angle) {
-          while (angle < 0) angle += Math.PI * 2;
-          while (angle > Math.PI * 2) angle -= Math.PI * 2;
-
-          var incX = angle < Math.PI * 0.5 || angle > Math.PI * 1.5;
-          var incY = angle > Math.PI;
-          var sin = Math.sin(angle);
-          var cos = Math.cos(angle);
           var lengthX = lengthY = Infinity;
 
-          if (cos !== 0) {
-            var slopeX = sin / cos;
+          if (slopeX !== Infinity) {
             var nextX = incX ? Math.floor(x + 1): Math.ceil(x - 1);
             var nextXY = y + (nextX - x) * slopeX;
             var dxX = nextX - x;
             var dyX = nextXY - y;
             lengthX = dxX * dxX + dyX * dyX;
           }
-          if (sin !== 0) {
-            var slopeY = cos / sin;
+          if (slopeY !== Infinity) {
             var nextY = incY ? Math.ceil(y - 1): Math.floor(y + 1);
             var nextYX = x + (nextY - y) * slopeY;
             var dyY = nextY - y;
