@@ -114,16 +114,11 @@
         });
       }
 
-      Map.prototype.cast = function(point, radians, range) {
-        var sin = Math.sin(radians);
-        var cos = Math.cos(radians);
-        var incX = cos > 0;
-        var incY = sin > 0;
-        var slopeX = sin / cos;
-        var slopeY = cos / sin;
-        var steps = [];
+      Map.prototype.cast = function(point, angle, range) {
+        var sin = Math.sin(angle);
+        var cos = Math.cos(angle);
+        var steps = [], distance = 0;
         var next = { x: point.x, y: point.y };
-        var distance = 0;
 
         while (distance < range) {
           next = nextStep(next.x, next.y);
@@ -133,16 +128,15 @@
         return steps;
 
         function nextStep(x, y) {
-          var stepX = step(slopeX, incX, x, y);
-          var stepY = step(slopeY, incY, y, x, true);
-
+          var stepX = step(sin, cos, x, y);
+          var stepY = step(cos, sin, y, x, true);
           return stepX.length < stepY.length ? stepX : stepY;
         }
 
-        function step(slope, inc, x, y, inverted) {
-          if (slope === Infinity) return { length: Infinity};
-          var dx = inc ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
-          var dy = dx * slope;
+        function step(rise, run, x, y, inverted) {
+          if (run === 0) return { length: Infinity};
+          var dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+          var dy = dx * (rise / run);
 
           return {
             x: inverted ? y + dy : x + dx,
