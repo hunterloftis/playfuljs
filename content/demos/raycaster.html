@@ -121,7 +121,7 @@
         while (angle < 0) angle += Math.PI * 2;
         while (angle > Math.PI * 2) angle -= Math.PI * 2;
         var incX = angle < Math.PI * 0.5 || angle > Math.PI * 1.5;
-        var incY = angle > Math.PI;
+        var incY = angle < Math.PI;
         var sin = Math.sin(angle);
         var cos = Math.cos(angle);
         var slopeX = sin / cos;
@@ -141,23 +141,22 @@
 
         function nextGrid(x, y, angle) {
           var lengthX = lengthY = Infinity;
+          var nextX, nextY, dx1, dy1, dx2, dy2;
 
           if (slopeX !== Infinity) {
-            var nextX = incX ? Math.floor(x + 1): Math.ceil(x - 1);
-            var nextXY = y + (nextX - x) * slopeX;
-            var dxX = nextX - x;
-            var dyX = nextXY - y;
-            lengthX = dxX * dxX + dyX * dyX;
+            dx1 = incX ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+            dy1 = dx1 * slopeX;
+            lengthX = dx1 * dx1 + dy1 * dy1;
           }
           if (slopeY !== Infinity) {
-            var nextY = incY ? Math.ceil(y - 1): Math.floor(y + 1);
-            var nextYX = x + (nextY - y) * slopeY;
-            var dyY = nextY - y;
-            var dxY = nextYX - x;
-            lengthY = dxY * dxY + dyY * dyY;
+            dy2 = incY ? Math.floor(y + 1) - y : Math.ceil(y - 1) - y;
+            dx2 = dy2 * slopeY;
+            lengthY = dx2 * dx2 + dy2 * dy2;
           }
 
-          return lengthX < lengthY ? { x: nextX, y: nextXY } : { x: nextYX, y: nextY };
+          return lengthX < lengthY ?
+            { x: x + dx1, y: y + dy1 } :
+            { x: x + dx2, y: y + dy2 };
         }
       };
 
