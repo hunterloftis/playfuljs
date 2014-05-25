@@ -113,13 +113,9 @@
       }
 
       Map.prototype.cast = function(point, angle, range) {
-        var steps = [];
-        var distance = 0;
-        var x = point.x;
-        var y = point.y;
-
         while (angle < 0) angle += Math.PI * 2;
         while (angle > Math.PI * 2) angle -= Math.PI * 2;
+
         var incX = angle < Math.PI * 0.5 || angle > Math.PI * 1.5;
         var incY = angle < Math.PI;
         var sin = Math.sin(angle);
@@ -127,36 +123,34 @@
         var slopeX = sin / cos;
         var slopeY = cos / sin;
 
-        while (distance < range) {
-          var next = nextGrid(x, y, angle);
-          var dx = next.x - point.x;
-          var dy = next.y - point.y;
-          distance = Math.sqrt(dx * dx + dy * dy);
-          steps.push(next);
-          x = next.x;
-          y = next.y;
-        }
+        var steps = [];
+        var next = { x: point.x, y: point.y };
+        var distance = 0;
 
+        while (distance < range) {
+          next = nextStep(next.x, next.y, angle);
+          steps.push(next);
+          distance += next.length
+        }
         return steps;
 
-        function nextGrid(x, y, angle) {
-          var lengthX = lengthY = Infinity;
-          var nextX, nextY, dx1, dy1, dx2, dy2;
+        function nextStep(x, y, angle) {
+          var stepX = step(slopeX, incX, x, y);
+          var stepY = step(slopeY, incY, y, x, true);
 
-          if (slopeX !== Infinity) {
-            dx1 = incX ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
-            dy1 = dx1 * slopeX;
-            lengthX = dx1 * dx1 + dy1 * dy1;
-          }
-          if (slopeY !== Infinity) {
-            dy2 = incY ? Math.floor(y + 1) - y : Math.ceil(y - 1) - y;
-            dx2 = dy2 * slopeY;
-            lengthY = dx2 * dx2 + dy2 * dy2;
-          }
+          return stepX.length < stepY.length ? stepX : stepY;
+        }
 
-          return lengthX < lengthY ?
-            { x: x + dx1, y: y + dy1 } :
-            { x: x + dx2, y: y + dy2 };
+        function step(slope, inc, x, y, inverted) {
+          if (slope === Infinity) return { length: Infinity};
+          var dx = inc ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+          var dy = dx * slope;
+
+          return {
+            x: inverted ? y + dy : x + dx,
+            y: inverted ? x + dx : y + dy,
+            length: Math.sqrt(dx * dx + dy * dy)
+          };
         }
       };
 
