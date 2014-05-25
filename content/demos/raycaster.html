@@ -46,9 +46,8 @@
       };
 
       Player.prototype.walk = function(distance, map) {
-        var path = map.cast(this, this.direction, distance);
-        this.x = path[path.length - 1].x;
-        this.y = path[path.length - 1].y;
+        this.x += Math.cos(this.direction) * distance;
+        this.y += Math.sin(this.direction) * distance;
         this.path = map.cast(this, this.direction, 10);
       };
 
@@ -65,6 +64,9 @@
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(scale + this.x * scale, scale + this.y * scale);
+        var dx = this.x + 10 * Math.cos(this.direction);
+        var dy = this.y + 10 * Math.sin(this.direction);
+        ctx.lineTo(scale + dx * scale, scale + dy * scale);
         this.path.forEach(function(segment) {
           ctx.lineTo(scale + segment.x * scale, scale + segment.y * scale);
           ctx.rect(scale - 1 + segment.x * scale, scale - 1 + segment.y * scale, 3, 3);
@@ -111,15 +113,52 @@
       }
 
       Map.prototype.cast = function(point, angle, range) {
-        var tx = point.x + range * Math.cos(angle);
-        var ty = point.y + range * Math.sin(angle);
-        if (this.get(~~tx, ~~ty) === 1) return [ { x: point.x, y: point.y } ];
-        return [
-          {
-            x: point.x + range * Math.cos(angle),
-            y: point.y + range * Math.sin(angle)
+        var steps = [];
+        var distance = 0;
+        var x = point.x;
+        var y = point.y;
+
+        while (distance < range) {
+          var next = nextGrid(x, y, angle);
+          var dx = next.x - point.x;
+          var dy = next.y - point.y;
+          distance = Math.sqrt(dx * dx + dy * dy);
+          steps.push(next);
+          x = next.x;
+          y = next.y;
+        }
+
+        return steps;
+
+        function nextGrid(x, y, angle) {
+          while (angle < 0) angle += Math.PI * 2;
+          while (angle > Math.PI * 2) angle -= Math.PI * 2;
+
+          var incX = angle < Math.PI * 0.5 || angle > Math.PI * 1.5;
+          var incY = angle > Math.PI;
+          var sin = Math.sin(angle);
+          var cos = Math.cos(angle);
+          var lengthX = lengthY = Infinity;
+
+          if (cos !== 0) {
+            var slopeX = sin / cos;
+            var nextX = incX ? Math.floor(x + 1): Math.ceil(x - 1);
+            var nextXY = y + (nextX - x) * slopeX;
+            var dxX = nextX - x;
+            var dyX = nextXY - y;
+            lengthX = dxX * dxX + dyX * dyX;
           }
-        ];
+          if (sin !== 0) {
+            var slopeY = cos / sin;
+            var nextY = incY ? Math.ceil(y - 1): Math.floor(y + 1);
+            var nextYX = x + (nextY - y) * slopeY;
+            var dyY = nextY - y;
+            var dxY = nextYX - x;
+            lengthY = dxY * dxY + dyY * dyY;
+          }
+
+          return lengthX < lengthY ? { x: nextX, y: nextXY } : { x: nextYX, y: nextY };
+        }
       };
 
       function Raycaster(canvas, resolution, fov) {
@@ -143,7 +182,7 @@
       var display = document.getElementById('display');
       var raycaster = new Raycaster(display, 640, Math.PI * 0.8);
       var keyboard = new Keyboard();
-      var player = new Player(2, 2, 0);
+      var player = new Player(2, 2, Math.PI * 0.1);
       var map = new Map(32);
       var lastTime = 0;
 
