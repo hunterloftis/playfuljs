@@ -87,6 +87,9 @@
       };
 
       Map.prototype.get = function(x, y) {
+        x = Math.floor(x);
+        y = Math.floor(y);
+        if (x < 0 || y < 0 || x > this.size - 1 || y > this.size - 1) return -1;
         return this.grid[y * this.size + x];
       };
 
@@ -118,10 +121,10 @@
         var sin = Math.sin(angle);
         var cos = Math.cos(angle);
         var steps = [], distance = 0;
-        var next = { x: point.x, y: point.y };
+        var next = { x: point.x, y: point.y, tile: 0 };
 
-        while (distance < range) {
-          next = nextStep(next.x, next.y);
+        while (distance < range && next.tile === 0) {
+          next = nextStep.call(this, next.x, next.y);
           steps.push(next);
           distance += next.length
         }
@@ -130,7 +133,14 @@
         function nextStep(x, y) {
           var stepX = step(sin, cos, x, y);
           var stepY = step(cos, sin, y, x, true);
-          return stepX.length < stepY.length ? stepX : stepY;
+          if (stepX.length < stepY.length) {
+            stepX.tile = this.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
+            return stepX;
+          }
+          else {
+            stepY.tile = this.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
+            return stepY;
+          }
         }
 
         function step(rise, run, x, y, inverted) {
