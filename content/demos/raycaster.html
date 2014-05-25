@@ -8,6 +8,8 @@
 
     <script>
 
+      var CIRCLE = Math.PI * 2;
+
       function Keyboard() {
         this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
         this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
@@ -41,7 +43,7 @@
       }
 
       Player.prototype.rotate = function(angle) {
-        this.direction += angle;
+        this.direction = (this.direction + angle + CIRCLE) % (CIRCLE);
         this.path = map.cast(this, this.direction, 10);
       };
 
@@ -112,29 +114,25 @@
         });
       }
 
-      Map.prototype.cast = function(point, angle, range) {
-        while (angle < 0) angle += Math.PI * 2;
-        while (angle > Math.PI * 2) angle -= Math.PI * 2;
-
-        var incX = angle < Math.PI * 0.5 || angle > Math.PI * 1.5;
-        var incY = angle < Math.PI;
-        var sin = Math.sin(angle);
-        var cos = Math.cos(angle);
+      Map.prototype.cast = function(point, radians, range) {
+        var sin = Math.sin(radians);
+        var cos = Math.cos(radians);
+        var incX = cos > 0;
+        var incY = sin > 0;
         var slopeX = sin / cos;
         var slopeY = cos / sin;
-
         var steps = [];
         var next = { x: point.x, y: point.y };
         var distance = 0;
 
         while (distance < range) {
-          next = nextStep(next.x, next.y, angle);
+          next = nextStep(next.x, next.y);
           steps.push(next);
           distance += next.length
         }
         return steps;
 
-        function nextStep(x, y, angle) {
+        function nextStep(x, y) {
           var stepX = step(slopeX, incX, x, y);
           var stepY = step(slopeY, incY, y, x, true);
 
