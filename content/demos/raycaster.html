@@ -43,16 +43,17 @@
         this.direction += angle;
       };
 
-      Player.prototype.walk = function(distance) {
-        this.x += distance * Math.cos(this.direction);
-        this.y += distance * Math.sin(this.direction);
+      Player.prototype.walk = function(distance, map) {
+        var path = map.ray(this, this.direction, distance);
+        this.x = path.x;
+        this.y = path.y;
       };
 
-      Player.prototype.update = function(controls, seconds) {
+      Player.prototype.update = function(controls, map, seconds) {
         if (controls.left) this.rotate(-this.turnSpeed * seconds);
         if (controls.right) this.rotate(this.turnSpeed * seconds);
-        if (controls.forward) this.walk(this.walkSpeed * seconds);
-        if (controls.backward) this.walk(-this.walkSpeed * seconds);
+        if (controls.forward) this.walk(this.walkSpeed * seconds, map);
+        if (controls.backward) this.walk(-this.walkSpeed * seconds, map);
       };
 
       Player.prototype.draw = function(ctx) {
@@ -97,6 +98,13 @@
         });
       }
 
+      Map.prototype.ray = function(point, angle, range) {
+        return {
+          x: point.x + range * Math.cos(angle),
+          y: point.y + range * Math.sin(angle)
+        };
+      };
+
       function Raycaster(canvas, resolution, fov) {
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width = window.innerWidth;
@@ -109,8 +117,8 @@
 
       Raycaster.prototype.render = function(player, map) {
         this.ctx.clearRect(0, 0, this.width, this.height);
-        player.draw(this.ctx);
         map.draw(this.ctx);
+        player.draw(this.ctx);
       };
 
       var display = document.getElementById('display');
@@ -127,7 +135,7 @@
         var seconds = (time - lastTime) / 1000;
         lastTime = time;
         if (seconds < 0.2) {
-          player.update(keyboard.states, seconds);
+          player.update(keyboard.states, map, seconds);
           raycaster.render(player, map);
         }
         requestAnimationFrame(frame);
