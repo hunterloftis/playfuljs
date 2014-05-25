@@ -9,8 +9,8 @@
     <script>
 
       function Keyboard() {
-        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'back' };
-        this.states = { 'left': false, 'right': false, 'forward': false, 'back': false };
+        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
+        this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
         document.addEventListener('keyup', this.onKeyUp.bind(this), false);
       }
@@ -36,7 +36,7 @@
         this.y = y;
         this.direction = direction;
         this.turnSpeed = Math.PI * 2;
-        this.walkSpeed = 200;
+        this.walkSpeed = 3;
       }
 
       Player.prototype.rotate = function(angle) {
@@ -55,72 +55,72 @@
         if (controls.backward) this.walk(-this.walkSpeed * seconds);
       };
 
-      Player.prototype.draw = function(ctx, width, height) {
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(width * 0.5 + this.x, height * 0.5 + this.y);
-        var x1 = this.x + 20 * Math.cos(this.direction);
-        var y1 = this.y + 20 * Math.sin(this.direction);
-        ctx.lineTo(width * 0.5 + x1, height * 0.5 + y1);
-        ctx.stroke();
+      Player.prototype.draw = function(ctx) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(9 + this.x * 10, 9 + this.y * 10, 3, 3);
       };
 
-      function Wall(x1, y1, x2, y2) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+      function Map(size) {
+        this.size = size;
+        this.grid = new Uint8Array(size * size);
       }
 
-      Wall.prototype.draw = function(ctx, width, height) {
-        ctx.strokeStyle = '#00ffff';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(width * 0.5 + this.x1, height * 0.5 + this.y1);
-        ctx.lineTo(width * 0.5 + this.x2, height * 0.5 + this.y2);
-        ctx.stroke();
+      Map.prototype.set = function(x, y, val) {
+        this.grid[y * this.size + x] = val;
+      };
+
+      Map.prototype.get = function(x, y) {
+        return this.grid[y * this.size + x];
+      };
+
+      Map.prototype.each = function(fn) {
+        for (var y = 0; y < this.size; y++) {
+          for (var x = 0; x < this.size; x++) {
+            fn.call(this, x, y);
+          }
+        }
+      };
+
+      Map.prototype.randomize = function() {
+        this.each(function(x, y) {
+          if (x === 0 || x === this.size - 1) this.set(x, y, 1);
+          else if (y === 0 || y === this.size - 1) this.set(x, y, 1);
+          else if (x < 5 && y < 5) this.set(x, y, 0);
+          else this.set(x, y, Math.random() < 0.2 ? 1 : 0);
+        });
+      }; 
+
+      Map.prototype.draw = function(ctx) {
+        ctx.fillStyle = '#009999';
+        this.each(function(x, y) {
+          if (this.get(x, y)) ctx.fillRect(10 + x * 10, 10 + y * 10, 10, 10);
+        });
       }
 
-      function Raycaster(canvas, resolution) {
+      function Raycaster(canvas, resolution, fov) {
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width = window.innerWidth;
         this.height = canvas.height = window.innerHeight;
         this.resolution = resolution;
         this.spacing = this.width / resolution;
+        this.fov = fov;
+        this.range = 200;
       }
 
-      Raycaster.prototype.render = function(player, walls) {
+      Raycaster.prototype.render = function(player, map) {
         this.ctx.clearRect(0, 0, this.width, this.height);
-
-        this.ctx.fillStyle = '#ffffff';
-        for (var x = 0; x < this.resolution; x++) {
-          var distance = 10;
-          this.ctx.fillRect(x * this.spacing, this.height * 0.5 - distance, this.spacing + 1, distance * 2);
-        }
-
-        // walls.forEach(function(wall) {
-        //   wall.draw(this.ctx, this.width, this.height);
-        // }.bind(this));
-        // player.draw(this.ctx, this.width, this.height);
+        player.draw(this.ctx);
+        map.draw(this.ctx);
       };
 
-      var raycaster = new Raycaster(document.getElementById('display'), 640);
+      var display = document.getElementById('display');
+      var raycaster = new Raycaster(display, 640, Math.PI * 0.8);
       var keyboard = new Keyboard();
-      var player = new Player(0, 0, 0);
-      var walls = [
-        new Wall(-100, -100, 180, -100),
-        new Wall(180, -100, 180, -80),
-        new Wall(180, -80, 100, -80),
-        new Wall(100, -80, 100, 100),
-        new Wall(100, 100, -100, 100),
-        new Wall(-100, 100, -100, -100),
-        new Wall(-50, -80, -50, -50),
-        new Wall(-50, -50, -80, -50),
-        new Wall(-80, -50, -50, -80)
-      ];
+      var player = new Player(2, 2, 0);
+      var map = new Map(32);
       var lastTime = 0;
 
+      map.randomize();
       requestAnimationFrame(frame);
 
       function frame(time) {
@@ -128,7 +128,7 @@
         lastTime = time;
         if (seconds < 0.2) {
           player.update(keyboard.states, seconds);
-          raycaster.render(player, walls);
+          raycaster.render(player, map);
         }
         requestAnimationFrame(frame);
       }
