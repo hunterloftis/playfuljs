@@ -99,6 +99,9 @@
       }
 
       Map.prototype.ray = function(point, angle, range) {
+        var tx = point.x + range * Math.cos(angle);
+        var ty = point.y + range * Math.sin(angle);
+        if (this.get(~~tx, ~~ty) === 1) return point;
         return {
           x: point.x + range * Math.cos(angle),
           y: point.y + range * Math.sin(angle)
