@@ -35,18 +35,21 @@
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.turnSpeed = Math.PI * 2;
+        this.turnSpeed = Math.PI * 1.5;
         this.walkSpeed = 3;
+        this.path = [];
       }
 
       Player.prototype.rotate = function(angle) {
         this.direction += angle;
+        this.path = map.cast(this, this.direction, 10);
       };
 
       Player.prototype.walk = function(distance, map) {
-        var path = map.ray(this, this.direction, distance);
-        this.x = path.x;
-        this.y = path.y;
+        var path = map.cast(this, this.direction, distance);
+        this.x = path[path.length - 1].x;
+        this.y = path[path.length - 1].y;
+        this.path = map.cast(this, this.direction, 10);
       };
 
       Player.prototype.update = function(controls, map, seconds) {
@@ -56,9 +59,18 @@
         if (controls.backward) this.walk(-this.walkSpeed * seconds, map);
       };
 
-      Player.prototype.draw = function(ctx) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(9 + this.x * 10, 9 + this.y * 10, 3, 3);
+      Player.prototype.draw = function(ctx, scale) {
+        ctx.fillStyle = '#ff0000';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(scale + this.x * scale, scale + this.y * scale);
+        this.path.forEach(function(segment) {
+          ctx.lineTo(scale + segment.x * scale, scale + segment.y * scale);
+          ctx.rect(scale - 1 + segment.x * scale, scale - 1 + segment.y * scale, 3, 3);
+        });
+        ctx.fill();
+        ctx.stroke();
       };
 
       function Map(size) {
@@ -91,21 +103,23 @@
         });
       }; 
 
-      Map.prototype.draw = function(ctx) {
+      Map.prototype.draw = function(ctx, scale) {
         ctx.fillStyle = '#009999';
         this.each(function(x, y) {
-          if (this.get(x, y)) ctx.fillRect(10 + x * 10, 10 + y * 10, 10, 10);
+          if (this.get(x, y)) ctx.fillRect(scale + x * scale, scale + y * scale, scale, scale);
         });
       }
 
-      Map.prototype.ray = function(point, angle, range) {
+      Map.prototype.cast = function(point, angle, range) {
         var tx = point.x + range * Math.cos(angle);
         var ty = point.y + range * Math.sin(angle);
-        if (this.get(~~tx, ~~ty) === 1) return point;
-        return {
-          x: point.x + range * Math.cos(angle),
-          y: point.y + range * Math.sin(angle)
-        };
+        if (this.get(~~tx, ~~ty) === 1) return [ { x: point.x, y: point.y } ];
+        return [
+          {
+            x: point.x + range * Math.cos(angle),
+            y: point.y + range * Math.sin(angle)
+          }
+        ];
       };
 
       function Raycaster(canvas, resolution, fov) {
@@ -119,9 +133,11 @@
       }
 
       Raycaster.prototype.render = function(player, map) {
+        //var walls = map.scan(player, this.fov);
         this.ctx.clearRect(0, 0, this.width, this.height);
-        map.draw(this.ctx);
-        player.draw(this.ctx);
+
+        map.draw(this.ctx, 10);
+        player.draw(this.ctx, 10);
       };
 
       var display = document.getElementById('display');
