@@ -37,7 +37,7 @@
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.turnSpeed = Math.PI * 1.5;
+        this.turnSpeed = Math.PI * 1;
         this.walkSpeed = 3;
         this.path = [];
       }
@@ -113,7 +113,7 @@
       }; 
 
       Map.prototype.draw = function(ctx, scale) {
-        ctx.fillStyle = '#009999';
+        ctx.fillStyle = '#ffffff';
         this.each(function(x, y) {
           if (this.get(x, y)) ctx.fillRect(scale + x * scale, scale + y * scale, scale, scale);
         });
@@ -182,13 +182,13 @@
       Camera.prototype.render = function(player, map) {
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.fillStyle = '#999999';
-        this.ctx.strokeStyle = '#009900';
+        this.ctx.strokeStyle = '#999900';
         for (var i = 0; i < this.resolution; i++) {
-          var viewAngle = i * (Math.PI / this.resolution); ////Math.atan(i - this.resolution / 2, 10);
-          var ray = map.cast(player, viewAngle + player.direction, 100);
+          var angle = player.direction - this.fov / 2 + this.fov * (i / this.resolution);
+          var ray = map.cast(player, angle, 10);
           var hit = ray[ray.length - 1];
-          var distance = ray[ray.length - 1].distance;
-          var wallHeight = (1 - (distance / 100)) * this.height * 0.5;
+          var distance = hit.distance;
+          var wallHeight = (1 - (distance / 10)) * this.height;
           this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
           this.ctx.beginPath();
           this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
@@ -200,7 +200,7 @@
       };
 
       var display = document.getElementById('display');
-      var camera = new Camera(display, 640, Math.PI * 0.8);
+      var camera = new Camera(display, 640, Math.PI * 0.5);
       var keyboard = new Keyboard();
       var player = new Player(2, 2, Math.PI * 0.1);
       var map = new Map(32);
