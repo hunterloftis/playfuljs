@@ -124,10 +124,10 @@
         var sin = Math.sin(angle);
         var cos = Math.cos(angle);
 
-        return steps({ x: point.x, y: point.y, tile: 0 }, 0);
+        return steps({ x: point.x, y: point.y, tile: 0, distance: 0 });
 
-        function steps(origin, distance) {
-          if (distance > range || origin.tile !== 0) return [origin];
+        function steps(origin) {
+          if (origin.distance > range || origin.tile !== 0) return [origin];
 
           var result = [origin];
           var stepX = step(sin, cos, origin.x, origin.y);
@@ -135,11 +135,13 @@
 
           if (stepX.length < stepY.length) {
             stepX.tile = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
-            result = result.concat(steps(stepX, distance + stepX.length));
+            stepX.distance = origin.distance + stepX.length;
+            result = result.concat(steps(stepX));
           }
           else {
             stepY.tile = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
-            result = result.concat(steps(stepY, distance + stepY.length));
+            stepY.distance = origin.distance + stepY.length;
+            result = result.concat(steps(stepY));
           }
 
           return result;
@@ -158,7 +160,16 @@
         }
       };
 
-      function Raycaster(canvas, resolution, fov) {
+      Map.prototype.scan = function(player, fov, depth) {
+        var rays = [];
+        for (var a = 0; a < fov; a++) {
+          var angle = player.direction - fov / 2 + a;
+          rays.push(this.cast(player, angle, depth));
+        }
+        return rays;
+      }
+
+      function Camera(canvas, resolution, fov) {
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width = window.innerWidth;
         this.height = canvas.height = window.innerHeight;
@@ -168,16 +179,28 @@
         this.range = 200;
       }
 
-      Raycaster.prototype.render = function(player, map) {
-        //var walls = map.scan(player, this.fov);
+      Camera.prototype.render = function(player, map) {
         this.ctx.clearRect(0, 0, this.width, this.height);
-
+        this.ctx.fillStyle = '#999999';
+        this.ctx.strokeStyle = '#009900';
+        for (var i = 0; i < this.resolution; i++) {
+          var viewAngle = i * (Math.PI / this.resolution); ////Math.atan(i - this.resolution / 2, 10);
+          var ray = map.cast(player, viewAngle + player.direction, 100);
+          var hit = ray[ray.length - 1];
+          var distance = ray[ray.length - 1].distance;
+          var wallHeight = (1 - (distance / 100)) * this.height * 0.5;
+          this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
+          this.ctx.beginPath();
+          this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
+          this.ctx.lineTo(9 + hit.x * 10, 9 + hit.y * 10);
+          this.ctx.stroke();
+        }
         map.draw(this.ctx, 10);
         player.draw(this.ctx, 10);
       };
 
       var display = document.getElementById('display');
-      var raycaster = new Raycaster(display, 640, Math.PI * 0.8);
+      var camera = new Camera(display, 640, Math.PI * 0.8);
       var keyboard = new Keyboard();
       var player = new Player(2, 2, Math.PI * 0.1);
       var map = new Map(32);
@@ -191,7 +214,7 @@
         lastTime = time;
         if (seconds < 0.2) {
           player.update(keyboard.states, map, seconds);
-          raycaster.render(player, map);
+          camera.render(player, map);
         }
         requestAnimationFrame(frame);
       }
