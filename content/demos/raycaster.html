@@ -48,8 +48,10 @@
       };
 
       Player.prototype.walk = function(distance, map) {
-        this.x += Math.cos(this.direction) * distance;
-        this.y += Math.sin(this.direction) * distance;
+        var dx = Math.cos(this.direction) * distance;
+        var dy = Math.sin(this.direction) * distance;
+        if (map.get(this.x + dx, this.y) === 0) this.x += dx;
+        if (map.get(this.x, this.y + dy) === 0) this.y += dy;
         this.path = map.cast(this, this.direction, 10);
       };
 
@@ -118,29 +120,29 @@
       }
 
       Map.prototype.cast = function(point, angle, range) {
+        var self = this;
         var sin = Math.sin(angle);
         var cos = Math.cos(angle);
-        var steps = [], distance = 0;
-        var next = { x: point.x, y: point.y, tile: 0 };
 
-        while (distance < range && next.tile === 0) {
-          next = nextStep.call(this, next.x, next.y);
-          steps.push(next);
-          distance += next.length
-        }
-        return steps;
+        return steps({ x: point.x, y: point.y, tile: 0 }, 0);
 
-        function nextStep(x, y) {
-          var stepX = step(sin, cos, x, y);
-          var stepY = step(cos, sin, y, x, true);
+        function steps(origin, distance) {
+          if (distance > range || origin.tile !== 0) return [origin];
+
+          var result = [origin];
+          var stepX = step(sin, cos, origin.x, origin.y);
+          var stepY = step(cos, sin, origin.y, origin.x, true);
+
           if (stepX.length < stepY.length) {
-            stepX.tile = this.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
-            return stepX;
+            stepX.tile = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
+            result = result.concat(steps(stepX, distance + stepX.length));
           }
           else {
-            stepY.tile = this.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
-            return stepY;
+            stepY.tile = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
+            result = result.concat(steps(stepY, distance + stepY.length));
           }
+
+          return result;
         }
 
         function step(rise, run, x, y, inverted) {
