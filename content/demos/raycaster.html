@@ -137,11 +137,13 @@
           if (stepX.length < stepY.length) {
             stepX.tile = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
             stepX.distance = origin.distance + stepX.length;
+            stepX.direction = cos < 0 ? 'east' : 'west';
             result = result.concat(steps(stepX));
           }
           else {
             stepY.tile = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
             stepY.distance = origin.distance + stepY.length;
+            stepY.direction = sin < 0 ? 'south' : 'north';
             result = result.concat(steps(stepY));
           }
 
@@ -182,7 +184,6 @@
 
       Camera.prototype.render = function(player, map) {
         this.ctx.clearRect(0, 0, this.width, this.height);
-        this.ctx.fillStyle = '#999999';
         this.ctx.strokeStyle = '#999900';
         for (var i = 0; i < this.resolution; i++) {
           var angle = -this.fov / 2 + this.fov * (i / this.resolution);
@@ -191,6 +192,10 @@
           if (hit.tile !== 0) {
             var distance = hit.distance * Math.cos(angle);
             var wallHeight = this.height / distance;
+            if (hit.direction === 'north') this.ctx.fillStyle = '#eeeeee';
+            else if (hit.direction === 'east') this.ctx.fillStyle = '#cccccc';
+            else if (hit.direction === 'west') this.ctx.fillStyle = '#bbbbbb';
+            else if (hit.direction === 'south') this.ctx.fillStyle = '#999999';
             this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
             this.ctx.beginPath();
             this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
