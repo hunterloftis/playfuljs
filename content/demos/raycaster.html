@@ -137,13 +137,13 @@
           if (stepX.length < stepY.length) {
             stepX.tile = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
             stepX.distance = origin.distance + stepX.length;
-            stepX.direction = cos < 0 ? 'east' : 'west';
+            stepX.lighting = cos < 0 ? 0.8 : 0.7;
             result = result.concat(steps(stepX));
           }
           else {
             stepY.tile = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
             stepY.distance = origin.distance + stepY.length;
-            stepY.direction = sin < 0 ? 'south' : 'north';
+            stepY.lighting = sin < 0 ? 0.5 : 1;
             result = result.concat(steps(stepY));
           }
 
@@ -190,12 +190,11 @@
           var ray = map.cast(player, player.direction + angle, 20);
           var hit = ray[ray.length - 1];
           if (hit.tile !== 0) {
-            var distance = hit.distance * Math.cos(angle);
-            var wallHeight = this.height / distance;
-            if (hit.direction === 'north') this.ctx.fillStyle = '#eeeeee';
-            else if (hit.direction === 'east') this.ctx.fillStyle = '#cccccc';
-            else if (hit.direction === 'west') this.ctx.fillStyle = '#bbbbbb';
-            else if (hit.direction === 'south') this.ctx.fillStyle = '#999999';
+            var z = hit.distance * Math.cos(angle);
+            var wallHeight = this.height / z;
+            var b = Math.floor(hit.lighting * 255 * (1 - (z / 15)));
+            var color = 'rgba(' + [b, b, b].join(',') + ',1)';
+            this.ctx.fillStyle = color;
             this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
             this.ctx.beginPath();
             this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
