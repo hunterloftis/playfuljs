@@ -185,12 +185,12 @@
         this.ctx.fillStyle = '#999999';
         this.ctx.strokeStyle = '#999900';
         for (var i = 0; i < this.resolution; i++) {
-          var angle = player.direction - this.fov / 2 + this.fov * (i / this.resolution);
-          var ray = map.cast(player, angle, 10);
+          var angle = -this.fov / 2 + this.fov * (i / this.resolution);
+          var ray = map.cast(player, player.direction + angle, 20);
           var hit = ray[ray.length - 1];
           if (hit.tile !== 0) {
-            var distance = hit.distance;
-            var wallHeight = (1 - (distance / 10)) * this.height;
+            var distance = hit.distance * Math.cos(angle);
+            var wallHeight = this.height / distance;
             this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
             this.ctx.beginPath();
             this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
