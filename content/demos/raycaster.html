@@ -127,7 +127,8 @@
         return steps({ x: point.x, y: point.y, tile: 0, distance: 0 });
 
         function steps(origin) {
-          if (origin.distance > range || origin.tile !== 0) return [origin];
+          if (origin.distance > range) return []
+          if (origin.tile !== 0) return [origin];
 
           var result = [origin];
           var stepX = step(sin, cos, origin.x, origin.y);
@@ -187,13 +188,15 @@
           var angle = player.direction - this.fov / 2 + this.fov * (i / this.resolution);
           var ray = map.cast(player, angle, 10);
           var hit = ray[ray.length - 1];
-          var distance = hit.distance;
-          var wallHeight = (1 - (distance / 10)) * this.height;
-          this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
-          this.ctx.beginPath();
-          this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
-          this.ctx.lineTo(9 + hit.x * 10, 9 + hit.y * 10);
-          this.ctx.stroke();
+          if (hit.tile !== 0) {
+            var distance = hit.distance;
+            var wallHeight = (1 - (distance / 10)) * this.height;
+            this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
+            this.ctx.beginPath();
+            this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
+            this.ctx.lineTo(9 + hit.x * 10, 9 + hit.y * 10);
+            this.ctx.stroke();
+          }
         }
         map.draw(this.ctx, 10);
         player.draw(this.ctx, 10);
