@@ -50,8 +50,8 @@
       Player.prototype.walk = function(distance, map) {
         var dx = Math.cos(this.direction) * distance;
         var dy = Math.sin(this.direction) * distance;
-        if (map.get(this.x + dx, this.y) === 0) this.x += dx;
-        if (map.get(this.x, this.y + dy) === 0) this.y += dy;
+        if (map.get(this.x + dx, this.y) < 10) this.x += dx;
+        if (map.get(this.x, this.y + dy) < 10) this.y += dy;
         this.path = map.cast(this, this.direction, 10);
       };
 
@@ -60,23 +60,6 @@
         if (controls.right) this.rotate(this.turnSpeed * seconds);
         if (controls.forward) this.walk(this.walkSpeed * seconds, map);
         if (controls.backward) this.walk(-this.walkSpeed * seconds, map);
-      };
-
-      Player.prototype.draw = function(ctx, scale) {
-        ctx.fillStyle = '#ff0000';
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(scale + this.x * scale, scale + this.y * scale);
-        var dx = this.x + 10 * Math.cos(this.direction);
-        var dy = this.y + 10 * Math.sin(this.direction);
-        ctx.lineTo(scale + dx * scale, scale + dy * scale);
-        this.path.forEach(function(segment) {
-          ctx.lineTo(scale + segment.x * scale, scale + segment.y * scale);
-          ctx.rect(scale - 1 + segment.x * scale, scale - 1 + segment.y * scale, 3, 3);
-        });
-        ctx.fill();
-        ctx.stroke();
       };
 
       function Map(size) {
@@ -105,19 +88,12 @@
 
       Map.prototype.randomize = function() {
         this.each(function(x, y) {
-          if (x === 0 || x === this.size - 1) this.set(x, y, 1);
-          else if (y === 0 || y === this.size - 1) this.set(x, y, 1);
-          else if (x < 5 && y < 5) this.set(x, y, 0);
-          else this.set(x, y, Math.random() < 0.2 ? 1 : 0);
+          if (x === 0 || x === this.size - 1) this.set(x, y, 10);
+          else if (y === 0 || y === this.size - 1) this.set(x, y, 10);
+          else if (x < 5 && y < 5) this.set(x, y, (x + y) % 2);
+          else this.set(x, y, Math.random() < 0.2 ? 10 : (x + y) % 2);
         });
-      }; 
-
-      Map.prototype.draw = function(ctx, scale) {
-        ctx.fillStyle = '#ffffff';
-        this.each(function(x, y) {
-          if (this.get(x, y)) ctx.fillRect(scale + x * scale, scale + y * scale, scale, scale);
-        });
-      }
+      };
 
       Map.prototype.cast = function(point, angle, range) {
         var self = this;
@@ -128,7 +104,7 @@
 
         function steps(origin) {
           if (origin.distance > range) return []
-          if (origin.tile !== 0) return [origin];
+          if (origin.tile >= 10) return [origin];
 
           var result = [origin];
           var stepX = step(sin, cos, origin.x, origin.y);
@@ -163,15 +139,6 @@
         }
       };
 
-      Map.prototype.scan = function(player, fov, depth) {
-        var rays = [];
-        for (var a = 0; a < fov; a++) {
-          var angle = player.direction - fov / 2 + a;
-          rays.push(this.cast(player, angle, depth));
-        }
-        return rays;
-      }
-
       function Camera(canvas, resolution, fov) {
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width = window.innerWidth;
@@ -188,22 +155,22 @@
         for (var i = 0; i < this.resolution; i++) {
           var angle = -this.fov / 2 + this.fov * (i / this.resolution);
           var ray = map.cast(player, player.direction + angle, 20);
-          var hit = ray[ray.length - 1];
-          if (hit.tile !== 0) {
-            var z = hit.distance * Math.cos(angle);
-            var wallHeight = this.height / z;
-            var b = Math.floor(hit.lighting * 255 * (1 - (z / 15)));
-            var color = 'rgba(' + [b, b, b].join(',') + ',1)';
-            this.ctx.fillStyle = color;
-            this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
-            this.ctx.beginPath();
-            this.ctx.moveTo(10 + player.x * 10, 10 + player.y * 10);
-            this.ctx.lineTo(9 + hit.x * 10, 9 + hit.y * 10);
-            this.ctx.stroke();
+          for (var s = 0; s < ray.length; s++) {
+            var step = ray[s];
+            if (step.tile >= 10) {
+              var z = step.distance * Math.cos(angle);
+              var wallHeight = this.height / z;
+              var b = Math.floor(step.lighting * 255 * (1 - (z / 15)));
+              var color = 'rgba(' + [b, b, b].join(',') + ',1)';
+              this.ctx.fillStyle = color;
+              this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
+            }
+            else {
+              var z = step.distance * Math.cos(angle);
+              
+            }
           }
         }
-        map.draw(this.ctx, 10);
-        player.draw(this.ctx, 10);
       };
 
       var display = document.getElementById('display');
