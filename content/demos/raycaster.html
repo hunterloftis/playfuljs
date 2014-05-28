@@ -173,25 +173,36 @@
         }
       };
 
+      function GameLoop() {
+        this.frame = this.frame.bind(this);
+        this.lastTime = 0;
+        this.callback = function() {};
+      }
+
+      GameLoop.prototype.start = function(callback) {
+        this.callback = callback;
+        requestAnimationFrame(this.frame);
+      };
+
+      GameLoop.prototype.frame = function(time) {
+        var seconds = (time - this.lastTime) / 1000;
+        this.lastTime = time;
+        if (seconds < 0.2) this.callback(seconds);
+        requestAnimationFrame(this.frame);
+      };
+
       var display = document.getElementById('display');
       var camera = new Camera(display, 640, Math.PI * 0.5);
       var keyboard = new Keyboard();
       var player = new Player(2, 2, Math.PI * 0.1);
       var map = new Map(32);
-      var lastTime = 0;
-
+      var loop = new GameLoop();
+      
       map.randomize();
-      requestAnimationFrame(frame);
-
-      function frame(time) {
-        var seconds = (time - lastTime) / 1000;
-        lastTime = time;
-        if (seconds < 0.2) {
-          player.update(keyboard.states, map, seconds);
-          camera.render(player, map);
-        }
-        requestAnimationFrame(frame);
-      }
+      loop.start(function frame(seconds) {
+        player.update(keyboard.states, map, seconds);
+        camera.render(player, map);
+      });
 
     </script>
     <script>
