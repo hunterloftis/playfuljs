@@ -71,6 +71,7 @@
         this.wallTexture = new Image();
         this.wallTexture.src = '../wall_texture.jpg';  // 1024x1024
         this.heightMap = new Uint8Array(size * size);
+        this.ambient = 0;
       }
 
       Map.prototype.set = function(x, y, height) {
@@ -146,6 +147,11 @@
         }
       };
 
+      Map.prototype.update = function(seconds) {
+        if (this.ambient > 0) this.ambient -= 10 * seconds;
+        else if (Math.random() < 0.004) this.ambient = 2;
+      };
+
       function Camera(canvas, resolution, fov) {
         this.ctx = canvas.getContext('2d');
         this.ctx.imageSmoothingEnabled = false;
@@ -175,7 +181,7 @@
         for (var column = 0; column < this.resolution; column++) {
           var angle = this.fov * (column / this.resolution - 0.5);
           var ray = map.cast(player, player.direction + angle, 20);
-          this.drawColumn(column, ray, angle);
+          this.drawColumn(column, ray, angle, map.ambient);
         }
 
         this.ctx.globalAlpha = 1;
@@ -185,7 +191,7 @@
         this.ctx.restore();
       };
 
-      Camera.prototype.drawColumn = function(column, ray, angle) {
+      Camera.prototype.drawColumn = function(column, ray, angle, ambient) {
         var maxHeight = this.height;
         var spacing = this.spacing;
 
@@ -200,7 +206,7 @@
 
             this.ctx.globalAlpha = 1;
             this.ctx.drawImage(map.wallTexture, textureX, 0, 1, 1024, left, wall.top, width, wall.height);
-            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange, 1 - this.exposure);
+            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - ambient, 1 - this.exposure);
             this.ctx.fillRect(left, wall.top, width, wall.height);
           }
         }
@@ -265,6 +271,7 @@
         var sprite = new Sprite()
       }
       loop.start(function frame(seconds) {
+        map.update(seconds);
         player.update(keyboard.states, map, seconds);
         camera.render(player, map);
       });
