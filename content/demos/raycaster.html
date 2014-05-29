@@ -41,7 +41,7 @@
         this.walkSpeed = 3;
         this.path = [];
         this.weapon = new Image();
-        this.weapon.src = 'knife_hand.png';  // 640x643
+        this.weapon.src = '../knife_hand.png';  // 640x643
         this.paces = 0;
       }
 
@@ -67,9 +67,9 @@
       function Map(size) {
         this.size = size;
         this.skybox = new Image();
-        this.skybox.src = 'deathvalley_panorama.jpg'; // 4000x1290
+        this.skybox.src = '../deathvalley_panorama.jpg'; // 4000x1290
         this.wallTexture = new Image();
-        this.wallTexture.src = 'wall_texture.jpg';  // 1024x1024
+        this.wallTexture.src = '../wall_texture.jpg';  // 1024x1024
         this.heightMap = new Uint8Array(size * size);
       }
 
@@ -241,8 +241,8 @@
       }
 
       Sprite.types = [
-        { src: 'black_cat.png', width: 100, height: 50 },
-        { src: 'plant.png', width: 50, height: 150 }
+        { src: '../black_cat.png', width: 100, height: 50 },
+        { src: '../plant.png', width: 50, height: 150 }
       ];
 
       Sprite.prototype.place = function(map) {
