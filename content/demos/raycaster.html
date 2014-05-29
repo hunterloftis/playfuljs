@@ -96,7 +96,7 @@
       Map.prototype.randomize = function() {
         this.each(function(x, y) {
           if (x < 4 && y < 4) this.set(x, y, 0);
-          else this.set(x, y, Math.random() < 0.33 ? 1 : 0);
+          else this.set(x, y, Math.random() < 0.3 ? 1 : 0);
         });
       };
 
@@ -118,14 +118,14 @@
           if (stepX.length < stepY.length) {
             stepX.height = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
             stepX.distance = origin.distance + stepX.length;
-            stepX.lighting = cos < 0 ? 3 : 0;
+            stepX.lighting = cos < 0 ? 2 : 0;
             stepX.offset = stepX.y - Math.floor(stepX.y)
             result = result.concat(steps(stepX));
           }
           else {
             stepY.height = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
             stepY.distance = origin.distance + stepY.length;
-            stepY.lighting = sin < 0 ? 2 : 1;
+            stepY.lighting = sin < 0 ? 1.5 : 1;
             stepY.offset = stepY.x - Math.floor(stepY.x);
             result = result.concat(steps(stepY));
           }
@@ -157,8 +157,8 @@
         this.spacing = this.width / resolution;
         this.fov = fov;
         this.range = 200;
-        this.underexposure = 0.3;
-        this.lightRange = 7;
+        this.exposure = 1;
+        this.lightRange = 5;
       }
 
       Camera.prototype.render = function(player, map) {
@@ -200,7 +200,7 @@
 
             this.ctx.globalAlpha = 1;
             this.ctx.drawImage(map.wallTexture, textureX, 0, 1, 1024, left, wall.top, width, wall.height);
-            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / 5, this.underexposure);
+            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange, 1 - this.exposure);
             this.ctx.fillRect(left, wall.top, width, wall.height);
           }
         }
@@ -232,14 +232,38 @@
         requestAnimationFrame(this.frame);
       };
 
+      function Sprite() {
+        this.img = new Image();
+        var type = Math.floor(Math.random() * Sprite.types);
+        this.img.src = type.src;
+        this.width = type.width;
+        this.height = type.height;
+      }
+
+      Sprite.types = [
+        { src: 'black_cat.png', width: 100, height: 50 },
+        { src: 'plant.png', width: 50, height: 150 }
+      ];
+
+      Sprite.prototype.place = function(map) {
+        do {
+          this.x = Math.random() * map.size;
+          this.y = Math.random() * map.size;
+        } while (map.get(this.x, this.y) > 0);
+      };
+
       var display = document.getElementById('display');
       var camera = new Camera(display, 320, Math.PI * 0.5);
       var keyboard = new Keyboard();
       var player = new Player(1.5, 1.5, Math.PI * 0.2);
       var map = new Map(32);
       var loop = new GameLoop();
-      
+      var sprites = [], i = 10;
+
       map.randomize();
+      while (i--) {
+        var sprite = new Sprite()
+      }
       loop.start(function frame(seconds) {
         player.update(keyboard.states, map, seconds);
         camera.render(player, map);
