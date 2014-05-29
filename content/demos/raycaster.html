@@ -150,8 +150,8 @@
       }
 
       Camera.prototype.render = function(player, map) {
-        this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(0, 0, this.width, this.height);
 
         for (var column = 0; column < this.resolution; column++) {
           var angle = this.fov * (column / this.resolution - 0.5);
@@ -172,16 +172,16 @@
           var rear = project(step.height, lastStep.distance);
           var front = project(step.height, step.distance);
 
-          if (front.top > rear.top) {
-            this.ctx.fillStyle = '#0000ff';
-            this.ctx.fillRect(left, rear.top, width, front.top - rear.top);
-          }
+          // if (front.top > rear.top) {
+          //   this.ctx.fillStyle = '#0000ff';
+          //   this.ctx.fillRect(left, rear.top, width, front.top - rear.top);
+          // }
           this.ctx.fillStyle = style(step.lighting, step.distance);
           this.ctx.fillRect(left, front.top, width, front.height);
         }
 
         function style(lighting, distance) {
-          var b = Math.floor(lighting * 255 * (1 - (distance / 15)));
+          var b = Math.floor(lighting * 255 * (distance / 15));
           var color = 'rgba(' + [b, b, b].join(',') + ',1)';
           return color;
         }
