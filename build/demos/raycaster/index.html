@@ -1,38 +1,273 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Terrain Demo - PlayfulJS</title>
+    <title>Raycaster Demo - PlayfulJS</title>
   </head>
-  <body style='background: #000'>
-    <canvas id='display' width='1' height='1' />
+  <body style='background: #000; margin: 0; padding: 0'>
+    <canvas id='display' width='1' height='1' style='width: 100%; height: 100%;' />
 
     <script>
 
+      var CIRCLE = Math.PI * 2;
+
       function Keyboard() {
-        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'back' };
-        this.states = {};
-        document.addEventListener('keydown', this.onKeyDown, false);
-        document.addEventListener('keyup', this.onKeyUp, false);
+        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
+        this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
+        document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+        document.addEventListener('keyup', this.onKeyUp.bind(this), false);
       }
 
       Keyboard.prototype.onKeyDown = function(e) {
         var state = this.codes[e.keyCode];
         if (!state) return;
-        if (this.states[state]) return;
         this.states[state] = true;
-        console.log(this.states);
+        e.preventDefault();
+        e.stopPropagation();
       };
 
       Keyboard.prototype.onKeyUp = function(e) {
-        var = state = this.codes[e.keyCode];
+        var state = this.codes[e.keyCode];
         if (!state) return;
         this.states[state] = false;
+        e.preventDefault();
+        e.stopPropagation();
       };
       
+      function Player(x, y, direction) {
+        this.x = x;
+        this.y = y;
+        this.direction = direction;
+        this.turnSpeed = Math.PI * 1;
+        this.walkSpeed = 3;
+        this.path = [];
+        this.weapon = new Image();
+        this.weapon.src = 'knife_hand.png';  // 640x643
+        this.paces = 0;
+      }
+
+      Player.prototype.rotate = function(angle) {
+        this.direction = (this.direction + angle + CIRCLE) % (CIRCLE);
+      };
+
+      Player.prototype.walk = function(distance, map) {
+        var dx = Math.cos(this.direction) * distance;
+        var dy = Math.sin(this.direction) * distance;
+        if (map.get(this.x + dx, this.y) <= 0) this.x += dx;
+        if (map.get(this.x, this.y + dy) <= 0) this.y += dy;
+        this.paces += distance;
+      };
+
+      Player.prototype.update = function(controls, map, seconds) {
+        if (controls.left) this.rotate(-this.turnSpeed * seconds);
+        if (controls.right) this.rotate(this.turnSpeed * seconds);
+        if (controls.forward) this.walk(this.walkSpeed * seconds, map);
+        if (controls.backward) this.walk(-this.walkSpeed * seconds, map);
+      };
+
+      function Map(size) {
+        this.size = size;
+        this.skybox = new Image();
+        this.skybox.src = 'deathvalley_panorama.jpg'; // 4000x1290
+        this.wallTexture = new Image();
+        this.wallTexture.src = 'wall_texture.jpg';  // 1024x1024
+        this.heightMap = new Uint8Array(size * size);
+      }
+
+      Map.prototype.set = function(x, y, height) {
+        var index = Math.floor(y) * this.size + Math.floor(x);
+        this.heightMap[index] = Math.floor(height);
+      };
+
+      Map.prototype.get = function(x, y) {
+        x = Math.floor(x);
+        y = Math.floor(y);
+        if (x < 0 || x > this.size - 1 || y < 0 || y > this.size - 1) return -1;
+        return this.heightMap[y * this.size + x];
+      };
+
+      Map.prototype.each = function(fn) {
+        for (var y = 0; y < this.size; y++) {
+          for (var x = 0; x < this.size; x++) {
+            fn.call(this, x, y);
+          }
+        }
+      };
+
+      Map.prototype.randomize = function() {
+        this.each(function(x, y) {
+          if (x < 4 && y < 4) this.set(x, y, 0);
+          else this.set(x, y, Math.random() < 0.3 ? 1 : 0);
+        });
+      };
+
+      Map.prototype.cast = function(point, angle, range) {
+        var self = this;
+        var sin = Math.sin(angle);
+        var cos = Math.cos(angle);
+
+        return steps({ x: point.x, y: point.y, height: 0, distance: 0 });
+
+        function steps(origin) {
+          if (origin.distance > range) return [];
+          if (origin.height > 0) return [origin];
+
+          var result = [origin];
+          var stepX = step(sin, cos, origin.x, origin.y);
+          var stepY = step(cos, sin, origin.y, origin.x, true);
+
+          if (stepX.length < stepY.length) {
+            stepX.height = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
+            stepX.distance = origin.distance + stepX.length;
+            stepX.lighting = cos < 0 ? 2 : 0;
+            stepX.offset = stepX.y - Math.floor(stepX.y)
+            result = result.concat(steps(stepX));
+          }
+          else {
+            stepY.height = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
+            stepY.distance = origin.distance + stepY.length;
+            stepY.lighting = sin < 0 ? 1.5 : 1;
+            stepY.offset = stepY.x - Math.floor(stepY.x);
+            result = result.concat(steps(stepY));
+          }
+
+          return result;
+        }
+
+        function step(rise, run, x, y, inverted) {
+          if (run === 0) return { length: Infinity};
+          var dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+          var dy = dx * (rise / run);
+
+          return {
+            x: inverted ? y + dy : x + dx,
+            y: inverted ? x + dx : y + dy,
+            length: Math.sqrt(dx * dx + dy * dy)
+          };
+        }
+      };
+
+      function Camera(canvas, resolution, fov) {
+        this.ctx = canvas.getContext('2d');
+        this.ctx.imageSmoothingEnabled = false;
+        this.ctx.webkitImageSmoothingEnabled = false;
+        this.ctx.mozImageSmoothingEnabled = false;
+        this.width = canvas.width = window.innerWidth * 0.5;
+        this.height = canvas.height = window.innerHeight * 0.5;
+        this.resolution = resolution;
+        this.spacing = this.width / resolution;
+        this.fov = fov;
+        this.range = 200;
+        this.exposure = 1;
+        this.lightRange = 5;
+      }
+
+      Camera.prototype.render = function(player, map) {
+        var skyWidth = 2000;
+        var skyRatio = skyWidth / Math.PI * 0.5;
+        var skyX = -player.direction * skyRatio;
+        var wrapX = skyWidth - this.width;
+        
+        this.ctx.save();
+        this.ctx.drawImage(map.skybox, skyX, 0, skyWidth, this.height);
+        if (skyX < -wrapX) this.ctx.drawImage(map.skybox, skyX + skyWidth, 0, skyWidth, this.height);
+
+        this.ctx.fillStyle = '#000000';
+        for (var column = 0; column < this.resolution; column++) {
+          var angle = this.fov * (column / this.resolution - 0.5);
+          var ray = map.cast(player, player.direction + angle, 20);
+          this.drawColumn(column, ray, angle);
+        }
+
+        this.ctx.globalAlpha = 1;
+        var bob = Math.sin(player.paces * 4) * this.height * 0.025;
+        var bobX = Math.cos(player.paces * 2) * this.height * 0.025;
+        this.ctx.drawImage(player.weapon, this.width * 0.6 + bobX, this.height * 0.6 + bob, 319 * this.width / 640, 320 * this.width / 640);
+        this.ctx.restore();
+      };
+
+      Camera.prototype.drawColumn = function(column, ray, angle) {
+        var maxHeight = this.height;
+        var spacing = this.spacing;
+
+        for (var s = ray.length - 1; s >= 0; s--) {
+          var step = ray[s];
+          var left = Math.floor(column * this.spacing);
+          var width = Math.ceil(this.spacing);
+          
+          if (step.height > 0) {
+            var textureX = Math.floor(1024 * step.offset);
+            var wall = project(step.height, step.distance);
+
+            this.ctx.globalAlpha = 1;
+            this.ctx.drawImage(map.wallTexture, textureX, 0, 1, 1024, left, wall.top, width, wall.height);
+            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange, 1 - this.exposure);
+            this.ctx.fillRect(left, wall.top, width, wall.height);
+          }
+        }
+
+        function project(height, distance) {
+          var z = distance * Math.cos(angle);
+          var wallHeight = maxHeight * height / z;
+          var bottom = maxHeight / 2 + (maxHeight / 2) / z;
+          var top = bottom - wallHeight;
+          return { top: top, height: wallHeight };
+        }
+      };
+
+      function GameLoop() {
+        this.frame = this.frame.bind(this);
+        this.lastTime = 0;
+        this.callback = function() {};
+      }
+
+      GameLoop.prototype.start = function(callback) {
+        this.callback = callback;
+        requestAnimationFrame(this.frame);
+      };
+
+      GameLoop.prototype.frame = function(time) {
+        var seconds = (time - this.lastTime) / 1000;
+        this.lastTime = time;
+        if (seconds < 0.2) this.callback(seconds);
+        requestAnimationFrame(this.frame);
+      };
+
+      function Sprite() {
+        this.img = new Image();
+        var type = Math.floor(Math.random() * Sprite.types);
+        this.img.src = type.src;
+        this.width = type.width;
+        this.height = type.height;
+      }
+
+      Sprite.types = [
+        { src: 'black_cat.png', width: 100, height: 50 },
+        { src: 'plant.png', width: 50, height: 150 }
+      ];
+
+      Sprite.prototype.place = function(map) {
+        do {
+          this.x = Math.random() * map.size;
+          this.y = Math.random() * map.size;
+        } while (map.get(this.x, this.y) > 0);
+      };
+
       var display = document.getElementById('display');
-      var ctx = display.getContext('2d');
-      var width = display.width = window.innerWidth;
-      var height = display.height = window.innerHeight;
+      var camera = new Camera(display, 320, Math.PI * 0.5);
+      var keyboard = new Keyboard();
+      var player = new Player(1.5, 1.5, Math.PI * 0.2);
+      var map = new Map(32);
+      var loop = new GameLoop();
+      var sprites = [], i = 10;
+
+      map.randomize();
+      while (i--) {
+        var sprite = new Sprite()
+      }
+      loop.start(function frame(seconds) {
+        player.update(keyboard.states, map, seconds);
+        camera.render(player, map);
+      });
 
     </script>
     <script>
