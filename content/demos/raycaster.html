@@ -42,6 +42,7 @@
         this.path = [];
         this.weapon = new Image();
         this.weapon.src = 'knife_hand.png';  // 640x643
+        this.paces = 0;
       }
 
       Player.prototype.rotate = function(angle) {
@@ -53,6 +54,7 @@
         var dy = Math.sin(this.direction) * distance;
         if (map.get(this.x + dx, this.y) <= 0) this.x += dx;
         if (map.get(this.x, this.y + dy) <= 0) this.y += dy;
+        this.paces += distance;
       };
 
       Player.prototype.update = function(controls, map, seconds) {
@@ -177,7 +179,9 @@
         }
 
         this.ctx.globalAlpha = 1;
-        this.ctx.drawImage(player.weapon, this.width * 0.6, this.height * 0.5, 319, 320);
+        var bob = Math.sin(player.paces * 4) * this.height * 0.025;
+        var bobX = Math.cos(player.paces * 2) * this.height * 0.025;
+        this.ctx.drawImage(player.weapon, this.width * 0.6 + bobX, this.height * 0.6 + bob, 319 * this.width / 640, 320 * this.width / 640);
         this.ctx.restore();
       };
 
