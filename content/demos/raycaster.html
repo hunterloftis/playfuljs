@@ -64,6 +64,8 @@
 
       function Map(size) {
         this.size = size;
+        this.skybox = new Image();
+        this.skybox.src = 'deathvalley_panorama.jpg'; // 4000x1290
         this.heightMap = new Uint8Array(size * size);
       }
 
@@ -150,8 +152,11 @@
       }
 
       Camera.prototype.render = function(player, map) {
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.fillRect(0, 0, this.width, this.height);
+        var skyRatio = 4000 / CIRCLE;
+        var skyX = -player.direction * skyRatio;
+        var wrapX = 4000 - this.width;
+        this.ctx.drawImage(map.skybox, skyX, 0, 4000, this.height * 0.72);
+        if (skyX < -wrapX) this.ctx.drawImage(map.skybox, skyX + 4000, 0, 4000, this.height * 0.72);
 
         for (var column = 0; column < this.resolution; column++) {
           var angle = this.fov * (column / this.resolution - 0.5);
