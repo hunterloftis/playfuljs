@@ -64,18 +64,19 @@
 
       function Map(size) {
         this.size = size;
-        this.grid = new Uint8Array(size * size);
+        this.heightMap = new Uint8Array(size * size);
       }
 
-      Map.prototype.set = function(x, y, val) {
-        this.grid[y * this.size + x] = val;
+      Map.prototype.set = function(x, y, height) {
+        var index = Math.floor(y) * this.size + Math.floor(x);
+        this.heightMap[index] = Math.floor(height);
       };
 
       Map.prototype.get = function(x, y) {
         x = Math.floor(x);
         y = Math.floor(y);
-        if (x < 0 || y < 0 || x > this.size - 1 || y > this.size - 1) return -1;
-        return this.grid[y * this.size + x];
+        if (x < 0 || x > this.size - 1 || y < 0 || y > this.size - 1) return -1;
+        return this.heightMap[y * this.size + x];
       };
 
       Map.prototype.each = function(fn) {
@@ -91,7 +92,7 @@
           if (x === 0 || x === this.size - 1) this.set(x, y, 10);
           else if (y === 0 || y === this.size - 1) this.set(x, y, 10);
           else if (x < 5 && y < 5) this.set(x, y, (x + y) % 2);
-          else this.set(x, y, Math.random() < 0.2 ? 10 : (x + y) % 2);
+          else this.set(x, y, Math.random() * 255);
         });
       };
 
@@ -100,24 +101,23 @@
         var sin = Math.sin(angle);
         var cos = Math.cos(angle);
 
-        return steps({ x: point.x, y: point.y, tile: 0, distance: 0 });
+        return steps({ x: point.x, y: point.y, height: 0, distance: 0 });
 
         function steps(origin) {
           if (origin.distance > range) return []
-          if (origin.tile >= 10) return [origin];
 
           var result = [origin];
           var stepX = step(sin, cos, origin.x, origin.y);
           var stepY = step(cos, sin, origin.y, origin.x, true);
 
           if (stepX.length < stepY.length) {
-            stepX.tile = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
+            stepX.height = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
             stepX.distance = origin.distance + stepX.length;
             stepX.lighting = cos < 0 ? 0.8 : 0.7;
             result = result.concat(steps(stepX));
           }
           else {
-            stepY.tile = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
+            stepY.height = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
             stepY.distance = origin.distance + stepY.length;
             stepY.lighting = sin < 0 ? 0.5 : 1;
             result = result.concat(steps(stepY));
@@ -151,25 +151,47 @@
 
       Camera.prototype.render = function(player, map) {
         this.ctx.clearRect(0, 0, this.width, this.height);
-        this.ctx.strokeStyle = '#999900';
-        for (var i = 0; i < this.resolution; i++) {
-          var angle = -this.fov / 2 + this.fov * (i / this.resolution);
+        this.ctx.fillStyle = '#ffffff';
+
+        for (var column = 0; column < this.resolution; column++) {
+          var angle = this.fov * (column / this.resolution - 0.5);
           var ray = map.cast(player, player.direction + angle, 20);
-          for (var s = 0; s < ray.length; s++) {
-            var step = ray[s];
-            if (step.tile >= 10) {
-              var z = step.distance * Math.cos(angle);
-              var wallHeight = this.height / z;
-              var b = Math.floor(step.lighting * 255 * (1 - (z / 15)));
-              var color = 'rgba(' + [b, b, b].join(',') + ',1)';
-              this.ctx.fillStyle = color;
-              this.ctx.fillRect(i * this.spacing, this.height * 0.5 - wallHeight * 0.5, this.spacing + 1, wallHeight);
-            }
-            else {
-              var z = step.distance * Math.cos(angle);
-              
-            }
+          this.drawColumn(column, ray, angle);
+        }
+      };
+
+      Camera.prototype.drawColumn = function(column, ray, angle) {
+        var maxHeight = this.height;
+        var spacing = this.spacing;
+
+        for (var s = ray.length - 2; s >= 0; s--) {
+          var step = ray[s];
+          var lastStep = ray[s + 1];
+          var left = Math.floor(column * this.spacing);
+          var width = Math.ceil(this.spacing);
+          var rear = project(step.height, lastStep.distance);
+          var front = project(step.height, step.distance);
+
+          if (front.top > rear.top) {
+            this.ctx.fillStyle = '#0000ff';
+            this.ctx.fillRect(left, rear.top, width, front.top - rear.top);
           }
+          this.ctx.fillStyle = style(step.lighting, step.distance);
+          this.ctx.fillRect(left, front.top, width, front.height);
+        }
+
+        function style(lighting, distance) {
+          var b = Math.floor(lighting * 255 * (1 - (distance / 15)));
+          var color = 'rgba(' + [b, b, b].join(',') + ',1)';
+          return color;
+        }
+
+        function project(height, distance) {
+          var z = distance * Math.cos(angle);
+          var wallHeight = 3 * height / z;
+          var bottom = maxHeight / 2 + (maxHeight / 2) / z;
+          var top = bottom - wallHeight;
+          return { top: top, height: wallHeight };
         }
       };
 
