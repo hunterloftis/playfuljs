@@ -32,6 +32,13 @@
         e.preventDefault();
         e.stopPropagation();
       };
+
+      function Bitmap(src, width, height) {
+        this.image = new Image();
+        this.image.src = src;
+        this.width = width;
+        this.height = height;
+      }
       
       function Player(x, y, direction) {
         this.x = x;
@@ -40,8 +47,7 @@
         this.turnSpeed = Math.PI * 1;
         this.walkSpeed = 3;
         this.path = [];
-        this.weapon = new Image();
-        this.weapon.src = '../knife_hand.png';  // 640x643
+        this.weapon = new Bitmap('../knife_hand.png', 319, 320);
         this.paces = 0;
       }
 
@@ -66,10 +72,8 @@
 
       function Map(size) {
         this.size = size;
-        this.skybox = new Image();
-        this.skybox.src = '../deathvalley_panorama.jpg'; // 4000x1290
-        this.wallTexture = new Image();
-        this.wallTexture.src = '../wall_texture.jpg';  // 1024x1024
+        this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
+        this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
         this.heightMap = new Uint8Array(size * size);
         this.ambient = 0;
       }
@@ -86,19 +90,13 @@
         return this.heightMap[y * this.size + x];
       };
 
-      Map.prototype.each = function(fn) {
+      Map.prototype.randomize = function() {
         for (var y = 0; y < this.size; y++) {
           for (var x = 0; x < this.size; x++) {
-            fn.call(this, x, y);
+            if (x < 4 && y < 4) this.set(x, y, 0);
+            else this.set(x, y, Math.random() < 0.3 ? 1 : 0);
           }
         }
-      };
-
-      Map.prototype.randomize = function() {
-        this.each(function(x, y) {
-          if (x < 4 && y < 4) this.set(x, y, 0);
-          else this.set(x, y, Math.random() < 0.3 ? 1 : 0);
-        });
       };
 
       Map.prototype.cast = function(point, angle, range) {
@@ -135,7 +133,7 @@
         }
 
         function step(rise, run, x, y, inverted) {
-          if (run === 0) return { length: Infinity};
+          if (run === 0) return { length: Infinity };
           var dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
           var dy = dx * (rise / run);
 
@@ -149,75 +147,92 @@
 
       Map.prototype.update = function(seconds) {
         if (this.ambient > 0) this.ambient -= 10 * seconds;
-        else if (Math.random() < 0.004) this.ambient = 2;
+        else if (Math.random() * 5 < seconds) this.ambient = 2;
       };
 
       function Camera(canvas, resolution, fov) {
         this.ctx = canvas.getContext('2d');
-        this.ctx.imageSmoothingEnabled = false;
-        this.ctx.webkitImageSmoothingEnabled = false;
-        this.ctx.mozImageSmoothingEnabled = false;
         this.width = canvas.width = window.innerWidth * 0.5;
         this.height = canvas.height = window.innerHeight * 0.5;
         this.resolution = resolution;
         this.spacing = this.width / resolution;
         this.fov = fov;
-        this.range = 200;
-        this.exposure = 1;
+        this.range = 20;
         this.lightRange = 5;
+        this.bob = (this.width + this.height) * 0.012;
+        this.weaponSize = (this.width + this.height) / 1200;
       }
 
       Camera.prototype.render = function(player, map) {
-        var skyWidth = 2000;
-        var skyRatio = skyWidth / Math.PI * 0.5;
-        var skyX = -player.direction * skyRatio;
-        var wrapX = skyWidth - this.width;
-        
-        this.ctx.save();
-        this.ctx.drawImage(map.skybox, skyX, 0, skyWidth, this.height);
-        if (skyX < -wrapX) this.ctx.drawImage(map.skybox, skyX + skyWidth, 0, skyWidth, this.height);
+        this.drawSky(player.direction, map.skybox);
+        this.drawColumns(player, map);
+        this.drawWeapon(player.weapon, player.paces);
+      };
 
-        this.ctx.fillStyle = '#000000';
+      Camera.prototype.drawSky = function(direction, sky) {
+        var width = this.width * (CIRCLE / this.fov);
+        var left = -width * direction / CIRCLE;
+
+        this.ctx.drawImage(sky.image, left, 0, width, this.height);
+        if (left < width - this.width) {
+          this.ctx.drawImage(sky.image, left + width, 0, width, this.height);
+        }
+      };
+
+      Camera.prototype.drawColumns = function(player, map) {
+        this.ctx.save();
         for (var column = 0; column < this.resolution; column++) {
           var angle = this.fov * (column / this.resolution - 0.5);
-          var ray = map.cast(player, player.direction + angle, 20);
-          this.drawColumn(column, ray, angle, map.ambient);
+          var ray = map.cast(player, player.direction + angle, this.range);
+          this.drawColumn(column, ray, angle, map);
         }
-
-        this.ctx.globalAlpha = 1;
-        var bob = Math.sin(player.paces * 4) * this.height * 0.025;
-        var bobX = Math.cos(player.paces * 2) * this.height * 0.025;
-        this.ctx.drawImage(player.weapon, this.width * 0.6 + bobX, this.height * 0.6 + bob, 319 * this.width / 640, 320 * this.width / 640);
         this.ctx.restore();
       };
 
-      Camera.prototype.drawColumn = function(column, ray, angle, ambient) {
-        var maxHeight = this.height;
-        var spacing = this.spacing;
+      Camera.prototype.drawWeapon = function(weapon, paces) {
+        var bobX = Math.cos(paces * 2) * this.bob;
+        var bobY = Math.sin(paces * 4) * this.bob;
+        var left = this.width * 0.66 + bobX;
+        var top = this.height * 0.6 + bobY;
+
+        this.ctx.drawImage(weapon.image, left, top, weapon.width * this.weaponSize, weapon.height * this.weaponSize);
+      };
+
+      Camera.prototype.drawColumn = function(column, ray, angle, map) {
+        var texture = map.wallTexture;
+        var left = Math.floor(column * this.spacing);
+        var width = Math.ceil(this.spacing);
 
         for (var s = ray.length - 1; s >= 0; s--) {
           var step = ray[s];
-          var left = Math.floor(column * this.spacing);
-          var width = Math.ceil(this.spacing);
-          
+          var rain = this.project(0.1, angle, step.distance);
+
           if (step.height > 0) {
-            var textureX = Math.floor(1024 * step.offset);
-            var wall = project(step.height, step.distance);
+            var textureX = Math.floor(texture.width * step.offset);
+            var wall = this.project(step.height, angle, step.distance);
 
             this.ctx.globalAlpha = 1;
-            this.ctx.drawImage(map.wallTexture, textureX, 0, 1, 1024, left, wall.top, width, wall.height);
-            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - ambient, 1 - this.exposure);
+            this.ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
+            
+            this.ctx.fillStyle = '#000000';
+            this.ctx.globalAlpha = (step.distance + step.lighting) / this.lightRange - map.ambient;
             this.ctx.fillRect(left, wall.top, width, wall.height);
           }
+          
+          this.ctx.fillStyle = '#ffffff';
+          this.ctx.globalAlpha = 0.1;
+          this.ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
         }
+      };
 
-        function project(height, distance) {
-          var z = distance * Math.cos(angle);
-          var wallHeight = maxHeight * height / z;
-          var bottom = maxHeight / 2 + (maxHeight / 2) / z;
-          var top = bottom - wallHeight;
-          return { top: top, height: wallHeight };
-        }
+      Camera.prototype.project = function(height, angle, distance) {
+        var z = distance * Math.cos(angle);
+        var wallHeight = this.height * height / z;
+        var bottom = this.height / 2 * (1 + 1 / z);
+        return {
+          top: bottom - wallHeight,
+          height: wallHeight
+        }; 
       };
 
       function GameLoop() {
@@ -238,38 +253,15 @@
         requestAnimationFrame(this.frame);
       };
 
-      function Sprite() {
-        this.img = new Image();
-        var type = Math.floor(Math.random() * Sprite.types);
-        this.img.src = type.src;
-        this.width = type.width;
-        this.height = type.height;
-      }
-
-      Sprite.types = [
-        { src: '../black_cat.png', width: 100, height: 50 },
-        { src: '../plant.png', width: 50, height: 150 }
-      ];
-
-      Sprite.prototype.place = function(map) {
-        do {
-          this.x = Math.random() * map.size;
-          this.y = Math.random() * map.size;
-        } while (map.get(this.x, this.y) > 0);
-      };
-
       var display = document.getElementById('display');
       var camera = new Camera(display, 320, Math.PI * 0.5);
       var keyboard = new Keyboard();
       var player = new Player(1.5, 1.5, Math.PI * 0.2);
       var map = new Map(32);
       var loop = new GameLoop();
-      var sprites = [], i = 10;
 
       map.randomize();
-      while (i--) {
-        var sprite = new Sprite()
-      }
+      
       loop.start(function frame(seconds) {
         map.update(seconds);
         player.update(keyboard.states, map, seconds);
