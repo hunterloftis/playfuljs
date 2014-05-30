@@ -13,22 +13,14 @@
       function Keyboard() {
         this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
         this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
-        document.addEventListener('keydown', this.onKeyDown.bind(this), false);
-        document.addEventListener('keyup', this.onKeyUp.bind(this), false);
+        document.addEventListener('keydown', this.onKey.bind(this, true), false);
+        document.addEventListener('keyup', this.onKey.bind(this, false), false);
       }
 
-      Keyboard.prototype.onKeyDown = function(e) {
+      Keyboard.prototype.onKey = function(val, e) {
         var state = this.codes[e.keyCode];
-        if (!state) return;
-        this.states[state] = true;
-        e.preventDefault();
-        e.stopPropagation();
-      };
-
-      Keyboard.prototype.onKeyUp = function(e) {
-        var state = this.codes[e.keyCode];
-        if (!state) return;
-        this.states[state] = false;
+        if (typeof state === 'undefined') return;
+        this.states[state] = val;
         e.preventDefault();
         e.stopPropagation();
       };
@@ -108,7 +100,6 @@
 
         function steps(origin) {
           if (origin.distance > range) return [];
-          //if (origin.height > 0) return [origin];
 
           var result = [origin];
           var stepX = step(sin, cos, origin.x, origin.y);
@@ -128,7 +119,6 @@
             stepY.offset = stepY.x - Math.floor(stepY.x);
             result = result.concat(steps(stepY));
           }
-
           return result;
         }
 
@@ -146,9 +136,8 @@
       };
 
       Map.prototype.update = function(seconds) {
-        if (this.ambient > 0) this.ambient -= 10 * seconds;
+        if (this.ambient > 0) this.ambient = Math.max(this.ambient - 10 * seconds, 0);
         else if (Math.random() * 5 < seconds) this.ambient = 2;
-        if (this.ambient < 0) this.ambient = 0;
       };
 
       function Camera(canvas, resolution, fov) {
