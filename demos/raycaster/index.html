@@ -149,8 +149,7 @@
         this.fov = fov;
         this.range = 15;
         this.lightRange = 5;
-        this.bob = (this.width + this.height) * 0.012;
-        this.weaponSize = (this.width + this.height) / 1200;
+        this.scale = (this.width + this.height) / 1200;
       }
 
       Camera.prototype.render = function(player, map) {
@@ -187,15 +186,15 @@
       };
 
       Camera.prototype.drawWeapon = function(weapon, paces) {
-        var bobX = Math.cos(paces * 2) * this.bob;
-        var bobY = Math.sin(paces * 4) * this.bob;
+        var bobX = Math.cos(paces * 2) * this.scale * 6;
+        var bobY = Math.sin(paces * 4) * this.scale * 6;
         var left = this.width * 0.66 + bobX;
         var top = this.height * 0.6 + bobY;
-
-        this.ctx.drawImage(weapon.image, left, top, weapon.width * this.weaponSize, weapon.height * this.weaponSize);
+        this.ctx.drawImage(weapon.image, left, top, weapon.width * this.scale, weapon.height * this.scale);
       };
 
       Camera.prototype.drawColumn = function(column, ray, angle, map) {
+        var ctx = this.ctx;
         var texture = map.wallTexture;
         var left = Math.floor(column * this.spacing);
         var width = Math.ceil(this.spacing);
@@ -207,26 +206,24 @@
 
         for (var s = ray.length - 1; s >= 0; s--) {
           var step = ray[s];
-          var rain = this.project(0.1, angle, step.distance);
+          var rainDrops = Math.random() < 0.1 ? s : 0;
+          var rain = rainDrops && this.project(0.1, angle, step.distance);
 
           if (s === hit) {
             var textureX = Math.floor(texture.width * step.offset);
             var wall = this.project(step.height, angle, step.distance);
 
-            this.ctx.globalAlpha = 1;
-            this.ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
+            ctx.globalAlpha = 1;
+            ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
             
-            this.ctx.fillStyle = '#000000';
-            this.ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - map.ambient, 0);
-            this.ctx.fillRect(left, wall.top, width, wall.height);
+            ctx.fillStyle = '#000000';
+            ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - map.ambient, 0);
+            ctx.fillRect(left, wall.top, width, wall.height);
           }
           
-          var i = Math.random() < 0.1 ? s : 0;
-          while (i--) {
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.globalAlpha = 0.1;
-            this.ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
-          }
+          ctx.fillStyle = '#ffffff';
+          ctx.globalAlpha = 0.1;
+          while (rainDrops--) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
         }
       };
 
