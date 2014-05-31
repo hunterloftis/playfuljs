@@ -206,7 +206,7 @@
 
         for (var s = ray.length - 1; s >= 0; s--) {
           var step = ray[s];
-          var rainDrops = Math.random() < 0.1 ? s : 0;
+          var rainDrops = Math.round(Math.random() * s / 4 + 0.05);
           var rain = rainDrops && this.project(0.1, angle, step.distance);
 
           if (s === hit) {
