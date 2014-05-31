@@ -36,9 +36,6 @@
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.turnSpeed = Math.PI * 1;
-        this.walkSpeed = 3;
-        this.path = [];
         this.weapon = new Bitmap('../knife_hand.png', 319, 320);
         this.paces = 0;
       }
@@ -56,10 +53,10 @@
       };
 
       Player.prototype.update = function(controls, map, seconds) {
-        if (controls.left) this.rotate(-this.turnSpeed * seconds);
-        if (controls.right) this.rotate(this.turnSpeed * seconds);
-        if (controls.forward) this.walk(this.walkSpeed * seconds, map);
-        if (controls.backward) this.walk(-this.walkSpeed * seconds, map);
+        if (controls.left) this.rotate(-Math.PI * seconds);
+        if (controls.right) this.rotate(Math.PI * seconds);
+        if (controls.forward) this.walk(3 * seconds, map);
+        if (controls.backward) this.walk(-3 * seconds, map);
       };
 
       function Map(size) {
@@ -67,13 +64,8 @@
         this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
         this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
         this.heightMap = new Uint8Array(size * size);
-        this.ambient = 0;
+        this.light = 0;
       }
-
-      Map.prototype.set = function(x, y, height) {
-        var index = Math.floor(y) * this.size + Math.floor(x);
-        this.heightMap[index] = Math.floor(height);
-      };
 
       Map.prototype.get = function(x, y) {
         x = Math.floor(x);
@@ -83,11 +75,8 @@
       };
 
       Map.prototype.randomize = function() {
-        for (var y = 0; y < this.size; y++) {
-          for (var x = 0; x < this.size; x++) {
-            if (x < 4 && y < 4) this.set(x, y, 0);
-            else this.set(x, y, Math.random() < 0.3 ? 1 : 0);
-          }
+        for (var i = 0; i < this.size * this.size; i++) {
+          this.heightMap[i] = Math.random() < 0.3 ? 1 : 0;
         }
       };
 
@@ -95,6 +84,7 @@
         var self = this;
         var sin = Math.sin(angle);
         var cos = Math.cos(angle);
+        var noWall = { length2: Infinity };
 
         return steps({ x: point.x, y: point.y, height: 0, distance: 0 });
 
@@ -123,10 +113,10 @@
         }
 
         function step(rise, run, x, y, inverted) {
-          if (run === 0) return { length2: Infinity };
+          if (run === 0) return noWall;
+
           var dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
           var dy = dx * (rise / run);
-
           return {
             x: inverted ? y + dy : x + dx,
             y: inverted ? x + dx : y + dy,
@@ -136,8 +126,8 @@
       };
 
       Map.prototype.update = function(seconds) {
-        if (this.ambient > 0) this.ambient = Math.max(this.ambient - 10 * seconds, 0);
-        else if (Math.random() * 5 < seconds) this.ambient = 2;
+        if (this.light > 0) this.light = Math.max(this.light - 10 * seconds, 0);
+        else if (Math.random() * 5 < seconds) this.light = 2;
       };
 
       function Camera(canvas, resolution, fov) {
@@ -153,7 +143,7 @@
       }
 
       Camera.prototype.render = function(player, map) {
-        this.drawSky(player.direction, map.skybox, map.ambient);
+        this.drawSky(player.direction, map.skybox, map.light);
         this.drawColumns(player, map);
         this.drawWeapon(player.weapon, player.paces);
       };
@@ -200,9 +190,7 @@
         var width = Math.ceil(this.spacing);
         var hit = -1;
 
-        for (var f = ray.length - 1; f >= 0; f--) {
-          if (ray[f].height > 0) hit = f;
-        }
+        while (++hit < ray.length && ray[hit].height <= 0);
 
         for (var s = ray.length - 1; s >= 0; s--) {
           var step = ray[s];
@@ -217,7 +205,7 @@
             ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
             
             ctx.fillStyle = '#000000';
-            ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - map.ambient, 0);
+            ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - map.light, 0);
             ctx.fillRect(left, wall.top, width, wall.height);
           }
           
@@ -256,10 +244,10 @@
       };
 
       var display = document.getElementById('display');
-      var camera = new Camera(display, 320, Math.PI * 0.5);
-      var keyboard = new Keyboard();
-      var player = new Player(1.5, 1.5, Math.PI * 0.2);
       var map = new Map(32);
+      var player = new Player(14.3, -1.2, Math.PI * 0.3);
+      var keyboard = new Keyboard();
+      var camera = new Camera(display, 320, Math.PI * 0.4);
       var loop = new GameLoop();
 
       map.randomize();
