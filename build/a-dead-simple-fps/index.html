@@ -55,32 +55,82 @@ Instead, it divides the scene into independent columns and renders them all indi
 Each column represents a single &#39;ray&#39; cast out from the player at a particular angle.
 If the ray hits a wall, it measures the distance to that wall.
 Columns without a hit remain empty, and you draw a rectangle in columns with a hit.
-The height of the rectangle is determined by the distance from the wall -
+The height of the rectangle is determined by the distance the ray traveled -
 more distant walls are drawn shorter.
-This all adds up to a powerful 3D illusion!</p>
-<h4 id="1-find-its-angle">1. Find its angle</h4>
+This all adds up to a fast, yet powerful 3D illusion!</p>
+<h4 id="1-find-the-ray-s-angle">1. Find the ray&#39;s angle</h4>
 <p>First, you find the angle at which you need to cast the ray.
 The angle depends on three things: the direction the player is facing,
-the field-of-view of the camera, and the current column being cast.</p>
+the field-of-view of the camera, and which column you&#39;re drawing.</p>
 <pre><code class="lang-js">var angle = this.fov * (column / this.resolution - 0.5);
+var ray = map.cast(player, player.direction + angle, this.range);
 </code></pre>
 <h4 id="2-step-through-the-grid">2. Step through the grid</h4>
+<p>Next, we need to check for walls in the ray&#39;s path.
+We do this by finding all the points where the ray intersects
+with a horizontal or vertical grid line and checking
+whether or not a wall exists at that point in the grid.</p>
+<pre><code class="lang-js">function ray(origin) {
+  var stepX = step(sin, cos, origin.x, origin.y);
+  var stepY = step(cos, sin, origin.y, origin.x, true);
+  var nextStep = stepX.length2 &lt; stepY.length2
+    ? inspect(stepX, 1, 0, origin.distance, stepX.y)
+    : inspect(stepY, 0, 1, origin.distance, stepY.x);
+
+  if (nextStep.distance &gt; range) return [origin];
+  return [origin].concat(ray(nextStep));
+}
+</code></pre>
+<p>This recursive function finds the nearest horizontal gridline (stepX)
+and the nearest vertical gridline (stepY).
+It chooses whichever is closer and looks for a wall (inspect).
+This continues until the ray passes beyond a maximum distance.</p>
+<pre><code class="lang-js">var dx = run &gt; 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+var dy = dx * (rise / run);
+</code></pre>
+<p>Finding grid intersections is straightforward: just look for whole numbers of x (1, 2, 3, etc).
+Then, find a matching y by multiplying by the line&#39;s slope (rise / run).
+To find vertical intersections, we flip x and y.</p>
 <h4 id="3-draw-a-column">3. Draw a column</h4>
+<p>Once we&#39;ve traced a ray, we need to draw any walls that it found in its path.
+This requires two properties: distance from the player, and grid offset.</p>
+<ul>
+<li><em>Distance</em> tells us how tall to draw our rectangle.</li>
+<li><em>Offset</em> tells us which part of the wall&#39;s texture we should draw on this column.
+Since we&#39;re using a grid of whole numbers, the texture offset is just any remainder.
+For example, a ray that intersects with a wall at (10, 8.2) would have an offset of 0.2.</li>
+</ul>
+<pre><code class="lang-js">Camera.prototype.project = function(height, angle, distance) {
+  var z = distance * Math.cos(angle);
+  var wallHeight = this.height * height / z;
+  var bottom = this.height / 2 * (1 + 1 / z);
+  return {
+    top: bottom - wallHeight,
+    height: wallHeight
+  }; 
+};
+</code></pre>
+<p>Oh damn, where did this cosine come in? I promised easy math!
+If we just use the raw distance from the player, we&#39;ll end up with a fisheye effect.
+Why? Imagine that you&#39;re facing a wall. The edges of the wall to your left and right
+are further away from you than the center of the wall.
+But you don&#39;t want straight walls to buldge out in the middle!
+To render walls as we really see them, we figure out how far away from the
+plane of view of the player. Like this:</p>
+<p>(illustration)</p>
+<p>Finally, we divide the height of the wall by z.
+Far away walls with large distances will have small heights,
+and nearby walls with small distances will have large heights.
+Beautiful.</p>
 <h3 id="the-camera">The Camera</h3>
 <p>The camera&#39;s job is to draw the map, each frame, from the player&#39;s perspective.
 It will be responsible for rendering each strip as we sweep from the
 left to the right of the screen.</p>
-<pre><code class="lang-js">function Camera(canvas, resolution, fov) {
-  this.ctx = canvas.getContext(&#39;2d&#39;);
-  this.width = canvas.width = window.innerWidth * 0.5;
-  this.height = canvas.height = window.innerHeight * 0.5;
-  this.resolution = resolution;
-  this.spacing = this.width / resolution;
-  this.fov = fov;
-  this.range = 15;
-  this.lightRange = 5;
-  this.scale = (this.width + this.height) / 1200;
-}
+<pre><code class="lang-js">Camera.prototype.render = function(player, map) {
+  this.drawSky(player.direction, map.skybox, map.light);
+  this.drawColumns(player, map);
+  this.drawWeapon(player.weapon, player.paces);
+};
 </code></pre>
 <p>The camera&#39;s most important properties are resolution, field-of-view (fov), and range.</p>
 <ul>

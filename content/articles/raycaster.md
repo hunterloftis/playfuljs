@@ -76,23 +76,91 @@ Instead, it divides the scene into independent columns and renders them all indi
 Each column represents a single 'ray' cast out from the player at a particular angle.
 If the ray hits a wall, it measures the distance to that wall.
 Columns without a hit remain empty, and you draw a rectangle in columns with a hit.
-The height of the rectangle is determined by the distance from the wall -
+The height of the rectangle is determined by the distance the ray traveled -
 more distant walls are drawn shorter.
-This all adds up to a powerful 3D illusion!
+This all adds up to a fast, yet powerful 3D illusion!
 
-#### 1. Find its angle
+#### 1. Find the ray's angle
 
 First, you find the angle at which you need to cast the ray.
 The angle depends on three things: the direction the player is facing,
-the field-of-view of the camera, and the current column being cast.
+the field-of-view of the camera, and which column you're drawing.
 
 ```js
 var angle = this.fov * (column / this.resolution - 0.5);
+var ray = map.cast(player, player.direction + angle, this.range);
 ```
 
 #### 2. Step through the grid
 
+Next, we need to check for walls in the ray's path.
+We do this by finding all the points where the ray intersects
+with a horizontal or vertical grid line and checking
+whether or not a wall exists at that point in the grid.
+
+```js
+function ray(origin) {
+  var stepX = step(sin, cos, origin.x, origin.y);
+  var stepY = step(cos, sin, origin.y, origin.x, true);
+  var nextStep = stepX.length2 < stepY.length2
+    ? inspect(stepX, 1, 0, origin.distance, stepX.y)
+    : inspect(stepY, 0, 1, origin.distance, stepY.x);
+
+  if (nextStep.distance > range) return [origin];
+  return [origin].concat(ray(nextStep));
+}
+```
+
+This recursive function finds the nearest horizontal gridline (stepX)
+and the nearest vertical gridline (stepY).
+It chooses whichever is closer and looks for a wall (inspect).
+This continues until the ray passes beyond a maximum distance.
+
+```js
+var dx = run > 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
+var dy = dx * (rise / run);
+```
+
+Finding grid intersections is straightforward: just look for whole numbers of x (1, 2, 3, etc).
+Then, find a matching y by multiplying by the line's slope (rise / run).
+To find vertical intersections, we flip x and y.
+
 #### 3. Draw a column
+
+Once we've traced a ray, we need to draw any walls that it found in its path.
+This requires two properties: distance from the player, and grid offset.
+
+- *Distance* tells us how tall to draw our rectangle.
+- *Offset* tells us which part of the wall's texture we should draw on this column.
+Since we're using a grid of whole numbers, the texture offset is just any remainder.
+For example, a ray that intersects with a wall at (10, 8.2) would have an offset of 0.2.
+
+```js
+Camera.prototype.project = function(height, angle, distance) {
+  var z = distance * Math.cos(angle);
+  var wallHeight = this.height * height / z;
+  var bottom = this.height / 2 * (1 + 1 / z);
+  return {
+    top: bottom - wallHeight,
+    height: wallHeight
+  }; 
+};
+```
+
+Oh damn, where did this cosine come in? I promised easy math!
+If we just use the raw distance from the player, we'll end up with a fisheye effect.
+Why? Imagine that you're facing a wall. The edges of the wall to your left and right
+are further away from you than the center of the wall.
+But you don't want straight walls to buldge out in the middle!
+To render walls as we really see them, we figure out how far away from the
+plane of view of the player. Like this:
+
+(illustration)
+
+Finally, we divide the height of the wall by z.
+Far away walls with large distances will have small heights,
+and nearby walls with small distances will have large heights.
+Beautiful.
 
 ### The Camera
 
@@ -101,20 +169,15 @@ It will be responsible for rendering each strip as we sweep from the
 left to the right of the screen.
 
 ```js
-function Camera(canvas, resolution, fov) {
-  this.ctx = canvas.getContext('2d');
-  this.width = canvas.width = window.innerWidth * 0.5;
-  this.height = canvas.height = window.innerHeight * 0.5;
-  this.resolution = resolution;
-  this.spacing = this.width / resolution;
-  this.fov = fov;
-  this.range = 15;
-  this.lightRange = 5;
-  this.scale = (this.width + this.height) / 1200;
-}
+Camera.prototype.render = function(player, map) {
+  this.drawSky(player.direction, map.skybox, map.light);
+  this.drawColumns(player, map);
+  this.drawWeapon(player.weapon, player.paces);
+};
 ```
 
 The camera's most important properties are resolution, field-of-view (fov), and range.
 - *Resolution* determines how many strips we draw each frame: how many rays we cast.
 - *Field-of-view* determines how wide of a lens we're looking through: the angles of the rays.
 - *Range* determines how far away we can see: the maximum length of each ray.
+
