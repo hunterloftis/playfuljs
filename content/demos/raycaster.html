@@ -86,25 +86,26 @@
         var cos = Math.cos(angle);
         var noWall = { length2: Infinity };
 
-        return steps({ x: point.x, y: point.y, height: 0, distance: 0 });
+        return ray({ x: point.x, y: point.y, height: 0, distance: 0 });
 
-        function steps(origin) {
+        function ray(origin) {
           var stepX = step(sin, cos, origin.x, origin.y);
           var stepY = step(cos, sin, origin.y, origin.x, true);
           var nextStep = stepX.length2 < stepY.length2
-            ? patch(stepX, 1, 0, cos, origin.distance, stepX.y)
-            : patch(stepY, 0, 1, sin, origin.distance, stepY.x);
+            ? patch(stepX, 1, 0, origin.distance, stepX.y)
+            : patch(stepY, 0, 1, origin.distance, stepY.x);
 
           if (nextStep.distance > range) return [origin];
-          return [origin].concat(steps(nextStep));
+          return [origin].concat(ray(nextStep));
         }
 
-        function patch(step, shiftX, shiftY, face, distance, offset) {
-          var dx = (cos < 0 ? -1 : 0) * shiftX;
-          var dy = (sin < 0 ? -1 : 0) * shiftY;
-          step.height = self.get(step.x + dx, step.y + dy);
+        function patch(step, shiftX, shiftY, distance, offset) {
+          var dx = cos < 0 ? shiftX : 0;
+          var dy = sin < 0 ? shiftY : 0;
+          step.height = self.get(step.x - dx, step.y - dy);
           step.distance = distance + Math.sqrt(step.length2);
-          step.lighting = face < 0 ? 2 : 0;
+          if (shiftX) step.shading = cos < 0 ? 2 : 0;
+          else step.shading = sin < 0 ? 2 : 1;
           step.offset = offset - Math.floor(offset);
           return step;
         }
@@ -202,7 +203,7 @@
             ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
             
             ctx.fillStyle = '#000000';
-            ctx.globalAlpha = Math.max((step.distance + step.lighting) / this.lightRange - map.light, 0);
+            ctx.globalAlpha = Math.max((step.distance + step.shading) / this.lightRange - map.light, 0);
             ctx.fillRect(left, wall.top, width, wall.height);
           }
           
