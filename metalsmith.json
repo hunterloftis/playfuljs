@@ -13,8 +13,7 @@
       "destination": "styles"
     },
     "metalsmith-ignore": [
-      "styles/!(global).styl",
-      "drafts/*"
+      "styles/!(global).styl"
     ],
     "metalsmith-stylus": {
       "paths": ["styles"]
