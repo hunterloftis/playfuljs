@@ -61,9 +61,9 @@
 
       function Map(size) {
         this.size = size;
+        this.wallGrid = new Uint8Array(size * size);
         this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
         this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
-        this.heightMap = new Uint8Array(size * size);
         this.light = 0;
       }
 
@@ -71,12 +71,12 @@
         x = Math.floor(x);
         y = Math.floor(y);
         if (x < 0 || x > this.size - 1 || y < 0 || y > this.size - 1) return -1;
-        return this.heightMap[y * this.size + x];
+        return this.wallGrid[y * this.size + x];
       };
 
       Map.prototype.randomize = function() {
         for (var i = 0; i < this.size * this.size; i++) {
-          this.heightMap[i] = Math.random() < 0.3 ? 1 : 0;
+          this.wallGrid[i] = Math.random() < 0.3 ? 1 : 0;
         }
       };
 
@@ -91,25 +91,24 @@
         function steps(origin) {
           if (origin.distance > range) return [];
 
-          var result = [origin];
           var stepX = step(sin, cos, origin.x, origin.y);
           var stepY = step(cos, sin, origin.y, origin.x, true);
 
-          if (stepX.length2 < stepY.length2) {
-            stepX.height = self.get(stepX.x - (cos < 0 ? 1 : 0), stepX.y);
-            stepX.distance = origin.distance + Math.sqrt(stepX.length2);
-            stepX.lighting = cos < 0 ? 2 : 0;
-            stepX.offset = stepX.y - Math.floor(stepX.y)
-            result = result.concat(steps(stepX));
-          }
-          else {
-            stepY.height = self.get(stepY.x, stepY.y - (sin < 0 ? 1 : 0));
-            stepY.distance = origin.distance + Math.sqrt(stepY.length2);
-            stepY.lighting = sin < 0 ? 1.5 : 1;
-            stepY.offset = stepY.x - Math.floor(stepY.x);
-            result = result.concat(steps(stepY));
-          }
-          return result;
+          var nextStep = stepX.length2 < stepY.length2
+            ? patch(stepX, 1, 0, cos, origin.distance, stepX.y)
+            : patch(stepY, 0, 1, sin, origin.distance, stepY.x);
+
+          return [origin].concat(steps(nextStep));
+        }
+
+        function patch(step, shiftX, shiftY, face, distance, offset) {
+          var dx = (cos < 0 ? -1 : 0) * shiftX;
+          var dy = (sin < 0 ? -1 : 0) * shiftY;
+          step.height = self.get(step.x + dx, step.y);
+          step.distance = distance + Math.sqrt(step.length2);
+          step.lighting = face < 0 ? 2 : 0;
+          step.offset = offset - Math.floor(offset);
+          return step;
         }
 
         function step(rise, run, x, y, inverted) {
@@ -244,8 +243,8 @@
       };
 
       var display = document.getElementById('display');
-      var map = new Map(32);
       var player = new Player(14.3, -1.2, Math.PI * 0.3);
+      var map = new Map(32);
       var keyboard = new Keyboard();
       var camera = new Camera(display, 320, Math.PI * 0.4);
       var loop = new GameLoop();

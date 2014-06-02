@@ -1,0 +1,99 @@
+<!DOCTYPE html><html><head><title>A dead-simple FPS</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>A dead-simple FPS</h2><p class="Article-date">30 May 2014</p><main class="Article-contents"><p>Today, let&#39;s drop into a world you can reach out and <em>touch</em>.
+In this article, we&#39;ll compose a first-person exploration from scratch,
+in 250 lines and without difficult math, using a technique called raycasting.
+You may have seen it before in games like Daggerfall and Duke Nukem 3D,
+or more recently in Notch Persson&#39;s ludum dare entries.
+Ready to build your own?
+<a href="/demos/raycaster"> [Demo] </a>
+<a href="https://github.com/hunterloftis/playfuljs/blob/master/content/demos/raycaster.html"> [Source] </a></p>
+<p>Raycasting feels like cheating, and as a lazy programmer, I love it.
+You get the immersion of a 3D environment without many of the
+complexities of &quot;real 3D&quot; to slow you down.
+For example, raycasts run in constant time,
+so you can load up a massive world and it will <em>just work</em>, without optimization,
+as quickly as a tiny world.
+Also, levels are defined as simple grids rather than as trees of polygon meshes,
+so you can dive right in without a 3D modeling background or mathematics PhD.</p>
+<p>It&#39;s one of those techniques that blows you away with simplicity.
+In fifteen minutes you&#39;ll be taking photos of your office walls and
+checking your HR documents for rules against &quot;building workplace gunfight simulations.&quot;</p>
+<p><a href="/demos/raycaster"><img src='../images/raycaster-result.jpg'></a></p>
+<h3 id="the-player">The Player</h3>
+<p>Everything begins and ends with the player.
+The player in a raycaster can be represented with three properties:
+x position, y position, and facing direction.</p>
+<pre><code class="lang-js">function Player(x, y, direction) {
+  this.x = x;
+  this.y = y;
+  this.direction = direction;
+  this.weapon = new Bitmap(&#39;../knife_hand.png&#39;, 319, 320);
+  this.paces = 0;
+}
+</code></pre>
+<p>Everything else is gravy.</p>
+<h3 id="the-map">The Map</h3>
+<p>We&#39;ll store our map as a simple two-dimensional array.
+In this array, 0 represents <em>no wall</em> and 1 represents <em>wall</em>.
+You can get a lot more complex than this... for example,
+you could render walls of arbitrary heights, or you could
+pack several &#39;stories&#39; of wall data into the array,
+but for our first attempt 0-vs-1 works great.</p>
+<pre><code class="lang-js">function Map(size) {
+  this.size = size;
+  this.wallGrid = new Uint8Array(size * size);
+  this.skybox = new Bitmap(&#39;../deathvalley_panorama.jpg&#39;, 4000, 1290);
+  this.wallTexture = new Bitmap(&#39;../wall_texture.jpg&#39;, 1024, 1024);
+  this.light = 0;
+}
+</code></pre>
+<p>We&#39;re also storing a couple of images for the map
+(a single wall texture and a skybox)
+and an ambient light value.</p>
+<h3 id="casting-a-ray">Casting a ray</h3>
+<p>Here&#39;s the trick: a raycasting engine <em>doesn&#39;t draw the whole scene at once.</em>
+Instead, it divides the scene into independent columns and renders them all individually.
+Each column represents a single &#39;ray&#39; cast out from the player at a particular angle.
+If the ray hits a wall, it measures the distance to that wall.
+Columns without a hit remain empty, and you draw a rectangle in columns with a hit.
+The height of the rectangle is determined by the distance from the wall -
+more distant walls are drawn shorter.
+This all adds up to a powerful 3D illusion!</p>
+<h4 id="1-find-its-angle">1. Find its angle</h4>
+<p>First, you find the angle at which you need to cast the ray.
+The angle depends on three things: the direction the player is facing,
+the field-of-view of the camera, and the current column being cast.</p>
+<pre><code class="lang-js">var angle = this.fov * (column / this.resolution - 0.5);
+</code></pre>
+<h4 id="2-step-through-the-grid">2. Step through the grid</h4>
+<h4 id="3-draw-a-column">3. Draw a column</h4>
+<h3 id="the-camera">The Camera</h3>
+<p>The camera&#39;s job is to draw the map, each frame, from the player&#39;s perspective.
+It will be responsible for rendering each strip as we sweep from the
+left to the right of the screen.</p>
+<pre><code class="lang-js">function Camera(canvas, resolution, fov) {
+  this.ctx = canvas.getContext(&#39;2d&#39;);
+  this.width = canvas.width = window.innerWidth * 0.5;
+  this.height = canvas.height = window.innerHeight * 0.5;
+  this.resolution = resolution;
+  this.spacing = this.width / resolution;
+  this.fov = fov;
+  this.range = 15;
+  this.lightRange = 5;
+  this.scale = (this.width + this.height) / 1200;
+}
+</code></pre>
+<p>The camera&#39;s most important properties are resolution, field-of-view (fov), and range.</p>
+<ul>
+<li><em>Resolution</em> determines how many strips we draw each frame: how many rays we cast.</li>
+<li><em>Field-of-view</em> determines how wide of a lens we&#39;re looking through: the angles of the rays.</li>
+<li><em>Range</em> determines how far away we can see: the maximum length of each ray.</li>
+</ul>
+</main></div><div class="col three"><form action="http://playfuljs.us8.list-manage.com/subscribe/post?u=21e71615334170b2bd165bd2e&amp;amp;id=8a76f848a7" method="post" name="mc-embedded-subscribe-form" target="_blank" class="Subscriber"><h4>Get updates!<p>Keep up with playful articles by email</p><input type="email" name="EMAIL" placeholder="enter your email address"/><div style="position: absolute; left: -5000px;"><input type="text" name="b_21e71615334170b2bd165bd2e_8a76f848a7" tabindex="-1" value=""/></div><button class="Button">Subscribe</button><p>Related content also posted at&nbsp;<a href="http://twitter.com/hunterloftis">@hunterloftis</a></p></h4></form><section class="Recent"><h4>Previous Article<a href="/realistic-terrain-in-130-lines">Realistic terrain in 130 lines</a></h4></section><section class="Recent"><h4>Recent Articles</h4><a href="/a-dead-simple-fps">A dead-simple FPS</a><a href="/realistic-terrain-in-130-lines">Realistic terrain in 130 lines</a><a href="/physics-for-the-lazy">Physics for the lazy</a></section></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-50885475-1', 'playfuljs.com');
+ga('require', 'displayfeatures');
+ga('send', 'pageview');
+</script></body></html>
