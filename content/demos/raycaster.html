@@ -150,6 +150,7 @@
         var left = -width * direction / CIRCLE;
 
         this.ctx.save();
+        this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.drawImage(sky.image, left, 0, width, this.height);
         if (left < width - this.width) {
           this.ctx.drawImage(sky.image, left + width, 0, width, this.height);
