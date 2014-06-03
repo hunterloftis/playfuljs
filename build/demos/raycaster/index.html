@@ -62,7 +62,7 @@
       function Map(size) {
         this.size = size;
         this.wallGrid = new Uint8Array(size * size);
-        this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
+        this.skybox = new Bitmap('../deathvalley_panorama2.jpg', 400, 120);
         this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
         this.light = 0;
       }
@@ -150,7 +150,6 @@
         var left = -width * direction / CIRCLE;
 
         this.ctx.save();
-        this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.drawImage(sky.image, left, 0, width, this.height);
         if (left < width - this.width) {
           this.ctx.drawImage(sky.image, left + width, 0, width, this.height);
