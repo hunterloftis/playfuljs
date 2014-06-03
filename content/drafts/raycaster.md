@@ -258,9 +258,6 @@ and thunderclaps synchronized to the lightning.
 - An indoors level. Replace the skybox with a symmetric gradient or, if you're feeling
 plucky, try rendering floor and ceiling tiles (think of it this way: they're just
 the spaces between the walls you're already drawing!)
-- Touch controls. One of the nice things about a raycaster is that it doesn't
-depend on a GPU or 3D graphics system, so a small modification will get this
-example screaming on an iPad. Probably need to lose the rain.
 - Lighting objects. We already have a fairly robust lighting model.
 Why not place lights in the world and compute wall lighting based on them?
 Lights are 80% of atmosphere.
