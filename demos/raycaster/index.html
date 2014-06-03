@@ -11,21 +11,36 @@
       var CIRCLE = Math.PI * 2;
       var MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
 
-      function Keyboard() {
+      function Controls() {
         this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
         this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
         document.addEventListener('keydown', this.onKey.bind(this, true), false);
         document.addEventListener('keyup', this.onKey.bind(this, false), false);
-        document.addEventListener('touchstart', this.onKey.bind(this, true, { keyCode: 39 }), false);
-        document.addEventListener('touchend', this.onKey.bind(this, false, { keyCode: 39 }), false);
+        document.addEventListener('touchstart', this.onTouch.bind(this), false);
+        document.addEventListener('touchmove', this.onTouch.bind(this), false);
+        document.addEventListener('touchend', this.onTouchEnd.bind(this), false);
       }
 
-      Keyboard.prototype.onKey = function(val, e) {
+      Controls.prototype.onTouch = function(e) {
+        var t = e.touches[0];
+        this.onTouchEnd(e);
+        if (t.pageY < window.innerHeight * 0.5) this.onKey(true, { keyCode: 38 });
+        else if (t.pageX < window.innerWidth * 0.5) this.onKey(true, { keyCode: 37 });
+        else if (t.pageY > window.innerWidth * 0.5) this.onKey(true, { keyCode: 39 });
+      };
+
+      Controls.prototype.onTouchEnd = function(e) {
+        this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
+        e.preventDefault();
+        e.stopPropagation();
+      };
+
+      Controls.prototype.onKey = function(val, e) {
         var state = this.codes[e.keyCode];
         if (typeof state === 'undefined') return;
         this.states[state] = val;
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault && e.preventDefault();
+        e.stopPropagation && e.stopPropagation();
       };
 
       function Bitmap(src, width, height) {
@@ -246,7 +261,7 @@
       var display = document.getElementById('display');
       var player = new Player(15.3, -1.2, Math.PI * 0.3);
       var map = new Map(32);
-      var keyboard = new Keyboard();
+      var controls = new Controls();
       var camera = new Camera(display, MOBILE ? 160 : 320, Math.PI * 0.4);
       var loop = new GameLoop();
 
@@ -254,7 +269,7 @@
       
       loop.start(function frame(seconds) {
         map.update(seconds);
-        player.update(keyboard.states, map, seconds);
+        player.update(controls.states, map, seconds);
         camera.render(player, map);
       });
 
