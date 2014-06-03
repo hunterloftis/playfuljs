@@ -276,8 +276,8 @@ and it would never have been released without several peoples' help:
 
 - [Jim Snodgrass](http://twitter.com/snodgrass23): editing
 - [Jeremy Morrell](http://twitter.com/jeremymorrell): editing
-- [Jeff Peterson](http://twitter.com/jeffpeterson): editing
+- [Jeff Peterson](http://twitter.com/arsinh): editing
 - [Chris Gomez](http://github.com/akagomez): weapons
-- [Amanda Lenz](http://etsy.com/helenedorothy): laptop bags and support
+- [Amanda Lenz](https://www.etsy.com/shop/HeleneDorothy): laptop bags and support
 - [Nicholas S](http://shadowh3.deviantart.com/art/Wall-Texture-73682375): wall texture
 - [Dan Duriscoe](http://apod.nasa.gov/apod/ap070508.html): Death Valley skybox
