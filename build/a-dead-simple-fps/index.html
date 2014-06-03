@@ -120,11 +120,12 @@ After the walls are done we&#39;ll drop a weapon into the foreground.</p>
 <li><em>Range</em> determines how far away we can see: the maximum length of each ray.</li>
 </ul>
 <h3 id="putting-it-all-together">Putting it all together</h3>
-<p>We&#39;ll use a Keyboard object to listen for the arrow keys and a GameLoop object
-to call requestAnimationFrame. Our simple gameloop is just three lines:</p>
+<p>We&#39;ll use a Controls object to listen for arrow keys (and touch events)
+and a GameLoop object to call requestAnimationFrame.
+Our simple gameloop is just three lines:</p>
 <pre><code class="lang-js">loop.start(function frame(seconds) {
   map.update(seconds);
-  player.update(keyboard.states, map, seconds);
+  player.update(controls.states, map, seconds);
   camera.render(player, map);
 });
 </code></pre>
@@ -162,7 +163,7 @@ We check x and y independently so the player can slide along a wall:</p>
 <h4 id="wall-textures">Wall textures</h4>
 <p>The walls would be pretty boring without a texture.
 How do we know which part of the wall texture to apply to a particular column?
-It&#39;s actually pretty simple: we take the remainder of our intersection point:</p>
+It&#39;s actually pretty simple: we take the remainder of our intersection point.</p>
 <pre><code class="lang-js">step.offset = offset - Math.floor(offset);
 var textureX = Math.floor(texture.width * step.offset);
 </code></pre>
@@ -186,6 +187,8 @@ the spaces between the walls you&#39;re already drawing!)</li>
 <li>Lighting objects. We already have a fairly robust lighting model.
 Why not place lights in the world and compute wall lighting based on them?
 Lights are 80% of atmosphere.</li>
+<li>Good touch events. I&#39;ve hacked in a couple of basic touch controls
+so folks on phones and tablets can try out the demo, but there&#39;s huge room for improvement.</li>
 </ul>
 <p>As always, if you build something cool, or have related work to share,
 <a href="mailto:hunter@hunterloftis.com">email me</a> or <a href="http://twitter.com/hunterloftis">tweet me</a>

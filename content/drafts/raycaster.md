@@ -169,13 +169,14 @@ The camera's most important properties are resolution, field-of-view (fov), and 
 
 ### Putting it all together
 
-We'll use a Keyboard object to listen for the arrow keys and a GameLoop object
-to call requestAnimationFrame. Our simple gameloop is just three lines:
+We'll use a Controls object to listen for arrow keys (and touch events)
+and a GameLoop object to call requestAnimationFrame.
+Our simple gameloop is just three lines:
 
 ```js
 loop.start(function frame(seconds) {
   map.update(seconds);
-  player.update(keyboard.states, map, seconds);
+  player.update(controls.states, map, seconds);
   camera.render(player, map);
 });
 ```
@@ -230,7 +231,7 @@ Player.prototype.walk = function(distance, map) {
 
 The walls would be pretty boring without a texture.
 How do we know which part of the wall texture to apply to a particular column?
-It's actually pretty simple: we take the remainder of our intersection point:
+It's actually pretty simple: we take the remainder of our intersection point.
 
 ```js
 step.offset = offset - Math.floor(offset);
@@ -261,6 +262,8 @@ the spaces between the walls you're already drawing!)
 - Lighting objects. We already have a fairly robust lighting model.
 Why not place lights in the world and compute wall lighting based on them?
 Lights are 80% of atmosphere.
+- Good touch events. I've hacked in a couple of basic touch controls
+so folks on phones and tablets can try out the demo, but there's huge room for improvement.
 
 As always, if you build something cool, or have related work to share,
 [email me](mailto:hunter@hunterloftis.com) or [tweet me](http://twitter.com/hunterloftis)
