@@ -271,7 +271,7 @@ and I'll shout it from the rooftops.
 
 ### Discuss
 
-Join [the discussion](#) on Hacker News.
+Join [the discussion](https://news.ycombinator.com/item?id=7842037) on Hacker News.
 
 ### Credits
 
