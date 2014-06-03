@@ -275,6 +275,8 @@ and I'll shout it from the rooftops.
 
 Join [the discussion](https://news.ycombinator.com/item?id=7842037) on Hacker News.
 
+- [Raycasting in Comanche](http://simulationcorner.net/index.php?page=comanche) - awesome JS example of raycast height maps
+
 ### Credits
 
 This "two hour" article turned into a "three week" article,
