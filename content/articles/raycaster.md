@@ -10,7 +10,7 @@ quickly and without difficult math, using a technique called raycasting.
 You may have seen it before in games like Daggerfall and Duke Nukem 3D,
 or more recently in Notch Persson's ludum dare entries.
 If it's good enough for Notch, it's good enough for me!
-[ [Demo] ](/demos/raycaster)
+[ [Demo (arrow keys / touch)] ](/demos/raycaster)
 [ [Source] ](https://github.com/hunterloftis/playfuljs/blob/master/content/demos/raycaster.html)
 
 [<img src='../images/raycaster-result.gif'>](/demos/raycaster)
@@ -264,6 +264,8 @@ Why not place lights in the world and compute wall lighting based on them?
 Lights are 80% of atmosphere.
 - Good touch events. I've hacked in a couple of basic touch controls
 so folks on phones and tablets can try out the demo, but there's huge room for improvement.
+- Camera effects. For example, zooming, blurring, drunk mode, etc.
+With a raycaster this are surprisingly simple. Start by modifying camera.fov in the console.
 
 As always, if you build something cool, or have related work to share,
 [email me](mailto:hunter@hunterloftis.com) or [tweet me](http://twitter.com/hunterloftis)
