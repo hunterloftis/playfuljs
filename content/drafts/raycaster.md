@@ -13,7 +13,7 @@ If it's good enough for Notch, it's good enough for me!
 [ [Demo] ](/demos/raycaster)
 [ [Source] ](https://github.com/hunterloftis/playfuljs/blob/master/content/demos/raycaster.html)
 
-[<img src='../images/raycaster-result.jpg'>](/demos/raycaster)
+[<img src='../images/raycaster-result.gif'>](/demos/raycaster)
 
 Raycasting feels like cheating, and as a lazy programmer, I love it.
 You get the immersion of a 3D environment without many of the
