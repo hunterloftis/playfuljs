@@ -9,6 +9,7 @@
     <script>
 
       var CIRCLE = Math.PI * 2;
+      var MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
 
       function Keyboard() {
         this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
@@ -136,7 +137,7 @@
         this.resolution = resolution;
         this.spacing = this.width / resolution;
         this.fov = fov;
-        this.range = 15;
+        this.range = MOBILE ? 8 : 15;
         this.lightRange = 5;
         this.scale = (this.width + this.height) / 1200;
       }
@@ -246,7 +247,7 @@
       var player = new Player(14.3, -1.2, Math.PI * 0.3);
       var map = new Map(32);
       var keyboard = new Keyboard();
-      var camera = new Camera(display, 320, Math.PI * 0.4);
+      var camera = new Camera(display, MOBILE ? 160 : 320, Math.PI * 0.4);
       var loop = new GameLoop();
 
       map.randomize();
