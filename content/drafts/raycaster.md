@@ -265,6 +265,10 @@ As always, if you build something cool, or have related work to share,
 [email me](mailto:hunter@hunterloftis.com) or [tweet me](http://twitter.com/hunterloftis)
 and I'll shout it from the rooftops.
 
+### Discuss
+
+Join [the discussion](#) on Hacker News.
+
 ### Credits
 
 This "two hour" article turned into a "three week" article,
