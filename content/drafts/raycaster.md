@@ -241,6 +241,10 @@ For example, an intersection with a wall at (10, 8.2) has a remainder of 0.2.
 That means that it's 20% from the left edge of the wall (8) and 80% from the right edge (9).
 So we multiply 0.2 * texture.width to find the x-coordinate for the texture image.
 
+## Try it out
+
+Wander around the [creepy ruins](/demos/raycaster).
+
 ### What's next?
 
 Because raycasters are so fast and simple, you can try lots of ideas quickly.
