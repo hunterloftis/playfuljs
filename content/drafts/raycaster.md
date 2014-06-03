@@ -6,7 +6,7 @@ template: article.jade
 
 Today, let's drop into a world you can reach out and *touch*.
 In this article, we'll compose a first-person exploration from scratch,
-in 250 lines and without difficult math, using a technique called raycasting.
+in around 250 lines and without difficult math, using a technique called raycasting.
 You may have seen it before in games like Daggerfall and Duke Nukem 3D,
 or more recently in Notch Persson's ludum dare entries.
 If it's good enough for Notch, it's good enough for me!
