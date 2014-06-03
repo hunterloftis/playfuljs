@@ -131,12 +131,12 @@ to call requestAnimationFrame. Our simple gameloop is just three lines:</p>
 <h3 id="the-details">The details</h3>
 <h4 id="rain">Rain</h4>
 <p>Rain is simulated with a bunch of very short walls in random places.</p>
-<pre><code class="lang-js">var rainDrops = Math.round(Math.random() * s / 4 + 0.05);
-var rain = rainDrops &amp;&amp; this.project(0.1, angle, step.distance);
+<pre><code class="lang-js">var rainDrops = Math.pow(Math.random(), 3) * s;
+var rain = (rainDrops &gt; 0) &amp;&amp; this.project(0.1, angle, step.distance);
 
 ctx.fillStyle = &#39;#ffffff&#39;;
-ctx.globalAlpha = 0.1;
-while (rainDrops--) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
+ctx.globalAlpha = 0.15;
+while (--rainDrops &gt; 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
 </code></pre>
 <p>Instead of drawing the walls at their full width, we draw them one pixel wide.</p>
 <h4 id="lighting-and-lightning">Lighting and lightning</h4>

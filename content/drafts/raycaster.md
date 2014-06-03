@@ -187,12 +187,12 @@ loop.start(function frame(seconds) {
 Rain is simulated with a bunch of very short walls in random places.
 
 ```js
-var rainDrops = Math.round(Math.random() * s / 4 + 0.05);
-var rain = rainDrops && this.project(0.1, angle, step.distance);
+var rainDrops = Math.pow(Math.random(), 3) * s;
+var rain = (rainDrops > 0) && this.project(0.1, angle, step.distance);
 
 ctx.fillStyle = '#ffffff';
-ctx.globalAlpha = 0.1;
-while (rainDrops--) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
+ctx.globalAlpha = 0.15;
+while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
 ```
 
 Instead of drawing the walls at their full width, we draw them one pixel wide.
