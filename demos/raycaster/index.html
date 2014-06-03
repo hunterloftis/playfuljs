@@ -137,7 +137,7 @@
         this.resolution = resolution;
         this.spacing = this.width / resolution;
         this.fov = fov;
-        this.range = MOBILE ? 8 : 15;
+        this.range = MOBILE ? 8 : 14;
         this.lightRange = 5;
         this.scale = (this.width + this.height) / 1200;
       }
@@ -194,8 +194,8 @@
 
         for (var s = ray.length - 1; s >= 0; s--) {
           var step = ray[s];
-          var rainDrops = Math.round(Math.random() * s / 4 + 0.05);
-          var rain = rainDrops && this.project(0.1, angle, step.distance);
+          var rainDrops = Math.pow(Math.random(), 3) * s;
+          var rain = (rainDrops > 0) && this.project(0.1, angle, step.distance);
 
           if (s === hit) {
             var textureX = Math.floor(texture.width * step.offset);
@@ -210,8 +210,8 @@
           }
           
           ctx.fillStyle = '#ffffff';
-          ctx.globalAlpha = 0.1;
-          while (rainDrops--) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
+          ctx.globalAlpha = 0.15;
+          while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
         }
       };
 
@@ -244,7 +244,7 @@
       };
 
       var display = document.getElementById('display');
-      var player = new Player(14.3, -1.2, Math.PI * 0.3);
+      var player = new Player(15.3, -1.2, Math.PI * 0.3);
       var map = new Map(32);
       var keyboard = new Keyboard();
       var camera = new Camera(display, MOBILE ? 160 : 320, Math.PI * 0.4);
