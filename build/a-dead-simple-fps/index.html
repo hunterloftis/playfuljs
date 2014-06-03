@@ -1,36 +1,32 @@
-<!DOCTYPE html><html><head><title>A dead-simple FPS</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>A dead-simple FPS</h2><p class="Article-date">30 May 2014</p><main class="Article-contents"><p>Today, let&#39;s drop into a world you can reach out and <em>touch</em>.
+<!DOCTYPE html><html><head><title>A dead-simple FPS</title><meta name="description" content="Adventures in the land of JavaScript"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><link rel="stylesheet" type="text/css" href="../styles/global.css"><link rel="stylesheet" type="text/css" href="../styles/grid.css"><link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css"></head><body class="Article"><header class="SmallHeader"><div class="row"><a href="/"><h1 class="SmallHeader-logo">PlayfulJS</h1></a></div></header><div class="row"><div class="col nine"><h2>A dead-simple FPS</h2><p class="Article-date">3 June 2014</p><main class="Article-contents"><p>Today, let&#39;s drop into a world you can reach out and <em>touch</em>.
 In this article, we&#39;ll compose a first-person exploration from scratch,
 in 250 lines and without difficult math, using a technique called raycasting.
 You may have seen it before in games like Daggerfall and Duke Nukem 3D,
 or more recently in Notch Persson&#39;s ludum dare entries.
-Ready to build your own?
+If it&#39;s good enough for Notch, it&#39;s good enough for me!
 <a href="/demos/raycaster"> [Demo] </a>
 <a href="https://github.com/hunterloftis/playfuljs/blob/master/content/demos/raycaster.html"> [Source] </a></p>
+<p><a href="/demos/raycaster"><img src='../images/raycaster-result.jpg'></a></p>
 <p>Raycasting feels like cheating, and as a lazy programmer, I love it.
 You get the immersion of a 3D environment without many of the
 complexities of &quot;real 3D&quot; to slow you down.
 For example, raycasts run in constant time,
 so you can load up a massive world and it will <em>just work</em>, without optimization,
 as quickly as a tiny world.
-Also, levels are defined as simple grids rather than as trees of polygon meshes,
+Levels are defined as simple grids rather than as trees of polygon meshes,
 so you can dive right in without a 3D modeling background or mathematics PhD.</p>
 <p>It&#39;s one of those techniques that blows you away with simplicity.
 In fifteen minutes you&#39;ll be taking photos of your office walls and
 checking your HR documents for rules against &quot;building workplace gunfight simulations.&quot;</p>
-<p><a href="/demos/raycaster"><img src='../images/raycaster-result.jpg'></a></p>
 <h3 id="the-player">The Player</h3>
-<p>Everything begins and ends with the player.
-The player in a raycaster can be represented with three properties:
-x position, y position, and facing direction.</p>
+<p>Where are we casting rays from? That&#39;s what the player is all about.
+We need just three properties: x, y, and direction.</p>
 <pre><code class="lang-js">function Player(x, y, direction) {
   this.x = x;
   this.y = y;
   this.direction = direction;
-  this.weapon = new Bitmap(&#39;../knife_hand.png&#39;, 319, 320);
-  this.paces = 0;
 }
 </code></pre>
-<p>Everything else is gravy.</p>
 <h3 id="the-map">The Map</h3>
 <p>We&#39;ll store our map as a simple two-dimensional array.
 In this array, 0 represents <em>no wall</em> and 1 represents <em>wall</em>.
@@ -41,35 +37,33 @@ but for our first attempt 0-vs-1 works great.</p>
 <pre><code class="lang-js">function Map(size) {
   this.size = size;
   this.wallGrid = new Uint8Array(size * size);
-  this.skybox = new Bitmap(&#39;../deathvalley_panorama.jpg&#39;, 4000, 1290);
-  this.wallTexture = new Bitmap(&#39;../wall_texture.jpg&#39;, 1024, 1024);
-  this.light = 0;
 }
 </code></pre>
-<p>We&#39;re also storing a couple of images for the map
-(a single wall texture and a skybox)
-and an ambient light value.</p>
 <h3 id="casting-a-ray">Casting a ray</h3>
 <p>Here&#39;s the trick: a raycasting engine <em>doesn&#39;t draw the whole scene at once.</em>
-Instead, it divides the scene into independent columns and renders them all individually.
-Each column represents a single &#39;ray&#39; cast out from the player at a particular angle.
-If the ray hits a wall, it measures the distance to that wall.
-Columns without a hit remain empty, and you draw a rectangle in columns with a hit.
+Instead, it divides the scene into independent columns and renders them one-by-one.
+Each column represents a single ray cast out from the player at a particular angle.
+If the ray hits a wall, it measures the distance to that wall and draws a rectangle in its column.
 The height of the rectangle is determined by the distance the ray traveled -
-more distant walls are drawn shorter.
-This all adds up to a fast, yet powerful 3D illusion!</p>
-<h4 id="1-find-the-ray-s-angle">1. Find the ray&#39;s angle</h4>
-<p>First, you find the angle at which you need to cast the ray.
+more distant walls are drawn shorter.</p>
+<p><img src="../images/raycaster-idea.png" alt="Raycasting basic idea"></p>
+<p>The more rays you draw, the smoother the result.</p>
+<h4 id="1-find-each-ray-s-angle">1. Find each ray&#39;s angle</h4>
+<p>First, we find the angle at which to cast each ray.
 The angle depends on three things: the direction the player is facing,
-the field-of-view of the camera, and which column you&#39;re drawing.</p>
+the field-of-view of the camera, and which column we&#39;re currently drawing.</p>
 <pre><code class="lang-js">var angle = this.fov * (column / this.resolution - 0.5);
 var ray = map.cast(player, player.direction + angle, this.range);
 </code></pre>
-<h4 id="2-step-through-the-grid">2. Step through the grid</h4>
-<p>Next, we need to check for walls in the ray&#39;s path.
-We do this by finding all the points where the ray intersects
-with a horizontal or vertical grid line and checking
-whether or not a wall exists at that point in the grid.</p>
+<h4 id="2-follow-each-ray-through-the-grid">2. Follow each ray through the grid</h4>
+<p>Next, we need to check for walls in each ray&#39;s path.
+Our goal is to end up with an array that lists each wall the ray
+passes through as it moves away from the player.</p>
+<p><img src="../images/raycaster-grid.png" alt="Raycaster grid"></p>
+<p>Starting from the player, we find the nearest horizontal (<em>stepX</em>) and
+vertical (<em>stepY</em>) gridlines.
+We move to whichever is closer and check for a wall (<em>inspect</em>).
+Then we repeat until we&#39;ve traced the entire length of each ray.</p>
 <pre><code class="lang-js">function ray(origin) {
   var stepX = step(sin, cos, origin.x, origin.y);
   var stepY = step(cos, sin, origin.y, origin.x, true);
@@ -81,51 +75,38 @@ whether or not a wall exists at that point in the grid.</p>
   return [origin].concat(ray(nextStep));
 }
 </code></pre>
-<p>This recursive function finds the nearest horizontal gridline (stepX)
-and the nearest vertical gridline (stepY).
-It chooses whichever is closer and looks for a wall (inspect).
-This continues until the ray passes beyond a maximum distance.</p>
+<p>Finding grid intersections is straightforward: just look for whole numbers of <em>x</em> (1, 2, 3, etc).
+Then, find a matching y by multiplying by the line&#39;s slope (rise / run).</p>
 <pre><code class="lang-js">var dx = run &gt; 0 ? Math.floor(x + 1) - x : Math.ceil(x - 1) - x;
 var dy = dx * (rise / run);
 </code></pre>
-<p>Finding grid intersections is straightforward: just look for whole numbers of x (1, 2, 3, etc).
-Then, find a matching y by multiplying by the line&#39;s slope (rise / run).
-To find vertical intersections, we flip x and y.</p>
+<p>Did you notice what&#39;s awesome about this part of the algorithm?
+We don&#39;t care how big the map is!
+We&#39;re only looking at specific points on the grid - approximately the same number of points each frame.
+Our example map is 32 x 32, but a map that&#39;s 32,000 x 32,000 would run just as quickly!</p>
 <h4 id="3-draw-a-column">3. Draw a column</h4>
-<p>Once we&#39;ve traced a ray, we need to draw any walls that it found in its path.
-This requires two properties: distance from the player, and grid offset.</p>
-<ul>
-<li><em>Distance</em> tells us how tall to draw our rectangle.</li>
-<li><em>Offset</em> tells us which part of the wall&#39;s texture we should draw on this column.
-Since we&#39;re using a grid of whole numbers, the texture offset is just any remainder.
-For example, a ray that intersects with a wall at (10, 8.2) would have an offset of 0.2.</li>
-</ul>
-<pre><code class="lang-js">Camera.prototype.project = function(height, angle, distance) {
-  var z = distance * Math.cos(angle);
+<p>Once we&#39;ve traced a ray, we need to draw any walls that it found in its path.</p>
+<pre><code class="lang-js">  var z = distance * Math.cos(angle);
   var wallHeight = this.height * height / z;
-  var bottom = this.height / 2 * (1 + 1 / z);
-  return {
-    top: bottom - wallHeight,
-    height: wallHeight
-  }; 
-};
 </code></pre>
-<p>Oh damn, where did this cosine come in? I promised easy math!
+<p>We determine the height of each wall by dividing its maximum height by <em>z</em>.
+The further away a wall is, the shorter we draw it.</p>
+<p>Oh damn, where did this <em>cosine</em> come in?
 If we just use the raw distance from the player, we&#39;ll end up with a fisheye effect.
 Why? Imagine that you&#39;re facing a wall. The edges of the wall to your left and right
 are further away from you than the center of the wall.
 But you don&#39;t want straight walls to buldge out in the middle!
-To render walls as we really see them, we figure out how far away from the
-plane of view of the player. Like this:</p>
-<p>(illustration)</p>
-<p>Finally, we divide the height of the wall by z.
-Far away walls with large distances will have small heights,
-and nearby walls with small distances will have large heights.
-Beautiful.</p>
-<h3 id="the-camera">The Camera</h3>
-<p>The camera&#39;s job is to draw the map, each frame, from the player&#39;s perspective.
+To render flat walls as we really see them, we build a triangle out of each ray
+and find the perpendicular distance to the wall with cosine. Like this:</p>
+<p><img src="../images/raycaster-distance.png" alt="Raycaster distance"></p>
+<p>And I promise, that&#39;s the hardest math in this whole thing.</p>
+<h3 id="render-the-damn-thing-">Render the damn thing!</h3>
+<p>Let&#39;s use a Camera object to draw the map each frame from the player&#39;s perspective.
 It will be responsible for rendering each strip as we sweep from the
 left to the right of the screen.</p>
+<p>Before it draws the walls, we&#39;ll render a skybox -
+just a big picture in the background with stars and a horizon.
+After the walls are done we&#39;ll drop a weapon into the foreground.</p>
 <pre><code class="lang-js">Camera.prototype.render = function(player, map) {
   this.drawSky(player.direction, map.skybox, map.light);
   this.drawColumns(player, map);
@@ -137,6 +118,90 @@ left to the right of the screen.</p>
 <li><em>Resolution</em> determines how many strips we draw each frame: how many rays we cast.</li>
 <li><em>Field-of-view</em> determines how wide of a lens we&#39;re looking through: the angles of the rays.</li>
 <li><em>Range</em> determines how far away we can see: the maximum length of each ray.</li>
+</ul>
+<h3 id="putting-it-all-together">Putting it all together</h3>
+<p>We&#39;ll use a Keyboard object to listen for the arrow keys and a GameLoop object
+to call requestAnimationFrame. Our simple gameloop is just three lines:</p>
+<pre><code class="lang-js">loop.start(function frame(seconds) {
+  map.update(seconds);
+  player.update(keyboard.states, map, seconds);
+  camera.render(player, map);
+});
+</code></pre>
+<h3 id="the-details">The details</h3>
+<h4 id="rain">Rain</h4>
+<p>Rain is simulated with a bunch of very short walls in random places.</p>
+<pre><code class="lang-js">var rainDrops = Math.round(Math.random() * s / 4 + 0.05);
+var rain = rainDrops &amp;&amp; this.project(0.1, angle, step.distance);
+
+ctx.fillStyle = &#39;#ffffff&#39;;
+ctx.globalAlpha = 0.1;
+while (rainDrops--) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
+</code></pre>
+<p>Instead of drawing the walls at their full width, we draw them one pixel wide.</p>
+<h4 id="lighting-and-lightning">Lighting and lightning</h4>
+<p>The lighting is actually shading.
+All walls are drawn at full brightness, and then covered with a black rectangle of some opacity.
+The opacity is determined by distance as well as by the wall&#39;s orientation (N/S/E/W).</p>
+<pre><code class="lang-js">ctx.fillStyle = &#39;#000000&#39;;
+ctx.globalAlpha = Math.max((step.distance + step.shading) / this.lightRange - map.light, 0);
+ctx.fillRect(left, wall.top, width, wall.height);
+</code></pre>
+<p>To simulate lightning, <em>map.light</em> randomly spikes to 2 and then quickly fades down again.</p>
+<h4 id="collision-detection">Collision detection</h4>
+<p>To prevent the player from walking through walls,
+we just check his future position against our map.
+We check x and y independently so the player can slide along a wall:</p>
+<pre><code class="lang-js">Player.prototype.walk = function(distance, map) {
+  var dx = Math.cos(this.direction) * distance;
+  var dy = Math.sin(this.direction) * distance;
+  if (map.get(this.x + dx, this.y) &lt;= 0) this.x += dx;
+  if (map.get(this.x, this.y + dy) &lt;= 0) this.y += dy;
+};
+</code></pre>
+<h4 id="wall-textures">Wall textures</h4>
+<p>The walls would be pretty boring without a texture.
+How do we know which part of the wall texture to apply to a particular column?
+It&#39;s actually pretty simple: we take the remainder of our intersection point:</p>
+<pre><code class="lang-js">step.offset = offset - Math.floor(offset);
+var textureX = Math.floor(texture.width * step.offset);
+</code></pre>
+<p>For example, an intersection with a wall at (10, 8.2) has a remainder of 0.2.
+That means that it&#39;s 20% from the left edge of the wall (8) and 80% from the right edge (9).
+So we multiply 0.2 * texture.width to find the x-coordinate for the texture image.</p>
+<h3 id="what-s-next-">What&#39;s next?</h3>
+<p>Because raycasters are so fast and simple, you can try lots of ideas quickly.
+You could make a dungeon crawler, first-person shooter, or a grand-theft-auto style sandbox.
+Hell, the constant-time makes me want to build an oldschool MMORPG with a massive,
+procedurally generated world.
+Here are a few challenges to get you started:</p>
+<ul>
+<li>Immersion. This example is begging for full-screen mouse-lock with a rainy background
+and thunderclaps synchronized to the lightning.</li>
+<li>An indoors level. Replace the skybox with a symmetric gradient or, if you&#39;re feeling
+plucky, try rendering floor and ceiling tiles (think of it this way: they&#39;re just
+the spaces between the walls you&#39;re already drawing!)</li>
+<li>Touch controls. One of the nice things about a raycaster is that it doesn&#39;t
+depend on a GPU or 3D graphics system, so a small modification will get this
+example screaming on an iPad. Probably need to lose the rain.</li>
+<li>Lighting objects. We already have a fairly robust lighting model.
+Why not place lights in the world and compute wall lighting based on them?
+Lights are 80% of atmosphere.</li>
+</ul>
+<p>As always, if you build something cool, or have related work to share,
+<a href="mailto:hunter@hunterloftis.com">email me</a> or <a href="http://twitter.com/hunterloftis">tweet me</a>
+and I&#39;ll shout it from the rooftops.</p>
+<h3 id="credits">Credits</h3>
+<p>This &quot;two hour&quot; article turned into a &quot;three week&quot; article,
+and it would never have been released without several peoples&#39; help:</p>
+<ul>
+<li><a href="http://twitter.com/snodgrass23">Jim Snodgrass</a>: editing</li>
+<li><a href="http://twitter.com/jeremymorrell">Jeremy Morrell</a>: editing</li>
+<li><a href="http://twitter.com/jeffpeterson">Jeff Peterson</a>: editing</li>
+<li><a href="http://github.com/akagomez">Chris Gomez</a>: weapons</li>
+<li><a href="http://etsy.com/helenedorothy">Amanda Lenz</a>: laptop bags and support</li>
+<li><a href="http://shadowh3.deviantart.com/art/Wall-Texture-73682375">Nicholas S</a>: wall texture</li>
+<li><a href="http://apod.nasa.gov/apod/ap070508.html">Dan Duriscoe</a>: Death Valley skybox</li>
 </ul>
 </main></div><div class="col three"><form action="http://playfuljs.us8.list-manage.com/subscribe/post?u=21e71615334170b2bd165bd2e&amp;amp;id=8a76f848a7" method="post" name="mc-embedded-subscribe-form" target="_blank" class="Subscriber"><h4>Get updates!<p>Keep up with playful articles by email</p><input type="email" name="EMAIL" placeholder="enter your email address"/><div style="position: absolute; left: -5000px;"><input type="text" name="b_21e71615334170b2bd165bd2e_8a76f848a7" tabindex="-1" value=""/></div><button class="Button">Subscribe</button><p>Related content also posted at&nbsp;<a href="http://twitter.com/hunterloftis">@hunterloftis</a></p></h4></form><section class="Recent"><h4>Recent Articles</h4><a href="/realistic-terrain-in-130-lines">Realistic terrain in 130 lines</a><a href="/physics-for-the-lazy">Physics for the lazy</a><a href="/particle-effects-are-easy">Particle effects are easy</a></section></div></div><script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
