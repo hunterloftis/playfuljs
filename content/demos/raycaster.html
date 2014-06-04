@@ -27,7 +27,7 @@
         this.onTouchEnd(e);
         if (t.pageY < window.innerHeight * 0.5) this.onKey(true, { keyCode: 38 });
         else if (t.pageX < window.innerWidth * 0.5) this.onKey(true, { keyCode: 37 });
-        else if (t.pageY > window.innerWidth * 0.5) this.onKey(true, { keyCode: 39 });
+        else if (t.pageX > window.innerWidth * 0.5) this.onKey(true, { keyCode: 39 });
       };
 
       Controls.prototype.onTouchEnd = function(e) {
@@ -55,7 +55,7 @@
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.weapon = new Bitmap('../knife_hand.png', 319, 320);
+        this.weapon = new Bitmap('knife_hand.png', 319, 320);
         this.paces = 0;
       }
 
@@ -81,8 +81,8 @@
       function Map(size) {
         this.size = size;
         this.wallGrid = new Uint8Array(size * size);
-        this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
-        this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
+        this.skybox = new Bitmap('deathvalley_panorama.jpg', 4000, 1290);
+        this.wallTexture = new Bitmap('wall_texture.jpg', 1024, 1024);
         this.light = 0;
       }
 
@@ -147,6 +147,7 @@
       };
 
       function Camera(canvas, resolution, fov) {
+        this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width = window.innerWidth * 0.5;
         this.height = canvas.height = window.innerHeight * 0.5;
@@ -162,6 +163,7 @@
         this.drawSky(player.direction, map.skybox, map.light);
         this.drawColumns(player, map);
         this.drawWeapon(player.weapon, player.paces);
+        this.drawMap(0, 0, this.canvas.width * 0.3, map, player);
       };
 
       Camera.prototype.drawSky = function(direction, sky, ambient) {
@@ -198,6 +200,28 @@
         var top = this.height * 0.6 + bobY;
         this.ctx.drawImage(weapon.image, left, top, weapon.width * this.scale, weapon.height * this.scale);
       };
+
+      Camera.prototype.drawMap = function(x, y, size, map, player) {
+        var gridElementSize = size / map.size;
+        for (var xx = 0; xx < map.size; xx++) {
+          for (var yy = 0; yy < map.size; yy++) {
+            var color = map.get(xx, yy) ? "white" : "black";
+            this.ctx.fillStyle = color;
+            this.ctx.fillRect(x + xx * gridElementSize, y + yy * gridElementSize, gridElementSize, gridElementSize);
+          }
+        }
+        var playerSize = gridElementSize * 0.7;
+        var halfPlayerSize = playerSize >> 1;
+        var sin = Math.sin(player.direction);
+        var cos = Math.cos(player.direction);
+        this.ctx.strokeStyle = "red";
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + player.x * gridElementSize, y + player.y * gridElementSize);
+        this.ctx.lineTo(x + (player.x + cos * this.range) * gridElementSize, y + (player.y + sin * this.range) * gridElementSize);
+        this.ctx.stroke();
+        this.ctx.fillStyle = "red";
+        this.ctx.fillRect(x + player.x * gridElementSize - halfPlayerSize, y + player.y * gridElementSize - halfPlayerSize, playerSize, playerSize);
+      }
 
       Camera.prototype.drawColumn = function(column, ray, angle, map) {
         var ctx = this.ctx;
