@@ -24,10 +24,38 @@
 
       Controls.prototype.onTouch = function(e) {
         var t = e.touches[0];
-        this.onTouchEnd(e);
-        if (t.pageY < window.innerHeight * 0.5) this.onKey(true, { keyCode: 38 });
-        else if (t.pageX < window.innerWidth * 0.5) this.onKey(true, { keyCode: 37 });
-        else if (t.pageX > window.innerWidth * 0.5) this.onKey(true, { keyCode: 39 });
+        var upInit = 0;
+        var upEnd = window.innerHeight * 0.5;
+        var downInit = window.innerHeight * 0.5;
+        var downEnd = window.innerHeight;
+        var leftInit = 0;
+        var leftEnd = window.innerWidth * 0.4;
+        var rightInit = window.innerWidth * 0.6;
+        var rightEnd = window.innerWidth;
+        if (t.pageY >= upInit && t.pageY < upEnd) {
+          this.onKey(true, { keyCode: 38 });
+          this.onKey(false, { keyCode: 40 });
+        }
+        else if (t.pageY >= downInit && t.pageY < downEnd) {
+          this.onKey(false, { keyCode: 38 });
+          this.onKey(true, { keyCode: 40 });
+        }
+        else {
+          this.onKey(false, { keyCode: 38 });
+          this.onKey(false, { keyCode: 40 });
+        }
+        if (t.pageX >= leftInit && t.pageX < leftEnd) {
+            this.onKey(true, { keyCode: 37 });
+            this.onKey(false, { keyCode: 39 });
+        }
+        else if (t.pageX >= rightInit && t.pageX < rightEnd) {
+            this.onKey(false, { keyCode: 37 });
+            this.onKey(true, { keyCode: 39 });
+        }
+        else {
+            this.onKey(false, { keyCode: 37 });
+            this.onKey(false, { keyCode: 39 });
+        }
       };
 
       Controls.prototype.onTouchEnd = function(e) {
@@ -163,7 +191,7 @@
         this.drawSky(player.direction, map.skybox, map.light);
         this.drawColumns(player, map);
         this.drawWeapon(player.weapon, player.paces);
-        this.drawMap(0, 0, this.canvas.width * 0.3, map, player);
+        this.drawMap(0, 0, this.canvas.width * 0.2, map, player);
       };
 
       Camera.prototype.drawSky = function(direction, sky, ambient) {
@@ -202,23 +230,36 @@
       };
 
       Camera.prototype.drawMap = function(x, y, size, map, player) {
+        // Draw the map
         var gridElementSize = size / map.size;
         for (var xx = 0; xx < map.size; xx++) {
           for (var yy = 0; yy < map.size; yy++) {
-            var color = map.get(xx, yy) ? "white" : "black";
+            var color = map.get(xx, yy) ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)";
             this.ctx.fillStyle = color;
             this.ctx.fillRect(x + xx * gridElementSize, y + yy * gridElementSize, gridElementSize, gridElementSize);
           }
         }
+        // Draw the player field of view 
         var playerSize = gridElementSize * 0.7;
-        var halfPlayerSize = playerSize >> 1;
-        var sin = Math.sin(player.direction);
-        var cos = Math.cos(player.direction);
-        this.ctx.strokeStyle = "red";
+        var halfPlayerSize = playerSize * 0.5;
+        var halfFOV = this.fov * 0.5;
+        var sin = Math.sin(player.direction - halfFOV);
+        var cos = Math.cos(player.direction - halfFOV);
+        var range = this.range * gridElementSize;
+        this.ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
         this.ctx.beginPath();
-        this.ctx.moveTo(x + player.x * gridElementSize, y + player.y * gridElementSize);
-        this.ctx.lineTo(x + (player.x + cos * this.range) * gridElementSize, y + (player.y + sin * this.range) * gridElementSize);
-        this.ctx.stroke();
+        xx = x + player.x * gridElementSize;
+        yy = y + player.y * gridElementSize;
+        this.ctx.moveTo(xx, yy);
+        this.ctx.lineTo(xx + cos * range, yy + sin * range);
+        sin = Math.sin(player.direction + halfFOV);
+        cos = Math.cos(player.direction + halfFOV);
+        this.ctx.lineTo(xx + cos * range, yy + sin * range);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.arc(xx, yy, range, player.direction + halfFOV, player.direction - halfFOV, true);
+        this.ctx.fill();
+        // Draw the player
         this.ctx.fillStyle = "red";
         this.ctx.fillRect(x + player.x * gridElementSize - halfPlayerSize, y + player.y * gridElementSize - halfPlayerSize, playerSize, playerSize);
       }
