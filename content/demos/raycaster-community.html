@@ -13,7 +13,8 @@
       var MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)
 
       function Controls() {
-        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward' };
+        this.codes  = { 37: 'left', 39: 'right', 38: 'forward', 40: 'backward',
+                        65: 'left', 68: 'right', 87: 'forward', 83: 'backward' };
         this.states = { 'left': false, 'right': false, 'forward': false, 'backward': false };
         document.addEventListener('keydown', this.onKey.bind(this, true), false);
         document.addEventListener('keyup', this.onKey.bind(this, false), false);
@@ -50,12 +51,12 @@
         this.width = width;
         this.height = height;
       }
-      
+
       function Player(x, y, direction) {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.weapon = new Bitmap('../knife_hand.png', 319, 320);
+        this.weapon = new Bitmap('knife_hand.png', 319, 320);
         this.paces = 0;
       }
 
@@ -81,8 +82,8 @@
       function Map(size) {
         this.size = size;
         this.wallGrid = new Uint8Array(size * size);
-        this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
-        this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
+        this.skybox = new Bitmap('deathvalley_panorama.jpg', 4000, 1290);
+        this.wallTexture = new Bitmap('wall_texture.jpg', 1024, 1024);
         this.light = 0;
       }
 
@@ -219,12 +220,12 @@
 
             ctx.globalAlpha = 1;
             ctx.drawImage(texture.image, textureX, 0, 1, texture.height, left, wall.top, width, wall.height);
-            
+
             ctx.fillStyle = '#000000';
             ctx.globalAlpha = Math.max((step.distance + step.shading) / this.lightRange - map.light, 0);
             ctx.fillRect(left, wall.top, width, wall.height);
           }
-          
+
           ctx.fillStyle = '#ffffff';
           ctx.globalAlpha = 0.15;
           while (--rainDrops > 0) ctx.fillRect(left, Math.random() * rain.top, 1, rain.height);
@@ -238,7 +239,7 @@
         return {
           top: bottom - wallHeight,
           height: wallHeight
-        }; 
+        };
       };
 
       function GameLoop() {
@@ -267,7 +268,7 @@
       var loop = new GameLoop();
 
       map.randomize();
-      
+
       loop.start(function frame(seconds) {
         map.update(seconds);
         player.update(controls.states, map, seconds);
