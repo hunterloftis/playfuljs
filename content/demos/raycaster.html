@@ -83,7 +83,7 @@
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.weapon = new Bitmap('knife_hand.png', 319, 320);
+        this.weapon = new Bitmap('../knife_hand.png', 319, 320);
         this.paces = 0;
       }
 
@@ -109,8 +109,8 @@
       function Map(size) {
         this.size = size;
         this.wallGrid = new Uint8Array(size * size);
-        this.skybox = new Bitmap('deathvalley_panorama.jpg', 4000, 1290);
-        this.wallTexture = new Bitmap('wall_texture.jpg', 1024, 1024);
+        this.skybox = new Bitmap('../deathvalley_panorama.jpg', 4000, 1290);
+        this.wallTexture = new Bitmap('../wall_texture.jpg', 1024, 1024);
         this.light = 0;
       }
 
