@@ -249,6 +249,8 @@ Wander around the [creepy ruins](/demos/raycaster).
 There's also a [community version](/demos/raycaster-community) that folks have extended:
 - [Add WASD](https://github.com/hunterloftis/playfuljs/pull/3) by [ctolsen](https://github.com/ctolsen)
 
+[Fredrik Wallgren](https://github.com/walle) has built a [Java port](https://github.com/walle/raycaster).
+
 ### What's next?
 
 Because raycasters are so fast and simple, you can try lots of ideas quickly.
