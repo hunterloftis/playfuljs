@@ -24,38 +24,10 @@
 
       Controls.prototype.onTouch = function(e) {
         var t = e.touches[0];
-        var upInit = 0;
-        var upEnd = window.innerHeight * 0.5;
-        var downInit = window.innerHeight * 0.5;
-        var downEnd = window.innerHeight;
-        var leftInit = 0;
-        var leftEnd = window.innerWidth * 0.4;
-        var rightInit = window.innerWidth * 0.6;
-        var rightEnd = window.innerWidth;
-        if (t.pageY >= upInit && t.pageY < upEnd) {
-          this.onKey(true, { keyCode: 38 });
-          this.onKey(false, { keyCode: 40 });
-        }
-        else if (t.pageY >= downInit && t.pageY < downEnd) {
-          this.onKey(false, { keyCode: 38 });
-          this.onKey(true, { keyCode: 40 });
-        }
-        else {
-          this.onKey(false, { keyCode: 38 });
-          this.onKey(false, { keyCode: 40 });
-        }
-        if (t.pageX >= leftInit && t.pageX < leftEnd) {
-            this.onKey(true, { keyCode: 37 });
-            this.onKey(false, { keyCode: 39 });
-        }
-        else if (t.pageX >= rightInit && t.pageX < rightEnd) {
-            this.onKey(false, { keyCode: 37 });
-            this.onKey(true, { keyCode: 39 });
-        }
-        else {
-            this.onKey(false, { keyCode: 37 });
-            this.onKey(false, { keyCode: 39 });
-        }
+        this.onTouchEnd(e);
+        if (t.pageY < window.innerHeight * 0.5) this.onKey(true, { keyCode: 38 });
+        else if (t.pageX < window.innerWidth * 0.5) this.onKey(true, { keyCode: 37 });
+        else if (t.pageY > window.innerWidth * 0.5) this.onKey(true, { keyCode: 39 });
       };
 
       Controls.prototype.onTouchEnd = function(e) {
