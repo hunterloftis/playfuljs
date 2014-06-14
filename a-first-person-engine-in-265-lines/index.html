@@ -51,8 +51,9 @@ more distant walls are drawn shorter.</p>
 <h4 id="1-find-each-ray-s-angle">1. Find each ray&#39;s angle</h4>
 <p>First, we find the angle at which to cast each ray.
 The angle depends on three things: the direction the player is facing,
-the field-of-view of the camera, and which column we&#39;re currently drawing.</p>
-<pre><code class="lang-js">var angle = this.fov * (column / this.resolution - 0.5);
+the focal length of the camera, and which column we&#39;re currently drawing.</p>
+<pre><code class="lang-js">var x = column / this.resolution - 0.5;
+var angle = Math.atan2(x, this.focalLength);
 var ray = map.cast(player, player.direction + angle, this.range);
 </code></pre>
 <h4 id="2-follow-each-ray-through-the-grid">2. Follow each ray through the grid</h4>
@@ -113,10 +114,10 @@ After the walls are done we&#39;ll drop a weapon into the foreground.</p>
   this.drawWeapon(player.weapon, player.paces);
 };
 </code></pre>
-<p>The camera&#39;s most important properties are resolution, field-of-view (fov), and range.</p>
+<p>The camera&#39;s most important properties are resolution, focal length, and range.</p>
 <ul>
 <li><em>Resolution</em> determines how many strips we draw each frame: how many rays we cast.</li>
-<li><em>Field-of-view</em> determines how wide of a lens we&#39;re looking through: the angles of the rays.</li>
+<li><em>Focal length</em> determines how wide of a lens we&#39;re looking through: the angles of the rays.</li>
 <li><em>Range</em> determines how far away we can see: the maximum length of each ray.</li>
 </ul>
 <h3 id="putting-it-all-together">Putting it all together</h3>
@@ -180,11 +181,14 @@ So we multiply 0.2 * texture.width to find the x-coordinate for the texture imag
 <p>Because raycasters are so fast and simple, you can try lots of ideas quickly.
 You could make a dungeon crawler, first-person shooter, or a grand-theft-auto style sandbox.
 Hell, the constant-time makes me want to build an oldschool MMORPG with a massive,
-procedurally generated world.
-Here are a few challenges to get you started:</p>
+procedurally generated world.</p>
+<p><a href="https://github.com/hunterloftis/playfuljs-demos">Fork the code</a>!</p>
+<p>Here are a few challenges to get you started:</p>
 <ul>
 <li>Immersion. This example is begging for full-screen mouse-lock with a rainy background
 and thunderclaps synchronized to the lightning.</li>
+<li>Optimization. Lots of speedups possible here, starting with caching the identical
+<em>Math.atan2</em> and <em>Math.cos</em> calls we make hundreds of times each frame.</li>
 <li>An indoors level. Replace the skybox with a symmetric gradient or, if you&#39;re feeling
 plucky, try rendering floor and ceiling tiles (think of it this way: they&#39;re just
 the spaces between the walls you&#39;re already drawing!)</li>
@@ -197,7 +201,8 @@ so folks on phones and tablets can try out the demo, but there&#39;s huge room f
 With a raycaster this are surprisingly simple. Start by modifying camera.fov in the console.</li>
 </ul>
 <p>As always, if you build something cool, or have related work to share,
-<a href="mailto:hunter@hunterloftis.com">email me</a> or <a href="http://twitter.com/hunterloftis">tweet me</a>
+link me to it via
+<a href="mailto:hunter@hunterloftis.com">email</a> or <a href="http://twitter.com/hunterloftis">twitter</a>
 and I&#39;ll shout it from the rooftops.</p>
 <h3 id="discuss">Discuss</h3>
 <p>Join <a href="https://news.ycombinator.com/item?id=7842037">the discussion</a> on Hacker News.</p>
