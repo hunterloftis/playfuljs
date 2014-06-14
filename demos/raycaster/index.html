@@ -156,6 +156,7 @@
         this.range = MOBILE ? 8 : 14;
         this.lightRange = 5;
         this.scale = (this.width + this.height) / 1200;
+        this.viewDistance = 0.8;
       }
 
       Camera.prototype.render = function(player, map) {
@@ -184,7 +185,8 @@
       Camera.prototype.drawColumns = function(player, map) {
         this.ctx.save();
         for (var column = 0; column < this.resolution; column++) {
-          var angle = this.fov * (column / this.resolution - 0.5);
+          var x = column / this.resolution - 0.5;
+          var angle = Math.atan2(x, this.viewDistance);
           var ray = map.cast(player, player.direction + angle, this.range);
           this.drawColumn(column, ray, angle, map);
         }
