@@ -225,6 +225,8 @@ If you're anything like me, the results of this simple algorithm leave you itchi
 build an online Terragen, a jetpack-based first person shooter, fishing simulator,
 MMORPG, etc. This single-cube, canvas-projected demo practically begs for extension.
 
+[Fork the code](https://github.com/hunterloftis/playfuljs-demos)!
+
 Here are a few things I challenge you to try:
 
 - WebGL rendering

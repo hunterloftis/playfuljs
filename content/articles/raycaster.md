@@ -74,10 +74,11 @@ The more rays you draw, the smoother the result.
 
 First, we find the angle at which to cast each ray.
 The angle depends on three things: the direction the player is facing,
-the field-of-view of the camera, and which column we're currently drawing.
+the focal length of the camera, and which column we're currently drawing.
 
 ```js
-var angle = this.fov * (column / this.resolution - 0.5);
+var x = column / this.resolution - 0.5;
+var angle = Math.atan2(x, this.focalLength);
 var ray = map.cast(player, player.direction + angle, this.range);
 ```
 
@@ -162,9 +163,9 @@ Camera.prototype.render = function(player, map) {
 };
 ```
 
-The camera's most important properties are resolution, field-of-view (fov), and range.
+The camera's most important properties are resolution, focal length, and range.
 - *Resolution* determines how many strips we draw each frame: how many rays we cast.
-- *Field-of-view* determines how wide of a lens we're looking through: the angles of the rays.
+- *Focal length* determines how wide of a lens we're looking through: the angles of the rays.
 - *Range* determines how far away we can see: the maximum length of each ray.
 
 ### Putting it all together
@@ -255,10 +256,15 @@ Because raycasters are so fast and simple, you can try lots of ideas quickly.
 You could make a dungeon crawler, first-person shooter, or a grand-theft-auto style sandbox.
 Hell, the constant-time makes me want to build an oldschool MMORPG with a massive,
 procedurally generated world.
+
+[Fork the code](https://github.com/hunterloftis/playfuljs-demos)!
+
 Here are a few challenges to get you started:
 
 - Immersion. This example is begging for full-screen mouse-lock with a rainy background
 and thunderclaps synchronized to the lightning.
+- Optimization. Lots of speedups possible here, starting with caching the identical
+*Math.atan2* and *Math.cos* calls we make hundreds of times each frame.
 - An indoors level. Replace the skybox with a symmetric gradient or, if you're feeling
 plucky, try rendering floor and ceiling tiles (think of it this way: they're just
 the spaces between the walls you're already drawing!)
@@ -271,7 +277,8 @@ so folks on phones and tablets can try out the demo, but there's huge room for i
 With a raycaster this are surprisingly simple. Start by modifying camera.fov in the console.
 
 As always, if you build something cool, or have related work to share,
-[email me](mailto:hunter@hunterloftis.com) or [tweet me](http://twitter.com/hunterloftis)
+link me to it via
+[email](mailto:hunter@hunterloftis.com) or [twitter](http://twitter.com/hunterloftis)
 and I'll shout it from the rooftops.
 
 ### Discuss
