@@ -8,7 +8,8 @@ As you saw in ['Particle effects are easy'](/particle-effects-are-easy/),
 particles provide a simple but powerful tool for animation.
 In this article, we'll add some basic physics to create
 a particle-based water fountain.
-[ [Demo] ](/demos/particles2)
+[ [Demo] ](http://demos.playfuljs.com/particles2)
+[ [Source] ](https://github.com/hunterloftis/playfuljs-demos/blob/gh-pages/particles2/index.html)
 
 ### Moving particles
 
@@ -83,7 +84,7 @@ for (var i = 0; i < drops.length; i++) {
 
 ## Try it out
 
-Splash around in the [water fountain demo](/demos/particles2).
+Splash around in the [water fountain demo](http://demos.playfuljs.com/particles2).
 
 ### What's next?
 

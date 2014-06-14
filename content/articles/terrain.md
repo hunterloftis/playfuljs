@@ -8,8 +8,8 @@ As programmers, we love to build things,
 and what could be more exciting than building a *world?*
 Minecraft, Terragen, Skyrim, and every flight simulator ever all use some sort of fractal terrain generation.
 Today we'll explore the beautifully simple diamond-square algorithm so you, too can play God.
-[ [Demo] ](/demos/terrain)
-[ [Source] ](https://github.com/hunterloftis/playfuljs/blob/master/content/demos/terrain.html)
+[ [Demo] ](http://demos.playfuljs.com/terrain)
+[ [Source] ](https://github.com/hunterloftis/playfuljs-demos/blob/gh-pages/terrain/index.html)
 
 Programmers tend to be lazy (I speak from experience), and one nice side effect of laziness is really
 brilliant ways to avoid work. In this case, instead of spending mind-numbing
@@ -217,7 +217,7 @@ terrain.draw(canvasContext, width, height);
 
 ## Try it out
 
-Explore the [otherworldly terrain](/demos/terrain).
+Explore the [otherworldly terrain](http://demos.playfuljs.com/terrain).
 
 ### What's next?
 

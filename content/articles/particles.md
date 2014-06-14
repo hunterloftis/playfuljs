@@ -7,7 +7,8 @@ template: article.jade
 Almost every game uses particles to create engaging effects for
 fire, smoke, explosions, fabric, water, gunfire, and more.
 Learn how to use this simple yet powerful technique to build your own stunning visuals.
-[ [Demo] ](/demos/particles)
+[ [Demo] ](http://demos.playfuljs.com/particles)
+[ [Source] ](https://github.com/hunterloftis/playfuljs-demos/blob/gh-pages/particles/index.html)
 
 ### The humble particle
 
@@ -76,7 +77,7 @@ for (var i = 0; i < particles.length; i++) {
 
 ## Try it out
 
-If an image is worth 1000 words, a [60fps Demo](/demos/particles) must be priceless.
+If an image is worth 1000 words, a [60fps Demo](http://demos.playfuljs.com/particles) must be priceless.
 
 ## Get creative!
 

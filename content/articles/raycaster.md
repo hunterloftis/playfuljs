@@ -10,10 +10,10 @@ quickly and without difficult math, using a technique called raycasting.
 You may have seen it before in games like Daggerfall and Duke Nukem 3D,
 or more recently in Notch Persson's ludum dare entries.
 If it's good enough for Notch, it's good enough for me!
-[ [Demo (arrow keys / touch)] ](/demos/raycaster)
-[ [Source] ](https://github.com/hunterloftis/playfuljs/blob/master/content/demos/raycaster.html)
+[ [Demo (arrow keys / touch)] ](http://demos.playfuljs.com/raycaster)
+[ [Source] ](https://github.com/hunterloftis/playfuljs-demos/blob/gh-pages/raycaster/index.html)
 
-[<img src='../images/raycaster-result.gif'>](/demos/raycaster)
+[<img src='../images/raycaster-result.gif'>](http://demos.playfuljs.com/raycaster)
 
 Raycasting feels like cheating, and as a lazy programmer, I love it.
 You get the immersion of a 3D environment without many of the
@@ -244,12 +244,10 @@ So we multiply 0.2 * texture.width to find the x-coordinate for the texture imag
 
 ## Try it out
 
-Wander around the [creepy ruins](/demos/raycaster).
+Wander around the [creepy ruins](http://demos.playfuljs.com/raycaster).
 
-There's also a [community version](/demos/raycaster-community) that folks have extended:
-- [Add WASD](https://github.com/hunterloftis/playfuljs/pull/3) by [ctolsen](https://github.com/ctolsen)
-
-[Fredrik Wallgren](https://github.com/walle) has built a [Java port](https://github.com/walle/raycaster).
+- [Fredrik Wallgren](https://github.com/walle) has built a [Java port](https://github.com/walle/raycaster).
+- [Sean McKiernen](https://github.com/Mekire) has built a [Python port](https://github.com/Mekire/pygame-raycasting-experiment).
 
 ### What's next?
 
