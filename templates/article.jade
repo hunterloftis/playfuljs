@@ -6,6 +6,7 @@ html
     title= title
     meta(name='description', content= description)
     meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
+    link(rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:300,700')
     link(rel='stylesheet' type='text/css' href='../styles/global.css')
     link(rel='stylesheet' type='text/css' href='../styles/grid.css')
     link(rel='stylesheet' href='http://yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css')
@@ -18,9 +19,15 @@ html
 
     .row
       .col.nine
-        h2= title
-        p.Article-date= simpleDate(date)
-        main.Article-contents!= contents
+        .row.Article-top
+          .Article-avatar(style='background-image: url(../images/' + avatar + ');')
+          .Article-header
+            h2= title
+            p by #{author}
+              a.icon.twitter(href=twitter): span twitter
+              a.icon.email(href='mailto:' + email): span email
+        .row
+          main.Article-contents!= contents
 
       .col.three
         +Subscriber

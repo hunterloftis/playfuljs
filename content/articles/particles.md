@@ -2,6 +2,10 @@
 title: 'Particle effects are easy'
 date: 2014-05-03
 template: article.jade
+author: 'Hunter Loftis'
+twitter: 'http://twitter.com/hunterloftis'
+email: 'hunter@hunterloftis.com'
+thumb: 'images/particles-thumb.jpg'
 ---
 
 Almost every game uses particles to create engaging effects for

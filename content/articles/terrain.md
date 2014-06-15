@@ -2,6 +2,11 @@
 title: 'Realistic terrain in 130 lines'
 date: 2014-05-05
 template: article.jade
+author: 'Hunter Loftis'
+avatar: 'avatar-hunter.jpg'
+twitter: 'http://twitter.com/hunterloftis'
+email: 'hunter@hunterloftis.com'
+thumb: 'images/terrain-thumb.jpg'
 ---
 
 As programmers, we love to build things,

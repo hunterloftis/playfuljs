@@ -2,6 +2,11 @@
 title: 'Physics for the lazy'
 date: 2014-05-04
 template: article.jade
+author: 'Hunter Loftis'
+avatar: 'avatar-hunter.jpg'
+twitter: 'http://twitter.com/hunterloftis'
+email: 'hunter@hunterloftis.com'
+thumb: 'images/particles2-thumb.jpg'
 ---
 
 As you saw in ['Particle effects are easy'](/particle-effects-are-easy/),

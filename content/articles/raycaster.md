@@ -2,6 +2,11 @@
 title: 'A first-person engine in 265 lines'
 date: 2014-06-03
 template: article.jade
+author: 'Hunter Loftis'
+avatar: 'avatar-hunter.jpg'
+twitter: 'http://twitter.com/hunterloftis'
+email: 'hunter@hunterloftis.com'
+thumb: 'images/raycaster-thumb.jpg'
 ---
 
 Today, let's drop into a world you can reach out and *touch*.
