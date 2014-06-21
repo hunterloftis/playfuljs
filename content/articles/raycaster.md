@@ -252,8 +252,11 @@ So we multiply 0.2 * texture.width to find the x-coordinate for the texture imag
 
 Wander around the [creepy ruins](http://demos.playfuljs.com/raycaster).
 
-- [Fredrik Wallgren](https://github.com/walle) has built a [Java port](https://github.com/walle/raycaster).
-- [Sean McKiernen](https://github.com/Mekire) has built a [Python port](https://github.com/Mekire/pygame-raycasting-experiment).
+- [Java port](https://github.com/walle/raycaster) by [Fredrik Wallgren](https://github.com/walle).
+- [Python port](https://github.com/Mekire/pygame-raycasting-experiment) by [Sean McKiernen](https://github.com/Mekire).
+- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Iker Jamardo](https://github.com/judax).
+- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Aaron](https://github.com/aarónfc).
+- [Direct2D raycaster](http://www.cnblogs.com/Baesky/p/D2DFpsEngineDemo.html) by RS Lee.
 
 ### What's next?
 
