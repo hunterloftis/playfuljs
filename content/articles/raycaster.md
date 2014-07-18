@@ -252,12 +252,6 @@ So we multiply 0.2 * texture.width to find the x-coordinate for the texture imag
 
 Wander around the [creepy ruins](http://demos.playfuljs.com/raycaster).
 
-- [Java port](https://github.com/walle/raycaster) by [Fredrik Wallgren](https://github.com/walle).
-- [Python port](https://github.com/Mekire/pygame-raycasting-experiment) by [Sean McKiernen](https://github.com/Mekire).
-- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Iker Jamardo](https://github.com/judax).
-- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Aaron](https://github.com/aarónfc).
-- [Direct2D raycaster](http://www.cnblogs.com/Baesky/p/D2DFpsEngineDemo.html) by RS Lee.
-
 ### What's next?
 
 Because raycasters are so fast and simple, you can try lots of ideas quickly.
@@ -288,6 +282,19 @@ As always, if you build something cool, or have related work to share,
 link me to it via
 [email](mailto:hunter@hunterloftis.com) or [twitter](http://twitter.com/hunterloftis)
 and I'll shout it from the rooftops.
+
+### In the community
+
+As usual, the community has built cooler stuff than I imagined!
+
+- [Java port](https://github.com/walle/raycaster) by [Fredrik Wallgren](https://github.com/walle).
+- [Python port](https://github.com/Mekire/pygame-raycasting-experiment) by [Sean McKiernen](https://github.com/Mekire).
+- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Iker Jamardo](https://github.com/judax).
+- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Aaron](https://github.com/aarónfc).
+- [Direct2D raycaster](http://www.cnblogs.com/Baesky/p/D2DFpsEngineDemo.html) by RS Lee.
+- [Mustachio'd enemies](http://nicmendoza.github.io/playfuljs-demos/raycaster/) by Nic Mendoza.
+- [Pebble smartwatch version](http://www.mypebblefaces.com/apps/8596/11063/11071/) by Rob Spiess.
+- [Speedreport 3D adventure](http://fasterness.com/2014/07/08/mashup-web-performance-with-raycasting/) by Ryan Bridges.
 
 ### Discuss
 
