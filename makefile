@@ -12,11 +12,11 @@ clean:
 	rm -rf build
 
 publish:
-	git subtree push --prefix build --squash github gh-pages
+	git subtree push --prefix build --squash origin gh-pages
 
 publish-force:
 	git subtree split --prefix build -b gh-pages
-	git push -f github gh-pages:gh-pages
+	git push -f origin gh-pages:gh-pages
 	git branch -D gh-pages
 
 .PHONY: build
