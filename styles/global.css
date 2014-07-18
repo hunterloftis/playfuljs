@@ -114,7 +114,7 @@ p {
   height: 128px;
   border-radius: 50%;
   background: #334 url("images/avatar.jpg") center center no-repeat;
-  -webkit-background-size: cover;
+  -webkit-background-size: cover cover;
   background-size: cover;
   -webkit-box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   box-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -226,7 +226,7 @@ p {
   height: 64px;
   border-radius: 50%;
   background: #334 center center no-repeat;
-  -webkit-background-size: cover;
+  -webkit-background-size: cover cover;
   background-size: cover;
   display: inline-block;
   vertical-align: top;
