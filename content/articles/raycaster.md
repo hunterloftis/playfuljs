@@ -287,10 +287,10 @@ and I'll shout it from the rooftops.
 
 As usual, the community has built cooler stuff than I imagined!
 
-- [Java port](https://github.com/walle/raycaster) by [Fredrik Wallgren](https://github.com/walle).
-- [Python port](https://github.com/Mekire/pygame-raycasting-experiment) by [Sean McKiernen](https://github.com/Mekire).
-- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Iker Jamardo](https://github.com/judax).
-- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by [Aaron](https://github.com/aarónfc).
+- [Java port](https://github.com/walle/raycaster) by Fredrik Wallgren.
+- [Python port](https://github.com/Mekire/pygame-raycasting-experiment) by Sean McKiernen.
+- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by Iker Jamardo.
+- [Extended version](http://aaronfc.github.io/playfuljs-demos/raycaster/) by Aaron.
 - [Direct2D raycaster](http://www.cnblogs.com/Baesky/p/D2DFpsEngineDemo.html) by RS Lee.
 - [Mustachio'd enemies](http://nicmendoza.github.io/playfuljs-demos/raycaster/) by Nic Mendoza.
 - [Pebble smartwatch version](http://www.mypebblefaces.com/apps/8596/11063/11071/) by Rob Spiess.
